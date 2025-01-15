@@ -1,0 +1,2 @@
+-- Per formattare i file html
+npx prettier --write "resources/views/**/*.blade.php"
