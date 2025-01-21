@@ -3,14 +3,15 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VeicoloController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\VehiclesController;
+use App\Http\Controllers\HomeController;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 
-Route::get('/', [VeicoloController::class, 'index'])->name('veicoli');
-
-Route::get('/veicolo/{id}', [VeicoloController::class, 'show'])->name('veicolo.dettaglio');
+Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');

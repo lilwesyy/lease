@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a#navbar-logo.navbar-brand{
+    font-size: 32px!important;
+}

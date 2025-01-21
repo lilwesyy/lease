@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Veicolo extends Model
+class Setting extends Model
 {
     use HasFactory;
 
-    protected $table = 'veicoli'; // Assicurati che il nome sia corretto
+    protected $fillable = [
+        'favicon',
+    ];
 }

@@ -1,0 +1,16 @@
+{
+    "printWidth": 100,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "htmlWhitespaceSensitivity": "ignore",
+    "overrides": [
+      {
+        "files": "*.blade.php",
+        "options": {
+          "parser": "html"
+        }
+      }
+    ]
+  }
