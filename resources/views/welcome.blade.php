@@ -16,8 +16,9 @@
     </style>
 
     @include('components.navbar')
+    @include('components.totop')
 
-    <div id="carouselExample" class="carousel slide">
+    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             @foreach($vehicles as $index => $vehicle)
                 <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">

@@ -21,6 +21,8 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/vehicles', [VehiclesController::class, 'adminIndex'])->name('vehicles.adminIndex');
+    Route::post('/vehicles', [VehiclesController::class, 'store'])->name('vehicles.store');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
