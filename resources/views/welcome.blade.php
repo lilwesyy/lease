@@ -1,25 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Lease</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <!-- Favicon -->
-        <link rel="icon" href="{{ asset('favicons/' . $favicon) }}" type="image/x-icon">
-        <!-- TailwindCSS -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-    </head>
+
+    @include('components.head')
+
     <body data-bs-theme="{{ $theme }}">
 
     <style>
@@ -27,39 +10,12 @@
         color: white !important;
         background-color: {{ $color }};
     }
-    #call-btn{
-        background-color: {{ $color }};
-    }
     #footer-link:hover{
         color: {{ $color }};
     }
     </style>
 
-    <nav id="navbar" class="navbar navbar-expand-lg bg-body-tertiary fixed-top" data-bs-theme="{{ $theme }}">
-        <div class="container">
-            <a id="navbar-logo" class="navbar-brand" href="/">
-                @if($name)
-                    <span style="color: {{ $color }};">{{ substr($name, 0, 1) }}</span>{{ substr($name, 1) }}
-                @else
-                    {{ $name }}
-                @endif
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ms-auto">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
-                    <a class="nav-link" href="#">About</a>
-                    <a class="nav-link" href="#">Cars</a>
-                    <a class="nav-link" href="#">Contact</a>
-                    <button type="button" id="call-btn" class="btn">
-                        <i class="fa fa-phone"></i> Need more help?
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('components.navbar')
 
     <div id="carouselExample" class="carousel slide">
         <div class="carousel-inner">
@@ -74,8 +30,8 @@
                     <div class="carousel-caption d-none d-md-block {{ $theme == 'dark' ? 'text-white' : '' }} position-absolute top-50 start-50 translate-middle">
                         <p style="color:{{ $color }};"><span style="color:white;">Rental Car - </span>{{ $vehicle->type }}</p>
                         <h1 id="rental-text">{{ $vehicle->make }} {{ $vehicle->model }} </h1>
-                        <p><span style="color:{{ $color }};">{{ number_format($vehicle->price, 0, ',', '.') }}€</span> / Day</p>                        
-                        <a id="view-detail-button" style="color:{{ $color }};border-color:{{ $color }};" class="btn btn-outline-primary btn-lg" href="#" role="button">View Details</a>
+                        <p><span style="color:{{ $color }};">{{ number_format($vehicle->price, 0, ',', '.') }}€</span> / Day</p>
+                        <a id="view-detail-button" style="color:{{ $color }};border-color:{{ $color }};" class="btn btn-outline-primary btn-lg" href="{{ route('vehicles.show', $vehicle->id) }}" role="button">View Details</a>
                         <a id="rent-now-btn" style="background-color:{{ $color }};" class="btn btn-primary btn-lg" href="#" role="button">Rent Now!</a>
                     </div>
                 </div>
@@ -110,7 +66,7 @@
             </div>
         </div>
     </div>
-        
+
     <div class="container" style="margin-top:5%;margin-bottom:5%;">
         <h1 id="rental-process-txt">Car Rental <span style="color:{{ $color }};">Process</span></h1>
         <div class="row">
@@ -211,58 +167,7 @@
             </div>
         </div>
 
-        <div class="container">
-            <div class="row">
-                    <div class="col-sm">
-                        <a id="navbar-logo" class="navbar-brand" href="/">
-                            @if($name)
-                                <span style="color: {{ $color }};">{{ substr($name, 0, 1) }}</span>{{ substr($name, 1) }}
-                            @else
-                                {{ $name }}
-                            @endif
-                        </a>
-                        <p>Rent a car imperdiet sapien porttito the bibenum ellentesue the commodo erat nesuen.</p>
-                        <div class="social-icons">
-                            <a href="https://www.facebook.com" class="social-icon" style="background-color:{{ $color }};">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="https://www.instagram.com" class="social-icon" style="background-color:{{ $color }};">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="https://www.whatsapp.com" class="social-icon" style="background-color:{{ $color }};">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-sm">
-                        <h3 class="footer-head-txt">Quick Links</h3>
-                        <ul style="list-style-type: disc;">
-                            <li><a href="/home" id="footer-link">Home</a></li>
-                            <li><a href="/about" id="footer-link">About Us</a></li>
-                            <li><a href="/services" id="footer-link">Services</a></li>
-                            <li><a href="/contact" id="footer-link">Contact</a></li>
-                        </ul>
-                    </div>
-                <div class="col-sm">
-                <div class="col-sm">
-                    <h3 class="footer-head-txt">Subscribe</h3>
-                    <p>Want to be notified about our services. Just sign up and we'll send you a notification by email.</p>
-                    <form action="/subscribe" method="POST" class="form-inline">
-                        @csrf
-                        <div class="input-group">
-                            <input type="email" name="email" class="form-control rounded-input" placeholder="Enter your email" required>
-                            <div class="input-group-append">
-                                <button style="background-color: {{$color}}; border:none;" class="btn btn-primary rounded-button" type="submit">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <p class="copyright">©2025 {{ $name }}. All rights reserved.</p>
-        </div>
-
+        @include('components.footer')
         <script>
             window.addEventListener('scroll', function() {
                 var navbar = document.getElementById('navbar');
@@ -294,8 +199,6 @@
                 $('.owl-carousel').find('.owl-item.active').eq(initialMiddleIndex).find('.caption').show();
             });
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        @include('components.scripts')
     </body>
 </html>

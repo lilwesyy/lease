@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VeicoloController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\VehiclesController;
 use App\Http\Controllers\HomeController;
@@ -12,6 +11,9 @@ use App\Http\Controllers\HomeController;
 // });
 
 Route::get('/', [HomeController::class, 'index']);
+
+Route::get('/vehicles/list', [VehiclesController::class, 'list'])->name('vehicles.list');
+Route::get('/vehicles/{id}', [VehiclesController::class, 'show'])->name('vehicles.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
