@@ -29,3 +29,14 @@
             </div>
         </div>
     </nav>
+
+    <script>
+            window.addEventListener('scroll', function() {
+                var navbar = document.getElementById('navbar');
+                if (window.scrollY > 10) {
+                    navbar.style.setProperty('background-color', '#272727', 'important');
+                } else {
+                    navbar.style.setProperty('background-color', 'transparent', 'important');
+                }
+            });
+        </script>

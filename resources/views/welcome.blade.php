@@ -19,24 +19,25 @@
 
     <div id="carouselExample" class="carousel slide">
         <div class="carousel-inner">
-        @foreach($vehicles as $index => $vehicle)
-            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
-                @php
-                    $imagePath = asset('images/' . $vehicle->image);
-                @endphp
-                <div class="image-container position-relative">
-                    <img src="{{ $imagePath }}" class="d-block w-100" alt="{{ $vehicle->name }}">
-                    <div class="overlay"></div>
-                    <div class="carousel-caption d-none d-md-block {{ $theme == 'dark' ? 'text-white' : '' }} position-absolute top-50 start-50 translate-middle">
-                        <p style="color:{{ $color }};"><span style="color:white;">Rental Car - </span>{{ $vehicle->type }}</p>
-                        <h1 id="rental-text">{{ $vehicle->make }} {{ $vehicle->model }} </h1>
-                        <p><span style="color:{{ $color }};">{{ number_format($vehicle->price, 0, ',', '.') }}€</span> / Day</p>
-                        <a id="view-detail-button" style="color:{{ $color }};border-color:{{ $color }};" class="btn btn-outline-primary btn-lg" href="{{ route('vehicles.show', $vehicle->id) }}" role="button">View Details</a>
-                        <a id="rent-now-btn" style="background-color:{{ $color }};" class="btn btn-primary btn-lg" href="#" role="button">Rent Now!</a>
+            @foreach($vehicles as $index => $vehicle)
+                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                    @php
+                        $imagePath = asset('images/' . $vehicle->image);
+                    @endphp
+                    <div class="image-container position-relative">
+                        <img src="{{ $imagePath }}" class="d-block w-100" alt="{{ $vehicle->name }}">
+                        <div class="overlay"></div>
+                        <div class="carousel-caption">
+                            <p style="color:{{ $color }};"><span style="color:white;">Rental Car - </span>{{ $vehicle->type }}</p>
+                            <h1 id="rental-text">{{ $vehicle->make }} {{ $vehicle->model }} </h1>
+                            <p><span style="color:{{ $color }};">{{ number_format($vehicle->price, 0, ',', '.') }}€</span> / Day</p>
+                            <a id="view-detail-button" style="color:{{ $color }};border-color:{{ $color }};margin-top:2%;" class="btn btn-outline-primary btn-lg" href="{{ route('vehicles.show', $vehicle->id) }}" role="button">View Details</a>
+                            <a id="rent-now-btn" style="background-color:{{ $color }};margin-top:2%;" class="btn btn-primary btn-lg" href="#" role="button">Rent Now!</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
     </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -169,23 +170,13 @@
 
         @include('components.footer')
         <script>
-            window.addEventListener('scroll', function() {
-                var navbar = document.getElementById('navbar');
-                if (window.scrollY > 10) {
-                    navbar.style.setProperty('background-color', '#272727', 'important');
-                } else {
-                    navbar.style.setProperty('background-color', 'transparent', 'important');
-                }
-            });
-        </script>
-        <script>
             $(document).ready(function(){
                 $('.owl-carousel').owlCarousel({
                     loop:true,
-                    margin:0, // Reduce margin between items
+                    margin:0,
                     nav:true,
-                    items:3, // Show multiple items
-                    center: true, // Center the active item
+                    items:3,
+                    center: true,
                     onTranslated: function(event) {
                         var visibleItems = event.page.size;
                         var middleIndex = Math.floor(visibleItems / 2);

@@ -23,7 +23,7 @@
                     </div>
                     <div class="col-sm">
                         <h3 class="footer-head-txt">Quick Links</h3>
-                        <ul style="list-style-type: disc;">
+                        <ul style="list-style-type: disc;text-color:#adb5bd;">
                             <li><a href="/home" id="footer-link">Home</a></li>
                             <li><a href="/about" id="footer-link">About Us</a></li>
                             <li><a href="/services" id="footer-link">Services</a></li>

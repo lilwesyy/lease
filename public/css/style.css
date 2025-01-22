@@ -57,9 +57,12 @@ body {
 
 .carousel-caption {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50% !important;
+    left: 50% !important;
     transform: translate(-50%, -50%);
+    right: 0 !important;
+    bottom: 0 !important;
+    color: white !important;
 }
 
 #rental-text{
@@ -246,8 +249,8 @@ body {
 }
 
 #footer-link{
-    text-decoration: none; 
-    color: white;
+    text-decoration: none;
+    color: #adb5bd;
     transition:  0.2s ease;
 }
 .caption {
@@ -286,4 +289,13 @@ body {
     transform: scale(0.8); /* Scale down side images */
     transition: transform 0.3s;
     margin: 0 !important; /* Force margin between items to 0 */
+}
+
+.fixed-height {
+    height: 200px;
+    object-fit: cover;
+}
+
+.large-card{
+    width: 100%;
 }
