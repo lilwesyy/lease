@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\Setting;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -16,7 +17,14 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        $setting = Setting::first();
+        $favicon = $setting ? $setting->favicon : null;
+        $name = $setting ? $setting->name : null;
+        $color = $setting ? $setting->primary_color : null;
+        $theme = $setting ? $setting->theme : null;
+
+        return view('auth.login', compact('favicon', 'name', 'color', 'theme'));
+        // return view('auth.login');
     }
 
     /**

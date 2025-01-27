@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Setting;
 
 class RegisteredUserController extends Controller
 {
@@ -19,7 +20,14 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $setting = Setting::first();
+        $favicon = $setting ? $setting->favicon : null;
+        $name = $setting ? $setting->name : null;
+        $color = $setting ? $setting->primary_color : null;
+        $theme = $setting ? $setting->theme : null;
+
+        return view('auth.register', compact('favicon', 'name', 'color', 'theme'));
+        // return view('auth.register');
     }
 
     /**

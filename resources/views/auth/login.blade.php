@@ -1,4 +1,5 @@
 @include('components.bootstrap')
+@include('components.head')
 
 <x-guest-layout>
     <!-- Session Status -->
