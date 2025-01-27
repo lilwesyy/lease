@@ -4,7 +4,7 @@
     <body data-bs-theme="{{ $theme }}">
         @include('components.navbar')
 
-        <div class="container text-center" style="margin-top:10%;">
+        <div class="container text-center" style="margin-top:5%;">
             <div class="row">
                 @foreach($vehicles as $index => $vehicle)
                     <div class="col-sm">
