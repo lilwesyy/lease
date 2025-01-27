@@ -152,6 +152,17 @@ body {
     border: 1px solid #272727;
 }
 
+.about-card{
+    background-color: #272727 !important;
+    border: none!important;
+    padding: 20px;
+    border-radius: 20px!important;
+}
+
+.about-image{
+    border-radius: 20px;
+}
+
 
 #rental-process-txt{
     color: white;

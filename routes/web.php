@@ -29,7 +29,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/vehicles', [VehiclesController::class, 'adminIndex'])->name('vehicles.adminIndex');
     Route::post('/vehicles/store', [VehiclesController::class, 'store'])->name('vehicles.store');
-    // Route::post('/vehicles/delete/{id}', [VehiclesController::class, 'delete'])->name('vehicles.delete');
     Route::delete('/vehicles/delete/{id}', [VehiclesController::class, 'delete'])->name('vehicles.delete');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

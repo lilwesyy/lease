@@ -4,12 +4,15 @@
 <body data-bs-theme="{{ $theme }}">
     @include('components.navbar')
 
-    <div class="container" style="margin-top: 100px; text-align:center;">
-        <h1>{{ $vehicle->make }} {{ $vehicle->model }}</h1>
+    <div class="container-fluid">
+    <div class="row position-relative" style="display: flex; justify-content: center; align-items: center; height: 500px; text-align: center;">
+        <img src="{{ asset('images/' . $vehicle->image)}}" alt="{{ $vehicle->make }} {{ $vehicle->model}}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: -1;">
+        <div style="position: absolute; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 0;"></div>
+        <h1 style="position: relative; color: white; z-index: 1;">{{ $vehicle->make }} {{ $vehicle->model }}</h1>
     </div>
-    <!-- @include('components.footer') -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</div>
+
+    @include('components.footer')
+
 </body>
 </html>

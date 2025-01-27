@@ -50,7 +50,24 @@
         </button>
     </div>
 
-    <div class="container-fluid" id="cars-container" style="margin-top:5%;margin-bottom:5%;">
+    <div class="container" style="margin-top:5%;margin-bottom:5%;">
+    <h1 id="rental-process-txt">About <span style="color:{{ $color }};">Us</span></h1>
+    <div class="row">
+        <div class="col">
+            <div class="card about-card" style="height: 100%;">
+                <div class="card-body about-card-body">
+                    <h5 class="card-title header-card-text" style="color:white;">Who we are?</h5>
+                    <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col" style="display: flex; align-items: center;">
+            <img class="about-image" src="{{ asset('images/about.png') }}" alt="" style="height: 100%; width: auto;">
+        </div>
+    </div>
+</div>
+
+    <!-- <div class="container-fluid" id="cars-container" style="margin-top:5%;margin-bottom:5%;">
         <h1 id="rental-process-txt">Our <span style="color:{{ $color }};">Cars</span></h1>
 
         <div class="owl-carousel owl-theme">
@@ -67,7 +84,7 @@
                 <div class="caption">Porsche GT3 RS</div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div class="container" style="margin-top:5%;margin-bottom:5%;">
         <h1 id="rental-process-txt">Car Rental <span style="color:{{ $color }};">Process</span></h1>
