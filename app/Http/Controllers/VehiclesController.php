@@ -54,15 +54,77 @@ class VehiclesController extends Controller
         $request->validate([
             'make' => 'required|string|max:255',
             'model' => 'required|string|max:255',
-            'year' => 'required|integer',
+            'year' => 'required|integer|min:1886|max:' . date('Y'),
+            'engine' => 'required|numeric|min:0',
+            'traction' => 'required|string|max:255',
+            'seats' => 'required|integer|min:1|max:50',
+            'luggage' => 'required|integer|min:0|max:100',
+            'price' => 'required|numeric|min:0',
+            'transmission' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+        ], [
+            'year.min' => 'The year must be at least 1886.',
+            'year.max' => 'The year cannot be greater than the current year.',
+            'engine.min' => 'The engine size must be a positive number.',
+            'seats.min' => 'The vehicle must have at least one seat.',
+            'seats.max' => 'The vehicle cannot have more than 50 seats.',
+            'luggage.min' => 'The luggage capacity must be a positive number.',
+            'luggage.max' => 'The luggage capacity cannot exceed 100.',
+            'price.min' => 'The price must be a positive number.',
         ]);
 
-        Vehicles::create([
-            'make' => $request->make,
-            'model' => $request->model,
-            'year' => $request->year,
-        ]);
+        // Additional control: Check if the vehicle already exists
+        $existingVehicle = Vehicles::where('make', $request->input('make'))
+            ->where('model', $request->input('model'))
+            ->where('year', $request->input('year'))
+            ->first();
 
-        return redirect()->route('vehicles.index')->with('success', 'Vehicle created successfully.');
+        if ($existingVehicle) {
+            return redirect()->back()->withErrors(['Vehicle already exists.'])->withInput();
+        }
+
+        $vehicle = new Vehicles();
+        $vehicle->make = $request->input('make');
+        $vehicle->model = $request->input('model');
+        $vehicle->year = $request->input('year');
+        $vehicle->engine = $request->input('engine');
+        $vehicle->traction = $request->input('traction');
+        $vehicle->seats = $request->input('seats');
+        $vehicle->luggage = $request->input('luggage');
+        $vehicle->price = $request->input('price');
+        $vehicle->transmission = $request->input('transmission');
+        $vehicle->type = $request->input('type');
+        $vehicle->save();
+
+        session()->flash('notification', ['type' => 'success', 'message' => 'Vehicle created successfully.']);
+
+        return redirect()->route('vehicles.adminIndex')->with('success', 'Vehicle created successfully.');
+    }
+
+    public function delete($id)
+    {
+        $vehicle = Vehicles::find($id);
+
+        if (!$vehicle) {
+            return redirect()->route('vehicles.adminIndex')->withErrors(['Vehicle not found.']);
+        }
+
+        $vehicle->delete();
+
+        return redirect()->route('vehicles.adminIndex')->with('notification', ['type' => 'danger', 'message' => 'Vehicle deleted successfully.']);
+
+    }
+
+    public function edit($id)
+    {
+        $vehicle = Vehicles::findOrFail($id);
+        return view('vehicles.edit', compact('vehicle'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $vehicle = Vehicles::findOrFail($id);
+        $vehicle->update($request->all());
+        return redirect()->route('vehicles.adminIndex')->with('notification', ['type' => 'success', 'message' => 'Vehicle updated successfully!']);
     }
 }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
 use Illuminate\Http\Request;
-use App\Models\Vehicles;
+use App\Models\Setting;
 
-class SettingController extends Controller
+class DashboardController extends Controller
 {
     public function index()
     {
@@ -16,6 +15,6 @@ class SettingController extends Controller
         $color = $setting ? $setting->primary_color : null;
         $theme = $setting ? $setting->theme : null;
 
-        return view('settings.index', compact('favicon', 'name', 'color', 'theme'));
+        return view('dashboard', compact('favicon', 'name', 'color', 'theme'));
     }
 }

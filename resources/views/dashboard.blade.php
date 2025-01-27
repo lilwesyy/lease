@@ -1,4 +1,5 @@
 @include('components.bootstrap')
+@include('components.head')
 <x-app-layout>
     <x-slot name="header">
         <h2>

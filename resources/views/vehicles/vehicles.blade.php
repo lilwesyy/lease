@@ -1,4 +1,5 @@
 @include('components.bootstrap')
+@include('components.head')
 
 <x-app-layout>
     <x-slot name="header">
@@ -6,15 +7,89 @@
             {{ __('Vehicles') }}
         </h2>
     </x-slot>
+    <div class="container-fluid">
+    @include('components.notifications')
+        <div class="card">
+            <div class="card-body">
+                <!-- <a href="" class="btn btn-success mb-4">Add New Vehicle</a> -->
+                <a class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#addVehicleModal">Add New Vehicle</a>
 
-    <div class="py-12">
-    <div class="container">
-        <div class="card shadow-sm">
-            <div class="p-6 text-gray-900 dark:text-gray-100">
-                <a href="" class="btn btn-success mb-4">Add New Vehicle</a>
-                <div style="max-height: 400px; overflow-y: auto;">
-                    <table class="table-auto w-full">
-                        <thead>
+                                <!-- Modal -->
+                <div class="modal fade" id="addVehicleModal" tabindex="-1" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addVehicleModalLabel">Add New Vehicle</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                            <form action="{{ route('vehicles.store') }}" method="POST">
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="make" class="form-label">Make</label>
+                                        <input type="text" class="form-control" id="make" name="make">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="model" class="form-label">Model</label>
+                                        <input type="text" class="form-control" id="model" name="model">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="year" class="form-label">Year</label>
+                                        <input type="number" class="form-control" id="year" name="year">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="engine" class="form-label">Engine</label>
+                                        <input type="text" class="form-control" id="engine" name="engine">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="traction" class="form-label">Traction</label>
+                                        <input type="text" class="form-control" id="traction" name="traction">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="seats" class="form-label">Seats</label>
+                                        <input type="number" class="form-control" id="seats" name="seats">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="luggage" class="form-label">Luggage</label>
+                                        <input type="text" class="form-control" id="luggage" name="luggage">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="price" class="form-label">Price</label>
+                                        <input type="number" class="form-control" id="price" name="price">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transmission" class="form-label">Transmission</label>
+                                        <select class="form-control" id="transmission" name="transmission">
+                                            <option value="manual">Manual</option>
+                                            <option value="automatic">Automatic</option>
+                                            <option value="semi-automatic">Semi-Automatic</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="type" class="form-label">Type</label>
+                                        <select class="form-control" id="type" name="type">
+                                            <option value="premium">Premium</option>
+                                            <option value="luxury">Luxury</option>
+                                            <option value="supercar">Supercar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped">
+                <thead>
                             <tr>
                                 <th class="px-4 py-2">ID</th>
                                 <th class="px-4 py-2">Make</th>
@@ -42,22 +117,21 @@
                                 <td class="border px-4 py-2">{{ $vehicle->seats }}</td>
                                 <td class="border px-4 py-2">{{ $vehicle->luggage }}</td>
                                 <td class="border px-4 py-2">{{ $vehicle->price }}</td>
-                                <td class="border px-4 py-2">{{ $vehicle->transmission }}</td>
-                                <td class="border px-4 py-2">{{ $vehicle->type }}</td>
+                                <td class="border px-4 py-2 text-capitalize">{{ $vehicle->transmission }}</td>
+                                <td class="border px-4 py-2 text-uppercase">{{ $vehicle->type }}</td>
                                 <td class="border px-4 py-2 inline-flex space-x-1">
-                                    <a href="{{ route('vehicles.show', $vehicle->id) }}" class="btn btn-primary">View</a>
-                                    <a href="" class="btn btn-secondary">Edit</a>
-                                    <form action="" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                    </form>
+                                <a href="{{ route('vehicles.show', $vehicle->id) }}" target="_blank" type="button" class="btn btn-primary m-1">View</a>
+                                <a href="{{ route('vehicles.edit', $vehicle->id) }}" type="button" class="btn btn-secondary m-1">Edit</a>
+                                <a href="#" onclick="event.preventDefault(); document.getElementById('delete-form-{{ $vehicle->id }}').submit();" class="btn btn-danger m-1">Delete</a>
+                                <form id="delete-form-{{ $vehicle->id }}" action="{{ route('vehicles.delete', $vehicle->id) }}" method="POST" class="d-none">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
-                    </table>
-                </div>
+                </table>
             </div>
         </div>
     </div>
