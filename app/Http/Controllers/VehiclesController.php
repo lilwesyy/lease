@@ -117,8 +117,14 @@ class VehiclesController extends Controller
 
     public function edit($id)
     {
+        $setting = Setting::first();
+        $favicon = $setting ? $setting->favicon : null;
+        $name = $setting ? $setting->name : null;
+        $color = $setting ? $setting->primary_color : null;
+        $theme = $setting ? $setting->theme : null;
         $vehicle = Vehicles::findOrFail($id);
-        return view('vehicles.edit', compact('vehicle'));
+
+        return view('vehicles.edit', compact('vehicle', 'favicon', 'name', 'color'));
     }
 
     public function update(Request $request, $id)

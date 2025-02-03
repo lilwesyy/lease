@@ -1,8 +1,8 @@
-<div class="brand-logos" style="display: flex; justify-content: center; gap: 50px; margin-bottom: 2%;">
+<!-- <div class="brand-logos" style="display: flex; justify-content: center; gap: 50px; margin-bottom: 2%;">
         <img src="{{ asset('images/bmw.png') }}" alt="Brand 1" style="height: 3%; width: 3%;">
         <img src="{{ asset('images/porsche.png') }}" alt="Brand 1" style="height: 3%; width: 3%;">
         <img src="{{ asset('images/volkswagen.png') }}" alt="Brand 1" style="height: 3%; width: 3%;">
-    </div>
+    </div> -->
 
 <div class="container">
 
