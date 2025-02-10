@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vehicles;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class HomeController extends Controller
 {
@@ -16,6 +17,10 @@ class HomeController extends Controller
         $name = $setting ? $setting->name : null;
         $color = $setting ? $setting->primary_color : null;
         $theme = $setting ? $setting->theme : null;
-        return view('welcome', compact('vehicles', 'favicon', 'name', 'color', 'theme'));
+        $lang = $setting ? $setting->lang : 'en';
+
+        App::setLocale($lang);
+
+        return view('welcome', compact('vehicles', 'favicon', 'name', 'color', 'theme', 'lang'));
     }
 }

@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/vehicles/{id}/edit', [VehiclesController::class, 'edit'])->name('vehicles.edit');
     Route::post('/vehicles/{id}', [VehiclesController::class, 'update'])->name('vehicles.update');
+    Route::post('/settings/update', [SettingController::class, 'update'])->name('settings.update');
 });
 
 require __DIR__.'/auth.php';

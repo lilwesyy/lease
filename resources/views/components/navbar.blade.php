@@ -19,7 +19,7 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" aria-current="page" href="/">Home</a>
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="#aboutus">About Us</a>
                     <a class="nav-link" href="{{ route('vehicles.list') }}">Cars</a>
                     <a class="nav-link" href="#">Contact</a>
                     <button type="button" id="call-btn" class="btn">

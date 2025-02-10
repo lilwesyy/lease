@@ -171,6 +171,13 @@ body {
     font-weight: bold;
 }
 
+#rental-process-txt-about{
+    color: white;
+    text-align: center;
+    margin-bottom: 5%;
+    font-weight: bold;
+}
+
 #below-card-text{
     text-align: center;
 }

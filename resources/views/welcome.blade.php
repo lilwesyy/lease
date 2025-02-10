@@ -3,8 +3,7 @@
 
 @include('components.head')
 
-<body data-bs-theme="{{ $theme }}">
-
+<body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-offset="0" tabindex="0" data-bs-theme="{{ $theme }}">
     <style>
         #view-detail-button:hover {
             color: white !important;
@@ -58,20 +57,14 @@
     </button>
     </div>
 
-    <div class="container" style="margin-top:5%;margin-bottom:5%;">
-        <h1 id="rental-process-txt">About <span style="color:{{ $color }};">Us</span></h1>
+    <div id="aboutus" class="container" style="margin-top:5%;margin-bottom:5%;">
+        <h1 id="rental-process-txt-about">{!! trans('translations.aboutUs', ['color' => $color]) !!}</span></h1>
         <div class="row">
             <div class="col">
                 <div class="card about-card" style="height: 100%;">
                     <div class="card-body about-card-body">
-                        <h5 class="card-title header-card-text" style="color:white;">Who we are?</h5>
-                        <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                            unknown printer took a galley of type and scrambled it to make a type specimen book. It has
-                            survived not only five centuries, but also the leap into electronic typesetting, remaining
-                            essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets
-                            containing Lorem Ipsum passages, and more recently with desktop publishing software like
-                            Aldus PageMaker including versions of Lorem Ipsum.</p>
+                        <h5 class="card-title header-card-text">{{ __('translations.whoWeAre') }}</h5>
+                        <p class="card-text" id="about-text">{{ __('translations.aboutText') }}</p>
                     </div>
                 </div>
             </div>
@@ -82,34 +75,14 @@
         </div>
     </div>
 
-    <!-- <div class="container-fluid" id="cars-container" style="margin-top:5%;margin-bottom:5%;">
-        <h1 id="rental-process-txt">Our <span style="color:{{ $color }};">Cars</span></h1>
-
-        <div class="owl-carousel owl-theme">
-            <div class="item-2">
-                <img src="{{ asset('images/bmw_m3.jpg') }}" class="d-block w-100 car-image" alt="...">
-                <div class="caption">BMW M3</div>
-            </div>
-            <div class="item-2">
-                <img src="{{ asset('images/lamborghini_aventador.jpg') }}" class="d-block w-100 car-image" alt="...">
-                <div class="caption">Lamborghini Aventador</div>
-            </div>
-            <div class="item-2">
-                <img src="{{ asset('images/porsche_gt3rs.jpg') }}" class="d-block w-100 car-image" alt="...">
-                <div class="caption">Porsche GT3 RS</div>
-            </div>
-        </div>
-    </div> -->
-
     <div class="container" style="margin-top:5%;margin-bottom:5%;">
-        <h1 id="rental-process-txt">Car Rental <span style="color:{{ $color }};">Process</span></h1>
+        <h1 id="rental-process-txt">{{ __('translations.carRentalProcess') }} <span style="color:{{ $color }};">Process</span></h1>
         <div class="row">
             <div class="col-sm">
-
                 <div class="item">
                     <div class="text">
-                        <h5 class="header-card-text">Choose A Car</h5>
-                        <p>View our range of cars, find your perfect car for the coming days.</p>
+                        <h5 class="header-card-text">{{ __('translations.chooseCar') }}</h5>
+                        <p>{{ __('translations.chooseCarText') }}</p>
                     </div>
                     <div class="numb">
                         <div class="numb-curv">
@@ -135,11 +108,10 @@
                 </div>
             </div>
             <div class="col-sm">
-
                 <div class="item">
                     <div class="text">
-                        <h5 class="header-card-text">Come In Contact</h5>
-                        <p>Our advisor team is ready to help you with the booking process or any questions.</p>
+                        <h5 class="header-card-text">{{ __('translations.comeInContact') }}</h5>
+                        <p>{{ __('translations.comeInContactText') }}</p>
                     </div>
                     <div class="numb">
                         <div class="numb-curv">
@@ -165,11 +137,10 @@
                 </div>
             </div>
             <div class="col-sm">
-
                 <div class="item">
                     <div class="text">
-                        <h5 class="header-card-text">Enjoy Driving</h5>
-                        <p>Receive the key and enjoy your car. We treat all our cars with respect.</p>
+                        <h5 class="header-card-text">{{ __('translations.enjoyDriving') }}</h5>
+                        <p>{{ __('translations.enjoyDrivingText') }}</p>
                     </div>
                     <div class="numb">
                         <div class="numb-curv">
@@ -198,7 +169,7 @@
                 <span class="info-icon">
                     <i class="fas fa-info-circle"></i>
                 </span>
-                If you’ve never rented a car before, we’ll guide you throught the process.
+                {{ __('translations.belowCardText') }}
             </p>
 
         </div>
@@ -212,8 +183,8 @@
         <div id="hero-banner" class="row" style="position: relative; z-index: 1;">
             <div class="col-sm">
                 <p style="color:{{ $color }};">RENT YOUR CAR</p>
-                <h1 id="hero-head-txt">Interested in Renting?</h1>
-                <p>Don't hesitate and send us a message.</p>
+                <h1 id="hero-head-txt">{{ __('translations.interestedInRenting') }}</h1>
+                <p>{{ __('translations.sendMessage') }}</p>
                 <a id="rent-now-btn" style="background-color:{{ $color }};" class="btn btn-primary btn-lg"
                     href="#" role="button">
                     <i class="fab fa-whatsapp"></i> WhatsApp
@@ -226,24 +197,18 @@
 
     @include('components.footer')
     <script>
-        $(document).ready(function() {
-            $('.owl-carousel').owlCarousel({
-                loop: true,
-                margin: 0,
-                nav: true,
-                items: 3,
-                center: true,
-                onTranslated: function(event) {
-                    var visibleItems = event.page.size;
-                    var middleIndex = Math.floor(visibleItems / 2);
-                    $('.caption').hide();
-                    $('.owl-item').eq(event.item.index + middleIndex).find('.caption').show();
-                }
-            });
-            $('.caption').hide();
-            var initialVisibleItems = $('.owl-carousel').find('.owl-item.active').length;
-            var initialMiddleIndex = Math.floor(initialVisibleItems / 2);
-            $('.owl-carousel').find('.owl-item.active').eq(initialMiddleIndex).find('.caption').show();
+        const translations = @json(__('translations'));
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("rental-process-txt").innerHTML = translations.carRentalProcess;
+            document.querySelector(".header-card-text").innerHTML = translations.whoWeAre;
+            document.getElementById("about-text").innerHTML = translations.aboutText;
+            document.querySelectorAll(".header-card-text")[1].innerHTML = translations.chooseCar;
+            document.querySelectorAll(".header-card-text")[2].innerHTML = translations.comeInContact;
+            document.querySelectorAll(".header-card-text")[3].innerHTML = translations.enjoyDriving;
+            document.getElementById("below-card-text").innerHTML = translations.belowCardText;
+            document.getElementById("hero-head-txt").innerHTML = translations.interestedInRenting;
+            document.querySelector("#hero-banner p").innerHTML = translations.sendMessage;
         });
     </script>
     @include('components.scripts')

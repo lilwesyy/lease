@@ -29,7 +29,6 @@
                                 <form action="{{ route('vehicles.store') }}" method="POST">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="make" class="form-label">Make</label>
                                                 <input type="text" class="form-control" id="make"
@@ -45,8 +44,6 @@
                                                 <input type="number" class="form-control" id="year"
                                                     name="year">
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="engine" class="form-label">Engine</label>
                                                 <input type="text" class="form-control" id="engine"
@@ -62,8 +59,6 @@
                                                 <input type="number" class="form-control" id="seats"
                                                     name="seats">
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="luggage" class="form-label">Luggage</label>
                                                 <input type="text" class="form-control" id="luggage"
@@ -90,7 +85,6 @@
                                                     <option value="supercar">Supercar</option>
                                                 </select>
                                             </div>
-                                        </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save</button>
                                 </form>
