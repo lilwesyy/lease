@@ -58,7 +58,7 @@
     </div>
 
     <div id="aboutus" class="container" style="margin-top:5%;margin-bottom:5%;">
-        <h1 id="rental-process-txt-about">{!! trans('translations.aboutUs', ['color' => $color]) !!}</span></h1>
+        <h1 id="rental-process-txt-about">{!! __('translations.aboutUs', ['color' => $color]) !!}</h1>
         <div class="row">
             <div class="col">
                 <div class="card about-card" style="height: 100%;">
@@ -76,7 +76,7 @@
     </div>
 
     <div class="container" style="margin-top:5%;margin-bottom:5%;">
-        <h1 id="rental-process-txt">{{ __('translations.carRentalProcess') }} <span style="color:{{ $color }};">Process</span></h1>
+    <h1 id="rental-process-txt-about">{!! __('translations.carRentalProcess', ['color' => $color]) !!}</h1>
         <div class="row">
             <div class="col-sm">
                 <div class="item">

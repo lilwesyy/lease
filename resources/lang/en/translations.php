@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'aboutUs' => 'About <span style="color:{{ $color }};">Us</span>',
+    'aboutUs' => 'About <span style="color: :color;">Us</span>',
     'whoWeAre' => 'Who we are?',
     'aboutText' => "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    'carRentalProcess' => 'Car Rental Process',
+    'carRentalProcess' => 'Car Rental <span style="color: :color;">Process</span>',
     'chooseCar' => 'Choose A Car',
     'chooseCarText' => 'View our range of cars, find your perfect car for the coming days.',
     'comeInContact' => 'Come In Contact',
