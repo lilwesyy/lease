@@ -7,7 +7,6 @@
           <p class="text-gray-600">Please log in to your account</p>
         </div>
 
-        <!-- Rimuovi il @click dal button -->
         <form @submit.prevent="onFormSubmit" class="flex flex-col gap-4 w-full">
             <div class="flex flex-col gap-1">
                 <InputText
@@ -48,7 +47,6 @@
                 <a href="#" class="text-sm text-blue-500 hover:underline forgot-password">Forgot Password?</a>
             </div>
 
-            <!-- Solo il submit è sufficiente -->
             <Button type="submit" severity="secondary" label="Log In" />
         </form>
       </div>

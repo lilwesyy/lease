@@ -44,7 +44,7 @@ const routes = [
     ]
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/:catchAll(.*)',
     component: NotFound,
     meta: { title: '404 - Page Not Found' }
   },
@@ -54,20 +54,5 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 });
-
-// router.afterEach((to) => {
-//   document.title = to.meta.title || 'Lease';
-
-//   const favicon = to.meta.favicon || '/favicon.ico';
-//   const link = document.getElementById("favicon-link");
-//   if (link) {
-//     link.href = favicon;
-//   } else {
-//     const newLink = document.createElement('link');
-//     newLink.rel = 'icon';
-//     newLink.href = favicon;
-//     document.head.appendChild(newLink);
-//   }
-// });
 
 export default router;

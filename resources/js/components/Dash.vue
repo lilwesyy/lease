@@ -75,7 +75,7 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import Divider from 'primevue/divider';
 import Avatar from 'primevue/avatar';
-import Ripple from 'primevue/ripple'; // Import the ripple directive
+import Ripple from 'primevue/ripple';
 
 export default {
   components: {
