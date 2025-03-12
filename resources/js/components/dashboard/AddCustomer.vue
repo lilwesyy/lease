@@ -1,8 +1,8 @@
 <template>
-    <h1 class="font-bold text-3xl">Add Customer</h1>
-    <Breadcrumb :model="items" class="custom-breadcrumb" />
+    <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Customer</h1>
+    <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
 
-    <Card>
+    <Card class="isviewed">
         <template #content>
             <h1 class="font-bold text-2xl">Personal Data</h1>
             <p class="mb-2 text-gray-500">Fill the customer personal data</p>
@@ -12,13 +12,13 @@
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="text1" placeholder="Name" />
+                        <InputText v-model="firstName" placeholder="First Name" />
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="text1" placeholder="Surname" />
+                        <InputText v-model="lastName" placeholder="Last Name" />
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
@@ -38,7 +38,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-phone"></i>
                         </InputGroupAddon>
-                        <InputText v-model="number" placeholder="Phone Number" />
+                        <InputText v-model="phone" placeholder="Phone Number" />
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
@@ -59,53 +59,52 @@
             <p class="mb-2 text-gray-500">Fill the customer documents</p>
 
             <div class="documents-grid">
-            <div>
-                <p>Driver License</p>
-            </div>
-            <div></div>
+                <div>
+                    <p>Driver License</p>
+                </div>
+                <div></div>
 
-            <div>
-                <InputGroup>
-                    <InputGroupAddon>
-                        <i class="pi pi-id-card"></i>
-                    </InputGroupAddon>
-                    <InputText v-model="driverLicenseNumber" placeholder="Serial Number" />
-                </InputGroup>
-            </div>
-            <div>
-                <InputGroup>
-                    <InputGroupAddon>
-                        <i class="pi pi-calendar"></i>
-                    </InputGroupAddon>
-                    <Calendar v-model="driverLicenseValidUntil" placeholder="Valid Until" />
-                </InputGroup>
-            </div>
+                <div>
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-id-card"></i>
+                        </InputGroupAddon>
+                        <InputText v-model="driverLicenseNumber" placeholder="Serial Number" />
+                    </InputGroup>
+                </div>
+                <div>
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-calendar"></i>
+                        </InputGroupAddon>
+                        <Calendar v-model="driverLicenseValidUntil" placeholder="Valid Until" />
+                    </InputGroup>
+                </div>
 
-            <div>
-                <p>Identity Card</p>
-            </div>
-            <div></div>
+                <div>
+                    <p>Identity Card / Passport</p>
+                </div>
+                <div></div>
 
-            <div>
-                <InputGroup>
-                    <InputGroupAddon>
-                        <i class="pi pi-id-card"></i>
-                    </InputGroupAddon>
-                    <InputText v-model="identityCardNumber" placeholder="Serial Number" />
-                </InputGroup>
+                <div>
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-id-card"></i>
+                        </InputGroupAddon>
+                        <InputText v-model="identityCardNumber" placeholder="Serial Number" />
+                    </InputGroup>
+                </div>
+                <div>
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-calendar"></i>
+                        </InputGroupAddon>
+                        <Calendar v-model="identityCardValidUntil" placeholder="Valid Until" />
+                    </InputGroup>
+                </div>
             </div>
-            <div>
-                <InputGroup>
-                    <InputGroupAddon>
-                        <i class="pi pi-calendar"></i>
-                    </InputGroupAddon>
-                    <Calendar v-model="identityCardValidUntil" placeholder="Valid Until" />
-                </InputGroup>
-            </div>
-        </div>
-        <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
-        <Button icon="pi pi-paperclip"  label="Attach Documents" />
-
+            <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
+            <Button icon="pi pi-paperclip" label="Attach Documents" />
 
             <h1 class="font-bold text-2xl mt-10">Card</h1>
             <p class="mb-2 text-gray-500">Fill the customer card info</p>
@@ -116,7 +115,6 @@
                         <InputGroupAddon>
                             <i class="pi pi-credit-card"></i>
                         </InputGroupAddon>
-                        <!-- Card Number è di tipo 'number' -->
                         <InputText v-model="cardNumber" type="number" placeholder="Card Number" />
                     </InputGroup>
                 </div>
@@ -125,7 +123,6 @@
                     <InputGroupAddon>
                         <i class="pi pi-calendar"></i>
                     </InputGroupAddon>
-                    <!-- MM/YYYY è di tipo 'text' per accettare il formato data -->
                     <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" />
                 </InputGroup>
 
@@ -133,7 +130,6 @@
                     <InputGroupAddon>
                         <i class="pi pi-lock"></i>
                     </InputGroupAddon>
-                    <!-- CVV2 è di tipo 'number' -->
                     <InputText v-model="cvv" type="number" placeholder="CVV2" />
                 </InputGroup>
 
@@ -141,17 +137,14 @@
                     <InputGroupAddon>
                         <i class="pi pi-user"></i>
                     </InputGroupAddon>
-                    <!-- Card Holder è di tipo 'text' -->
                     <InputText v-model="cardHolder" type="text" placeholder="Card Holder" />
                 </InputGroup>
             </div>
 
-            <p class="mt-3 text-gray-500">You can attach customer credi card scans</p>
-            <Button icon="pi pi-paperclip"  label="Attach Documents" />
+            <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
+            <Button icon="pi pi-paperclip" label="Attach Documents" />
 
-            <Button label="Create Customer" severity="contrast" class="ml-2" icon="pi pi-user" />
-
-
+            <Button v-if="!isViewMode" label="Create Customer" severity="contrast" class="ml-2" icon="pi pi-user" />
         </template>
     </Card>
 </template>
@@ -159,59 +152,89 @@
 <script>
 import Breadcrumb from 'primevue/breadcrumb';
 import Card from 'primevue/card';
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import Tab from 'primevue/tab';
-import TabPanels from 'primevue/tabpanels';
-import TabPanel from 'primevue/tabpanel';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import AutoComplete from 'primevue/autocomplete';
-import Divider from 'primevue/divider';
-import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
-import Textarea from 'primevue/textarea';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
 import Calendar from 'primevue/calendar';
 
 export default {
   name: 'AddCustomer',
+  props: {
+    isViewMode: {
+      type: Boolean,
+      default: false
+    },
+    client: {
+      type: Object,
+      required: true
+    }
+  },
   components: {
     Breadcrumb,
     Card,
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
     InputText,
     Select,
     AutoComplete,
-    Divider,
-    FileUpload,
     Button,
-    Textarea,
     InputGroup,
     InputGroupAddon,
     Calendar
   },
   data() {
     return {
-      items: [
-        { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-        { label: 'Add Customer', url: '/dashboard/add-customer' },
-      ],
+      firstName: '',
+      lastName: '',
       birthDate: null,
       selectedLanguage: null,
-      languages: [
-        { label: 'Italiano', value: 'it' },
-        { label: 'Inglese', value: 'en' },
-        { label: 'Rumeno', value: 'ro' }
-      ],
+      phone: '',
+      email: '',
       selectedAddress: null,
-      filteredAddresses: []
+      filteredAddresses: [],
+      driverLicenseNumber: '',
+      driverLicenseValidUntil: null,
+      identityCardNumber: '',
+      identityCardValidUntil: null,
+      cardNumber: '',
+      expirationDate: '',
+      cvv: '',
+      cardHolder: '',
+      items: [
+        { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+        { label: 'Add Customer', url: '/dashboard/add-customer' }
+      ],
+      languages: [
+        { label: 'Italian', value: 'it' },
+        { label: 'English', value: 'en' },
+        { label: 'Romanian', value: 'ro' }
+      ]
     };
+  },
+  watch: {
+    client: {
+      immediate: true,
+      handler(newClient) {
+        if (newClient) {
+          this.firstName = newClient.firstName || '';
+          this.lastName = newClient.lastName || '';
+          this.birthDate = newClient.birthDate || null;
+          this.selectedLanguage = newClient.language || null;
+          this.phone = newClient.phone || '';
+          this.email = newClient.email || '';
+          this.selectedAddress = newClient.address || '';
+          this.driverLicenseNumber = newClient.licenseNumber || '';
+          this.driverLicenseValidUntil = newClient.licenseValidUntil || null;
+          this.identityCardNumber = newClient.nationalID || '';
+          this.identityCardValidUntil = newClient.identityCardValidUntil || null;
+          this.cardNumber = newClient.cardNumber || '';
+          this.expirationDate = newClient.expirationDate || '';
+          this.cvv = newClient.cvv || '';
+          this.cardHolder = newClient.cardHolder || '';
+        }
+      }
+    }
   },
   methods: {
     searchAddress(event) {
@@ -257,18 +280,17 @@ export default {
 }
 
 .card-input-row {
-    display: flex;
-    gap: 1rem; /* Aggiungi spazio tra gli input */
-    flex-wrap: wrap; /* Consente di andare a capo se necessario */
+  display: flex;
+  gap: 1rem; /* Aggiungi spazio tra gli input */
+  flex-wrap: wrap; /* Consente di andare a capo se necessario */
 }
 
 .card-input-row > div {
-    flex: 1;
-    min-width: 150px; /* Imposta una larghezza minima per evitare che diventino troppo piccoli */
+  flex: 1;
+  min-width: 150px; /* Imposta una larghezza minima per evitare che diventino troppo piccoli */
 }
 
 .card-number {
-    flex: 2; /* Rende il campo Card Number più largo rispetto agli altri */
+  flex: 2; /* Rende il campo Card Number più largo rispetto agli altri */
 }
-
 </style>

@@ -2,110 +2,38 @@
 <h1 class="font-bold text-3xl">Customer List</h1>
 <Breadcrumb :model="items" class="custom-breadcrumb" />
   <div>
-    <DataTable :value="clients" selectionMode="single" dataKey="id" @row-select="showClientDetails" class="p-datatable-gridlines">
-      <Column field="id" header="ID" />
-      <Column field="firstName" header="First Name" />
-      <Column field="lastName" header="Last Name" />
-      <Column field="email" header="Email" />
-      <Column field="phone" header="Phone" />
-      <Column field="status" header="Status" />
-    </DataTable>
+    <Card>
+    <template #content>
+        <header class="p-d-flex p-ai-center p-gap-2 inline-header">
+            <Button label="Add Customer" icon="pi pi-plus" @click="$router.push('/dashboard/add-customer')" />
+            <IconField class="p-d-flex p-ai-center">
+                <InputIcon class="pi pi-search" />
+                <InputText v-model="value1" placeholder="Search" />
+            </IconField>
+        </header>
+
+        <DataTable :value="clients" selectionMode="single" dataKey="id" @row-select="showClientDetails" class="p-datatable-no-gridlines">
+          <Column header="Name">
+            <template #body="slotProps">
+              <div>
+                {{ slotProps.data.firstName }} {{ slotProps.data.lastName }}
+                <div class="text-sm text-gray-500">{{ slotProps.data.email }}</div>
+              </div>
+            </template>
+          </Column>
+          <Column field="phone" header="Phone" />
+          <Column field="address" header="Address" />
+          <Column header="Documents">
+            <template #body="">
+              <i class="pi pi-file"></i>
+            </template>
+          </Column>
+        </DataTable>
+    </template>
+    </Card>
 
     <Dialog v-model:visible="dialogVisible" v-if="selectedClient" header="Client Details" :modal="true" :style="{ width: '50vw' }">
-      <TabView>
-        <TabPanel header="Client Info">
-          <div v-if="selectedClient">
-            <div class="input-group-row">
-              <div class="input-group-spacing full-width">
-                <label for="firstName">First Name</label>
-                <InputGroup class="full-width">
-                  <InputGroupAddon><i class="pi pi-user"></i></InputGroupAddon>
-                  <InputText id="firstName" v-model="selectedClient.firstName" placeholder="First Name" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-                </InputGroup>
-              </div>
-
-              <div class="input-group-spacing full-width">
-                <label for="lastName">Last Name</label>
-                <InputGroup class="full-width">
-                  <InputGroupAddon><i class="pi pi-user"></i></InputGroupAddon>
-                  <InputText id="lastName" v-model="selectedClient.lastName" placeholder="Last Name" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-                </InputGroup>
-              </div>
-            </div>
-
-            <div class="input-group-row">
-              <div class="input-group-spacing full-width">
-                <label for="email">Email</label>
-                <InputGroup class="full-width">
-                  <InputGroupAddon><i class="pi pi-envelope"></i></InputGroupAddon>
-                  <InputText id="email" v-model="selectedClient.email" placeholder="Email" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-                </InputGroup>
-              </div>
-
-              <div class="input-group-spacing full-width">
-                <label for="phone">Phone</label>
-                <InputGroup class="full-width">
-                  <InputGroupAddon><i class="pi pi-phone"></i></InputGroupAddon>
-                  <InputText id="phone" v-model="selectedClient.phone" placeholder="Phone" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-                </InputGroup>
-              </div>
-            </div>
-
-            <Button icon="pi pi-pencil" class="p-button-rounded p-button-secondary mr-2" @click="editClient" />
-            <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="confirmDeleteClient($event, selectedClient)" />
-          </div>
-        </TabPanel>
-
-        <TabPanel header="Documents">
-        <div v-if="selectedClient">
-          <div class="input-group-row">
-            <div class="input-group-spacing full-width">
-              <label for="licenseNumber">License Number</label>
-              <InputGroup class="full-width">
-                <InputGroupAddon><i class="pi pi-id-card"></i></InputGroupAddon>
-                <InputText id="licenseNumber" v-model="selectedClient.licenseNumber" placeholder="License Number" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-              </InputGroup>
-            </div>
-
-            <div class="input-group-spacing full-width">
-              <label for="nationalID">National ID</label>
-              <InputGroup class="full-width">
-                <InputGroupAddon><i class="pi pi-id-card"></i></InputGroupAddon>
-                <InputText id="nationalID" v-model="selectedClient.nationalID" placeholder="National ID" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-              </InputGroup>
-            </div>
-          </div>
-
-          <div class="input-group-row">
-            <div class="input-group-spacing full-width">
-              <label for="passport">Passport</label>
-              <InputGroup class="full-width">
-                <InputGroupAddon><i class="pi pi-id-card"></i></InputGroupAddon>
-                <InputText id="passport" v-model="selectedClient.passport" placeholder="Passport" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-              </InputGroup>
-            </div>
-
-            <div class="input-group-spacing full-width">
-              <label for="utilityBill">Utility Bill</label>
-              <InputGroup class="full-width">
-                <InputGroupAddon><i class="pi pi-id-card"></i></InputGroupAddon>
-                <InputText id="utilityBill" v-model="selectedClient.utilityBill" placeholder="Utility Bill" class="full-width" :readonly="!isEditing" v-tooltip="!isEditing ? 'Click the edit button to unlock' : ''" />
-              </InputGroup>
-            </div>
-          </div>
-        </div>
-      </TabPanel>
-
-        <TabPanel header="Bookings">
-          <div v-if="selectedClient">
-            <DataTable :value="selectedClient.bookings" class="p-datatable-gridlines">
-              <Column field="id" header="Booking ID" />
-              <Column field="vehicle" header="Vehicle" />
-              <Column field="date" header="Date" />
-            </DataTable>
-          </div>
-        </TabPanel>
-      </TabView>
+        <AddCustomer :client="selectedClient" :isViewMode="true" />
     </Dialog>
 
     <ConfirmPopup />
@@ -127,6 +55,10 @@ import { useConfirm } from "primevue/useconfirm";
 import InputText from 'primevue/inputtext';
 import Tooltip from 'primevue/tooltip';
 import Breadcrumb from 'primevue/breadcrumb';
+import Card from 'primevue/card';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
+import AddCustomer from './AddCustomer.vue';
 
 export default {
   name: 'Clients',
@@ -141,18 +73,107 @@ export default {
     InputGroupAddon,
     ConfirmPopup,
     InputText,
-    Breadcrumb
+    Breadcrumb,
+    Card,
+    InputIcon,
+    IconField,
+    AddCustomer
   },
   directives: {
     tooltip: Tooltip
   },
   setup() {
     const clients = ref([
-      { id: 1, firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com', phone: '123-456-7890', status: 'Active', licenseNumber: 'D1234567', nationalID: 'N1234567', passport: 'P1234567', utilityBill: 'U1234567', bookings: [{ id: 101, vehicle: 'Toyota Camry', date: '2025-01-15' }, { id: 102, vehicle: 'Honda Accord', date: '2025-02-10' }, { id: 103, vehicle: 'Ford Mustang', date: '2025-03-05' }] },
-      { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com', phone: '987-654-3210', status: 'Inactive', licenseNumber: 'S7654321', nationalID: 'N7654321', passport: 'P7654321', utilityBill: 'U7654321', bookings: [{ id: 104, vehicle: 'Chevrolet Malibu', date: '2025-04-20' }, { id: 107, vehicle: 'Ford Focus', date: '2025-05-10' }, { id: 108, vehicle: 'Tesla Model 3', date: '2025-06-15' }] },
-      { id: 3, firstName: 'Michael', lastName: 'Johnson', email: 'michael.johnson@example.com', phone: '456-789-1234', status: 'Active', licenseNumber: 'J1234567', nationalID: 'N1234568', passport: 'P1234568', utilityBill: 'U1234568', bookings: [{ id: 105, vehicle: 'Nissan Altima', date: '2025-05-15' }, { id: 109, vehicle: 'Chevrolet Impala', date: '2025-07-20' }, { id: 110, vehicle: 'Hyundai Sonata', date: '2025-08-25' }] },
-      { id: 4, firstName: 'Emily', lastName: 'Davis', email: 'emily.davis@example.com', phone: '321-654-9870', status: 'Inactive', licenseNumber: 'D7654321', nationalID: 'N7654322', passport: 'P7654322', utilityBill: 'U7654322', bookings: [{ id: 106, vehicle: 'BMW 3 Series', date: '2025-06-10' }, { id: 111, vehicle: 'Audi A4', date: '2025-09-05' }, { id: 112, vehicle: 'Mercedes-Benz C-Class', date: '2025-10-10' }] }
+    {
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        language: 'English',
+        address: 'Strada Altessano, 96/B, 10151 Torino TO',
+        email: 'john.doe@example.com',
+        phone: '123-456-7890',
+        status: 'Active',
+        licenseNumber: 'D1234567',
+        licenseValidUntil: '24/10/2032',
+        nationalID: 'N1234567',
+        identityCardValidUntil: '19/98/2054',
+        passport: 'P1234567',
+        utilityBill: 'U1234567',
+        birthDate: '1990-05-12',
+        cardNumber: '1234567890123456',
+        expirationDate: '12/25',
+        cvv: '123',
+        cardHolder: 'John Doe',
+        language: 'en',
+    },
+    {
+        id: 2,
+        firstName: 'Jane',
+        lastName: 'Smith',
+        language: 'English',
+        address: 'Via Bologna, 32, 10152 Torino TO',
+        email: 'jane.smith@example.com',
+        phone: '987-654-3210',
+        status: 'Inactive',
+        licenseNumber: 'S7654321',
+        licenseValidUntil: '24/10/2032',
+        nationalID: 'N7654321',
+        identityCardValidUntil: '19/98/2054',
+        passport: 'P7654321',
+        utilityBill: 'U7654321',
+        birthDate: '1985-02-20',
+        cardNumber: '2345678901234567',
+        expirationDate: '11/24',
+        cvv: '234',
+        cardHolder: 'Jane Smith',
+        language: 'it',
+    },
+    {
+        id: 3,
+        firstName: 'Michael',
+        lastName: 'Johnson',
+        language: 'English',
+        address: 'Corso Tortona, 4/A, 10153 Torino TO',
+        email: 'michael.johnson@example.com',
+        phone: '456-789-1234',
+        status: 'Active',
+        licenseNumber: 'J1234567',
+        licenseValidUntil: '24/10/2032',
+        nationalID: 'N1234568',
+        identityCardValidUntil: '19/98/2054',
+        passport: 'P1234568',
+        utilityBill: 'U1234568',
+        birthDate: '1992-08-10',
+        cardNumber: '3456789012345678',
+        expirationDate: '10/24',
+        cvv: '345',
+        cardHolder: 'Michael Johnson',
+        language: 'en',
+    },
+    {
+        id: 4,
+        firstName: 'Emily',
+        lastName: 'Davis',
+        language: 'English',
+        address: 'Str. del Pascolo, 61, 10156 Torino TO',
+        email: 'emily.davis@example.com',
+        phone: '321-654-9870',
+        status: 'Inactive',
+        licenseNumber: 'D7654321',
+        licenseValidUntil: '24/10/2032',
+        nationalID: 'N7654322',
+        identityCardValidUntil: '19/98/2054',
+        passport: 'P7654322',
+        utilityBill: 'U7654322',
+        birthDate: '1988-03-25',
+        cardNumber: '4567 8901 2345 6789',
+        expirationDate: '09/23',
+        cvv: '456',
+        cardHolder: 'Emily Davis',
+        language: 'ro',
+    }
     ]);
+
 
     const dialogVisible = ref(false);
     const selectedClient = ref(null);
