@@ -14,3 +14,9 @@
     font-weight: 600;
     margin-bottom: 10px;
 }
+
+.p-breadcrumb {
+    background: transparent !important;
+    border: none;
+  }
+

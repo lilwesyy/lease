@@ -1,4 +1,6 @@
 <template>
+<h1 class="font-bold text-3xl">Customer List</h1>
+<Breadcrumb :model="items" class="custom-breadcrumb" />
   <div>
     <DataTable :value="clients" selectionMode="single" dataKey="id" @row-select="showClientDetails" class="p-datatable-gridlines">
       <Column field="id" header="ID" />
@@ -124,6 +126,7 @@ import ConfirmPopup from 'primevue/confirmpopup';
 import { useConfirm } from "primevue/useconfirm";
 import InputText from 'primevue/inputtext';
 import Tooltip from 'primevue/tooltip';
+import Breadcrumb from 'primevue/breadcrumb';
 
 export default {
   name: 'Clients',
@@ -137,7 +140,8 @@ export default {
     InputGroup,
     InputGroupAddon,
     ConfirmPopup,
-    InputText
+    InputText,
+    Breadcrumb
   },
   directives: {
     tooltip: Tooltip
@@ -195,6 +199,11 @@ export default {
       }
     });
 
+    const items = [
+      { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+      { label: 'Customer List', url: '/dashboard/clients' }
+    ];
+
     return {
       clients,
       dialogVisible,
@@ -205,7 +214,8 @@ export default {
       deleteClient,
       isEditing,
       metaKey,
-      confirm
+      confirm,
+      items
     };
   }
 };

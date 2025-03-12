@@ -1,191 +1,231 @@
 <template>
-  <div>
-    <!-- <header class="p-d-flex p-jc-between p-ai-center">
-      <Button label="Add Vehicle" icon="pi pi-plus" @click="showModal = true" />
-    </header> -->
-    <h1 class="font-bold text-3xl">Vehicles</h1>
-    <Breadcrumb :model="items" class="custom-breadcrumb" />
-
-    <DataTable :value="vehicles" selectionMode="single" class="p-datatable-gridlines" @row-click="onRowClick">
-      <Column field="id" header="ID" />
-      <Column field="make" header="Make" />
-      <Column field="model" header="Model" />
-      <Column field="year" header="Year" />
-      <Column field="engine" header="Engine" />
-      <Column field="seats" header="Seats" />
-      <Column field="transmission" header="Transmission" />
-      <Column field="mileage" header="Mileage" />
-      <Column field="color" header="Color" />
-      <Column field="dailyPrice" header="Daily Price" />
-      <Column field="status" header="Status" />
-    </DataTable>
-
-    <AddVehicleDialog
-      :showModal="showModal"
-      :newVehicle="newVehicle"
-      :addVehicle="addVehicle"
-      @update:showModal="showModal = $event"
-    />
-
-    <Dialog :visible="showDetailsModal" header="Vehicle Details" modal @update:visible="showDetailsModal = $event" :style="{ width: '50vw'}">
-      <div v-if="selectedVehicle">
-        <TabView>
-          <TabPanel header="Details">
-            <p><strong>Make:</strong> {{ selectedVehicle.make }}</p>
-            <p><strong>Model:</strong> {{ selectedVehicle.model }}</p>
-            <p><strong>Year:</strong> {{ selectedVehicle.year }}</p>
-            <p><strong>Engine:</strong> {{ selectedVehicle.engine }}</p>
-            <p><strong>Seats:</strong> {{ selectedVehicle.seats }}</p>
-            <p><strong>Transmission:</strong> {{ selectedVehicle.transmission }}</p>
-            <p><strong>Mileage:</strong> {{ selectedVehicle.mileage }}</p>
-            <p><strong>Color:</strong> {{ selectedVehicle.color }}</p>
-            <p><strong>Daily Price:</strong> {{ selectedVehicle.dailyPrice }}</p>
-            <p><strong>Status:</strong> {{ selectedVehicle.status }}</p>
-          </TabPanel>
-          <TabPanel header="Image">
-            <Image :src="selectedVehicle.imageUrl" :alt="`${selectedVehicle.make} ${selectedVehicle.model}`" width="200" />
-          </TabPanel>
-        </TabView>
-      </div>
-    </Dialog>
-  </div>
-</template>
-
-<script>
-import { ref } from 'vue';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import Image from 'primevue/image';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
-import AddVehicleDialog from './AddVehicleDialog.vue';
-import Breadcrumb from 'primevue/breadcrumb';
-
-export default {
-  name: 'Vehicles',
-  components: {
-    DataTable,
-    Column,
-    Button,
-    Dialog,
-    Image,
-    TabView,
-    TabPanel,
-    AddVehicleDialog,
-    Breadcrumb
-  },
-  setup() {
-    const vehicles = ref([
-      { 
-        id: 1, 
-        make: 'Toyota', 
-        model: 'Corolla', 
-        year: 2020, 
-        engine: '1.8L I4', 
-        seats: 5, 
-        transmission: 'Automatic', 
-        mileage: '20,000 km', 
-        color: 'White', 
-        plateNumber: 'ABC1234', 
-        location: 'Torino', 
-        dailyPrice: '$50', 
-        status: 'Available', 
-        imageUrl: 'https://media.ed.edmunds-media.com/toyota/corolla-hatchback/2020/oem/2020_toyota_corolla-hatchback_4dr-hatchback_nightshade-edition_fq_oem_1_1600.jpg'
-      },
-      { 
-        id: 2, 
-        make: 'Honda', 
-        model: 'Civic', 
-        year: 2019, 
-        engine: '2.0L I4', 
-        seats: 5, 
-        transmission: 'Manual', 
-        mileage: '30,000 km', 
-        color: 'Black', 
-        plateNumber: 'XYZ5678', 
-        location: 'Milano', 
-        dailyPrice: '$45', 
-        status: 'Unavailable', 
-        imageUrl: 'https://www.cnet.com/a/img/resize/df2edfd143035974957c05a677468f2fbd767569/hub/2019/05/20/95e44f16-4eda-427d-aae4-1df5309547f6/2019-honda-civic-touring-sedan-1.jpg?auto=webp&width=768'
-      },
-      { 
-        id: 3, 
-        make: 'Ford', 
-        model: 'Focus', 
-        year: 2018, 
-        engine: '2.0L I4', 
-        seats: 5, 
-        transmission: 'Automatic', 
-        mileage: '25,000 km', 
-        color: 'Blue', 
-        plateNumber: 'LMN8765', 
-        location: 'Torino', 
-        dailyPrice: '$40', 
-        status: 'Available', 
-        imageUrl: 'https://rcs.cdn.publieditor.it/w640/M1273_01.jpg'
-      }
-    ]);
+    <div>
+      <h1 class="font-bold text-3xl">Vehicles List</h1>
+      <Breadcrumb :model="items" class="custom-breadcrumb" />
 
 
-    const showModal = ref(false);
-    const showDetailsModal = ref(false);
-    const selectedVehicle = ref(null);
+      <Card>
+        <template #content>
+            <header class="p-d-flex p-ai-center p-gap-2 inline-header">
+            <Button label="Add Vehicle" icon="pi pi-plus" @click="$router.push('/dashboard/add-vehicles')" />
 
-    const newVehicle = ref({
-      make: '', model: '', year: '', engine: '', seats: '', transmission: '', mileage: '', color: '', dailyPrice: '', status: '', imageUrl: ''
-    });
+            <IconField class="p-d-flex p-ai-center">
+                <InputIcon class="pi pi-search" />
+                <InputText v-model="value1" placeholder="Search" />
+            </IconField>
+            </header>
 
-    const addVehicle = () => {
-      vehicles.value.push({ ...newVehicle.value, id: vehicles.value.length + 1 });
-      showModal.value = false;
-      newVehicle.value = { make: '', model: '', year: '', engine: '', seats: '', transmission: '', mileage: '', color: '', dailyPrice: '', status: '', imageUrl: '' };
+          <DataTable :value="vehicles" selectionMode="single" class="p-datatable-no-gridlines" @row-click="onRowClick">
+            <Column header="Brand and Model">
+              <template #body="slotProps">
+                <div style="display: flex; align-items: center;">
+                  <img :src="slotProps.data.logo" :alt="`${slotProps.data.make} logo`" width="90" height="90" v-if="slotProps.data.logo" style="margin-right: 8px;" />
+                  <div>
+                    <div>{{ slotProps.data.make }} {{ slotProps.data.model }}</div>
+                    <div style="font-size: 0.8em; color: grey;">
+                      {{ slotProps.data.year }}, {{ slotProps.data.engine }}, {{ slotProps.data.transmission }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </Column>
+            <Column header="Color" style="width: 50px;">
+              <template #body="slotProps">
+                <div :style="{
+                  backgroundColor: slotProps.data.color,
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  border: slotProps.data.color.toLowerCase() === 'white' ? '1px solid grey' : 'none'
+                }"></div>
+              </template>
+            </Column>
+            <Column header="KM" style="width: 120px;">
+            <template #body="slotProps">
+                {{ formatNumber(slotProps.data.odometer) }} km
+            </template>
+            </Column>
+            <Column field="plateNumber" header="Plate" style="width: 100px;" />
+            <Column field="location" header="Location" style="width: 100px;" />
+            <Column header="Status" style="width: 100px;">
+              <template #body="slotProps">
+                <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)" />
+              </template>
+            </Column>
+          </DataTable>
+        </template>
+      </Card>
+
+      <AddVehicleDialog
+        :showModal="showModal"
+        :newVehicle="newVehicle"
+        :addVehicle="addVehicle"
+        @update:showModal="showModal = $event"
+      />
+
+      <Dialog :visible="showDetailsModal" header="Vehicle Details" modal @update:visible="showDetailsModal = $event" :style="{ width: '70vw'}">
+        <AddVehicle :vehicle="selectedVehicle" :isViewMode="true"/>
+      </Dialog>
+    </div>
+  </template>
+
+  <script>
+  import { ref } from 'vue';
+  import DataTable from 'primevue/datatable';
+  import Column from 'primevue/column';
+  import Button from 'primevue/button';
+  import Dialog from 'primevue/dialog';
+  import TabView from 'primevue/tabview';
+  import TabPanel from 'primevue/tabpanel';
+  import Breadcrumb from 'primevue/breadcrumb';
+  import Card from 'primevue/card';
+  import Tag from 'primevue/tag';
+  import IconField from 'primevue/iconfield';
+  import InputIcon from 'primevue/inputicon';
+  import InputText from 'primevue/inputtext';
+  import Divider from 'primevue/divider';
+  import AddVehicle from './AddVehicle.vue'; // Importa il componente AddVehicle
+
+  export default {
+    name: 'VehiclesList',
+    components: {
+      DataTable,
+      Column,
+      Button,
+      Dialog,
+      Breadcrumb,
+      Card,
+      Tag,
+      IconField,
+      InputIcon,
+      InputText,
+      TabView,
+      TabPanel,
+      Divider,
+      AddVehicle
+    },
+    setup() {
+    const formatNumber = (number) => {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
+      const value1 = ref('');
+      const vehicles = ref([
+        {
+          id: 1,
+          logo: 'https://www.carlogos.org/car-logos/toyota-logo-2005-640.png',
+          make: 'Toyota',
+          model: 'Corolla',
+          year: 2020,
+          engine: '1.8L I4',
+          seats: 5,
+          transmission: 'automatic',
+          color: 'white',
+          plateNumber: 'ABC1234',
+          bodyType: 'sedan',
+          location: 'Torino',
+          dailyPrice: '$50',
+          status: 'Available',
+          odometer: 120000,
+          fuel_type: 'petrol',
+          km_per_day: 100,
+          extra_km_price: 0.5,
+          basic_daily_price: 50,
+          franchise: 500,
+          imageUrl: 'https://media.ed.edmunds-media.com/toyota/corolla-hatchback/2020/oem/2020_toyota_corolla-hatchback_4dr-hatchback_nightshade-edition_fq_oem_1_1600.jpg'
+        },
+        {
+          id: 2,
+          logo: 'https://www.carlogos.org/car-logos/honda-logo-2000-full-640.png',
+          make: 'Honda',
+          model: 'Civic',
+          year: 2019,
+          engine: '2.0L I4',
+          seats: 5,
+          transmission: 'manual',
+          color: 'black',
+          plateNumber: 'XYZ5678',
+          bodyType: 'sedan',
+          location: 'Milano',
+          dailyPrice: '$45',
+          status: 'Unavailable',
+          odometer: 90000,
+          fuel_type: 'petrol',
+          km_per_day: 80,
+          extra_km_price: 0.4,
+          basic_daily_price: 45,
+          franchise: 400,
+          imageUrl: 'https://www.cnet.com/a/img/resize/df2edfd143035974957c05a677468f2fbd767569/hub/2019/05/20/95e44f16-4eda-427d-aae4-1df5309547f6/2019-honda-civic-touring-sedan-1.jpg?auto=webp&width=768'
+        },
+        {
+          id: 3,
+          logo: 'https://www.carlogos.org/car-logos/ford-logo-2017-640.png',
+          make: 'Ford',
+          model: 'Focus',
+          year: 2018,
+          engine: '2.0L I4',
+          seats: 5,
+          transmission: 'automatic',
+          color: 'blue',
+          plateNumber: 'LMN8765',
+          bodyType: 'sedan',
+          location: 'Torino',
+          dailyPrice: '$40',
+          status: 'Available',
+          odometer: 100000,
+          fuel_type: 'diesel',
+          km_per_day: 120,
+          extra_km_price: 0.6,
+          basic_daily_price: 40,
+          franchise: 450,
+          imageUrl: 'https://rcs.cdn.publieditor.it/w640/M1273_01.jpg'
+        }
+      ]);
+      const showModal = ref(false);
+      const showDetailsModal = ref(false);
+      const selectedVehicle = ref(null); // <-- aggiunto per memorizzare il veicolo selezionato
 
-    const imageTemplate = (rowData) => {
-      return `<img src="${rowData.imageUrl}" alt="${rowData.make} ${rowData.model}" width="200" />`;
-    };
+      const onRowClick = (event) => {
+        selectedVehicle.value = event.data; // <-- memorizza i dati del veicolo selezionato
+        showDetailsModal.value = true;
+      };
 
-    const onRowClick = (event) => {
-      selectedVehicle.value = event.data;
-      showDetailsModal.value = true;
-    };
+      const addVehicle = (vehicle) => {
+        vehicles.value.push(vehicle);
+        showModal.value = false;
+      };
 
-    const items = [
-      { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-      { label: 'Vehicles', url: '/dashboard/vehicles' }
-    ];
+      const getSeverity = (vehicle) => {
+        return vehicle.status === 'Available' ? 'success' : 'danger';
+      };
 
-    return {
-      vehicles,
-      showModal,
-      showDetailsModal,
-      selectedVehicle,
-      newVehicle,
-      addVehicle,
-      imageTemplate,
-      onRowClick,
-      items
-    };
+      const items = [
+        { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+        { label: 'Vehicles List', url: '/dashboard/vehicles' }
+      ];
+
+      return {
+        value1,
+        vehicles,
+        showModal,
+        showDetailsModal,
+        selectedVehicle, // <-- esponi selectedVehicle
+        onRowClick,
+        addVehicle,
+        getSeverity,
+        formatNumber,
+        items
+      };
+    }
+  };
+  </script>
+
+  <style>
+  .isviewed{
+    box-shadow:none!important;
   }
-};
-</script>
-
-<style scoped>
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.p-datatable-gridlines {
-  width: 100%;
-}
-
-.p-breadcrumb {
-  background: transparent !important;
-  border: none;
-}
-</style>
+  .inline-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    }
+  </style>

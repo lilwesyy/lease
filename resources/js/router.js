@@ -11,6 +11,8 @@ import Vehicles from '@/components/dashboard/Vehicles.vue';
 import Dash from '@/components/Dash.vue';
 import Help from '@/components/dashboard/Help.vue';
 import HomeDash from '@/components/dashboard/Home.vue';
+import AddVehicle from '@/components/dashboard/AddVehicle.vue';
+import AddCustomer from '@/components/dashboard/AddCustomer.vue';
 
 const routes = [
   {
@@ -37,9 +39,11 @@ const routes = [
       { path: 'bookings', name: 'dashboard-bookings', component: Bookings, meta: { title: 'Bookings'} },
       { path: 'home', name: 'dashboard-home', component: HomeDash, meta: { title: 'Home'} },
       { path: 'clients', name: 'dashboard-clients', component: Clients, meta: { title: 'Clients'} },
+      { path: 'add-customer', name: 'dashboard-add-customer', component: AddCustomer, meta: { title: 'Add Customer'} },
       { path: 'reports', name: 'dashboard-reports', component: Reports, meta: { title: 'Reports'} },
       { path: 'settings', name: 'dashboard-settings', component: Settings, meta: { title: 'Settings'} },
       { path: 'vehicles', name: 'dashboard-vehicles', component: Vehicles, meta: { title: 'Vehicles'} },
+      { path: 'add-vehicles', name: 'dashboard-add-vehicles', component: AddVehicle, meta: { title: 'Add Vehicles'} },
       { path: 'help', name: 'dashboard-help', component: Help, meta: { title: 'Help'} },
     ]
   },
