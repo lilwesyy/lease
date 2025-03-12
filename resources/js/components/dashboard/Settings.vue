@@ -256,7 +256,7 @@ h3 {
 .user-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 20px 10px; /* 20px per la spaziatura verticale, 10px per quella orizzontale */
 }
 
 .user-card {

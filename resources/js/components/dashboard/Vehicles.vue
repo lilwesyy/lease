@@ -1,11 +1,13 @@
 <template>
   <div>
-    <header class="p-d-flex p-jc-between p-ai-center">
+    <!-- <header class="p-d-flex p-jc-between p-ai-center">
       <Button label="Add Vehicle" icon="pi pi-plus" @click="showModal = true" />
-    </header>
+    </header> -->
+    <h1 class="font-bold text-3xl">Vehicles</h1>
+    <Breadcrumb :model="items" class="custom-breadcrumb" />
+
     <DataTable :value="vehicles" selectionMode="single" class="p-datatable-gridlines" @row-click="onRowClick">
       <Column field="id" header="ID" />
-      <Column header="Image" :body="imageUrl" />
       <Column field="make" header="Make" />
       <Column field="model" header="Model" />
       <Column field="year" header="Year" />
@@ -59,6 +61,7 @@ import Image from 'primevue/image';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import AddVehicleDialog from './AddVehicleDialog.vue';
+import Breadcrumb from 'primevue/breadcrumb';
 
 export default {
   name: 'Vehicles',
@@ -70,14 +73,61 @@ export default {
     Image,
     TabView,
     TabPanel,
-    AddVehicleDialog
+    AddVehicleDialog,
+    Breadcrumb
   },
   setup() {
     const vehicles = ref([
-      { id: 1, make: 'Toyota', model: 'Corolla', year: 2020, engine: '1.8L I4', seats: 5, transmission: 'Automatic', mileage: '20,000 km', color: 'White', dailyPrice: '$50', status: 'Available', imageUrl: 'https://media.ed.edmunds-media.com/toyota/corolla-hatchback/2020/oem/2020_toyota_corolla-hatchback_4dr-hatchback_nightshade-edition_fq_oem_1_1600.jpg' },
-      { id: 2, make: 'Honda', model: 'Civic', year: 2019, engine: '2.0L I4', seats: 5, transmission: 'Manual', mileage: '30,000 km', color: 'Black', dailyPrice: '$45', status: 'Unavailable', imageUrl: 'https://www.cnet.com/a/img/resize/df2edfd143035974957c05a677468f2fbd767569/hub/2019/05/20/95e44f16-4eda-427d-aae4-1df5309547f6/2019-honda-civic-touring-sedan-1.jpg?auto=webp&width=768' },
-      { id: 3, make: 'Ford', model: 'Focus', year: 2018, engine: '2.0L I4', seats: 5, transmission: 'Automatic', mileage: '25,000 km', color: 'Blue', dailyPrice: '$40', status: 'Available', imageUrl: 'https://rcs.cdn.publieditor.it/w640/M1273_01.jpg' }
+      { 
+        id: 1, 
+        make: 'Toyota', 
+        model: 'Corolla', 
+        year: 2020, 
+        engine: '1.8L I4', 
+        seats: 5, 
+        transmission: 'Automatic', 
+        mileage: '20,000 km', 
+        color: 'White', 
+        plateNumber: 'ABC1234', 
+        location: 'Torino', 
+        dailyPrice: '$50', 
+        status: 'Available', 
+        imageUrl: 'https://media.ed.edmunds-media.com/toyota/corolla-hatchback/2020/oem/2020_toyota_corolla-hatchback_4dr-hatchback_nightshade-edition_fq_oem_1_1600.jpg'
+      },
+      { 
+        id: 2, 
+        make: 'Honda', 
+        model: 'Civic', 
+        year: 2019, 
+        engine: '2.0L I4', 
+        seats: 5, 
+        transmission: 'Manual', 
+        mileage: '30,000 km', 
+        color: 'Black', 
+        plateNumber: 'XYZ5678', 
+        location: 'Milano', 
+        dailyPrice: '$45', 
+        status: 'Unavailable', 
+        imageUrl: 'https://www.cnet.com/a/img/resize/df2edfd143035974957c05a677468f2fbd767569/hub/2019/05/20/95e44f16-4eda-427d-aae4-1df5309547f6/2019-honda-civic-touring-sedan-1.jpg?auto=webp&width=768'
+      },
+      { 
+        id: 3, 
+        make: 'Ford', 
+        model: 'Focus', 
+        year: 2018, 
+        engine: '2.0L I4', 
+        seats: 5, 
+        transmission: 'Automatic', 
+        mileage: '25,000 km', 
+        color: 'Blue', 
+        plateNumber: 'LMN8765', 
+        location: 'Torino', 
+        dailyPrice: '$40', 
+        status: 'Available', 
+        imageUrl: 'https://rcs.cdn.publieditor.it/w640/M1273_01.jpg'
+      }
     ]);
+
 
     const showModal = ref(false);
     const showDetailsModal = ref(false);
@@ -102,6 +152,11 @@ export default {
       showDetailsModal.value = true;
     };
 
+    const items = [
+      { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+      { label: 'Vehicles', url: '/dashboard/vehicles' }
+    ];
+
     return {
       vehicles,
       showModal,
@@ -110,7 +165,8 @@ export default {
       newVehicle,
       addVehicle,
       imageTemplate,
-      onRowClick
+      onRowClick,
+      items
     };
   }
 };
@@ -126,5 +182,10 @@ header {
 
 .p-datatable-gridlines {
   width: 100%;
+}
+
+.p-breadcrumb {
+  background: transparent !important;
+  border: none;
 }
 </style>
