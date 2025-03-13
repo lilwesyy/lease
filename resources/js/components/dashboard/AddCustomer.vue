@@ -4,6 +4,7 @@
 
     <Card class="isviewed">
         <template #content>
+
             <h1 class="font-bold text-2xl">Personal Data</h1>
             <p class="mb-2 text-gray-500">Fill the customer personal data</p>
             <div class="input-group-grid">
@@ -12,25 +13,25 @@
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="firstName" placeholder="First Name" />
+                        <InputText v-model="firstName" placeholder="First Name" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="lastName" placeholder="Last Name" />
+                        <InputText v-model="lastName" placeholder="Last Name" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-calendar"></i>
                         </InputGroupAddon>
-                        <Calendar v-model="birthDate" placeholder="Birth Date" />
+                        <Calendar v-model="birthDate" placeholder="Birth Date" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-globe"></i>
                         </InputGroupAddon>
-                        <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" />
+                        <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
                 <div class="input-group-row">
@@ -38,19 +39,19 @@
                         <InputGroupAddon>
                             <i class="pi pi-phone"></i>
                         </InputGroupAddon>
-                        <InputText v-model="phone" placeholder="Phone Number" />
+                        <InputText v-model="phone" placeholder="Phone Number" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-envelope"></i>
                         </InputGroupAddon>
-                        <InputText v-model="email" placeholder="Email" />
+                        <InputText v-model="email" placeholder="Email" :disabled="isViewMode && !isEditMode" />
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-home"></i>
                         </InputGroupAddon>
-                        <AutoComplete v-model="selectedAddress" :suggestions="filteredAddresses" completeMethod="searchAddress" placeholder="Address" />
+                        <AutoComplete v-model="selectedAddress" :suggestions="filteredAddresses" completeMethod="searchAddress" placeholder="Address" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
             </div>
@@ -69,7 +70,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-id-card"></i>
                         </InputGroupAddon>
-                        <InputText v-model="driverLicenseNumber" placeholder="Serial Number" />
+                        <InputText v-model="driverLicenseNumber" placeholder="Serial Number" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
                 <div>
@@ -77,7 +78,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-calendar"></i>
                         </InputGroupAddon>
-                        <Calendar v-model="driverLicenseValidUntil" placeholder="Valid Until" />
+                        <Calendar v-model="driverLicenseValidUntil" placeholder="Valid Until" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
 
@@ -91,7 +92,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-id-card"></i>
                         </InputGroupAddon>
-                        <InputText v-model="identityCardNumber" placeholder="Serial Number" />
+                        <InputText v-model="identityCardNumber" placeholder="Serial Number" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
                 <div>
@@ -99,12 +100,12 @@
                         <InputGroupAddon>
                             <i class="pi pi-calendar"></i>
                         </InputGroupAddon>
-                        <Calendar v-model="identityCardValidUntil" placeholder="Valid Until" />
+                        <Calendar v-model="identityCardValidUntil" placeholder="Valid Until" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
             </div>
             <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
-            <Button icon="pi pi-paperclip" label="Attach Documents" />
+            <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode"/>
 
             <h1 class="font-bold text-2xl mt-10">Card</h1>
             <p class="mb-2 text-gray-500">Fill the customer card info</p>
@@ -115,7 +116,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-credit-card"></i>
                         </InputGroupAddon>
-                        <InputText v-model="cardNumber" type="number" placeholder="Card Number" />
+                        <InputText v-model="cardNumber" type="number" placeholder="Card Number" :disabled="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
 
@@ -123,28 +124,36 @@
                     <InputGroupAddon>
                         <i class="pi pi-calendar"></i>
                     </InputGroupAddon>
-                    <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" />
+                    <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" :disabled="isViewMode && !isEditMode"/>
                 </InputGroup>
 
                 <InputGroup>
                     <InputGroupAddon>
                         <i class="pi pi-lock"></i>
                     </InputGroupAddon>
-                    <InputText v-model="cvv" type="number" placeholder="CVV2" />
+                    <InputText v-model="cvv" type="number" placeholder="CVV2" :disabled="isViewMode && !isEditMode"/>
                 </InputGroup>
 
                 <InputGroup>
                     <InputGroupAddon>
                         <i class="pi pi-user"></i>
                     </InputGroupAddon>
-                    <InputText v-model="cardHolder" type="text" placeholder="Card Holder" />
+                    <InputText v-model="cardHolder" type="text" placeholder="Card Holder" :disabled="isViewMode && !isEditMode"/>
                 </InputGroup>
             </div>
 
             <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-            <Button icon="pi pi-paperclip" label="Attach Documents" />
+            <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode"/>
 
             <Button v-if="!isViewMode" label="Create Customer" severity="contrast" class="ml-2" icon="pi pi-user" />
+
+            <div v-if="isViewMode && !isEditMode">
+                <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+            </div>
+            <div v-else-if="isEditMode">
+                <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
+                <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
+            </div>
         </template>
     </Card>
 </template>
@@ -185,6 +194,7 @@ export default {
   },
   data() {
     return {
+      isEditMode: false,
       firstName: '',
       lastName: '',
       birthDate: null,
@@ -245,6 +255,18 @@ export default {
         { label: 'Via Roma, 1', value: 'Via Roma, 1' },
         { label: 'Piazza del Duomo, 2', value: 'Piazza del Duomo, 2' }
       ];
+    },
+    enableEditMode() {
+      this.isEditMode = true;
+      this.originalData = { ...this.$data }; // Salva i dati originali
+    },
+    saveChanges() {
+      this.isEditMode = false;
+      // Logica per salvare le modifiche
+    },
+    cancelEditMode() {
+      Object.assign(this.$data, this.originalData); // Ripristina i dati originali
+      this.isEditMode = false;
     }
   }
 };
@@ -291,6 +313,6 @@ export default {
 }
 
 .card-number {
-  flex: 2; /* Rende il campo Card Number più largo rispetto agli altri */
+  flex: 3; /* Rende il campo Card Number più largo rispetto agli altri */
 }
 </style>

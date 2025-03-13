@@ -23,7 +23,7 @@
                   <div>
                     <div>{{ slotProps.data.make }} {{ slotProps.data.model }}</div>
                     <div style="font-size: 0.8em; color: grey;">
-                      {{ slotProps.data.year }}, {{ slotProps.data.engine }}, {{ slotProps.data.transmission }}
+                      {{ slotProps.data.year }}, {{ capitalize(slotProps.data.fuel_type) }}, {{ capitalize(slotProps.data.transmission) }}
                     </div>
                   </div>
                 </div>
@@ -105,6 +105,12 @@
       AddVehicle
     },
     setup() {
+
+    const capitalize = (str) => {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+
     const formatNumber = (number) => {
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
@@ -116,7 +122,6 @@
           make: 'Toyota',
           model: 'Corolla',
           year: 2020,
-          engine: '1.8L I4',
           seats: 5,
           transmission: 'automatic',
           color: 'white',
@@ -139,7 +144,6 @@
           make: 'Honda',
           model: 'Civic',
           year: 2019,
-          engine: '2.0L I4',
           seats: 5,
           transmission: 'manual',
           color: 'black',
@@ -162,7 +166,6 @@
           make: 'Ford',
           model: 'Focus',
           year: 2018,
-          engine: '2.0L I4',
           seats: 5,
           transmission: 'automatic',
           color: 'blue',
@@ -204,6 +207,7 @@
       ];
 
       return {
+        capitalize,
         value1,
         vehicles,
         showModal,

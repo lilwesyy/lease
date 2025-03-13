@@ -1,144 +1,165 @@
 <template>
-    <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Vehicle</h1>
-    <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
+  <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Vehicle</h1>
+  <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
 
-    <Card class="isviewed">
-        <template #content>
-            <Tabs value="0">
-                <TabList>
-                    <Tab value="0" icon="pi pi-car">Vehicle Information</Tab>
-                    <Tab value="1" icon="pi pi-upload">{{ isViewMode ? 'Photos' : 'Upload Photos' }}</Tab>
-                    <Tab value="2" icon="pi pi-wrench">Damages</Tab>
-                </TabList>
-                <TabPanels>
-                    <TabPanel value="0">
-                        <div class="vehicle-info">
-                            <img :src="brandLogo" width="300" height="300" :alt="selectedBrand + '-Logo'">
-                            <div class="input-group">
-                                <Select v-model="selectedBrand" :options="brands" optionLabel="label" optionValue="value" placeholder="Brand" :disabled="isViewMode && !isEditMode"/>
-                                <Select v-model="model" :options="filteredModels" optionLabel="label" optionValue="value" placeholder="Model" :disabled="(!selectedBrand || isViewMode) && !isEditMode"/>
-                                <Select v-model="bodyType" :options="bodyTypes" optionLabel="label" optionValue="value" placeholder="Body Type" :disabled="isViewMode && !isEditMode"/>
-                                <InputText type="number" v-model="year" placeholder="Year" :disabled="isViewMode && !isEditMode"/>
-                                <Select v-model="location" :options="Locations" optionLabel="label" optionValue="value" placeholder="Location" :disabled="isViewMode && !isEditMode"/>
-                                <InputText type="text" v-model="plate" placeholder="Plate" :disabled="isViewMode && !isEditMode"/>
-                            </div>
-                        </div>
-                        <div class="vehicle-specs">
-                            <Divider><strong>Vehicle Specs</strong></Divider>
+  <Card class="isviewed">
+      <template #content>
+          <Tabs value="0">
+              <TabList>
+                  <Tab value="0" icon="pi pi-car">Vehicle Information</Tab>
+                  <Tab value="1" icon="pi pi-upload">{{ isViewMode ? 'Photos' : 'Upload Photos' }}</Tab>
+                  <Tab value="2" icon="pi pi-wrench">Damages</Tab>
+              </TabList>
+              <TabPanels>
+                  <TabPanel value="0">
+                      <div class="vehicle-info">
+                          <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'">
+                          <div class="input-group">
+                              <FloatLabel variant="on">
+                                  <Select id="brand" class="full-width" v-model="selectedBrand" :options="brands" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="brand">Brand</label>
+                              </FloatLabel>
 
-                            <div class="input-group">
-                                <InputText v-model="odometer" type="number" placeholder="Odometer" :disabled="isViewMode && !isEditMode"/>
+                              <FloatLabel variant="on">
+                                  <Select v-model="model" class="full-width" :options="filteredModels" optionLabel="label" optionValue="value" :disabled="(!selectedBrand || isViewMode) && !isEditMode"/>
+                                  <label for="model">Model</label>
+                              </FloatLabel>
 
-                                <Select v-model="externalColour" :options="colorOptions" optionLabel="label" optionValue="value" placeholder="External Colour" :disabled="isViewMode && !isEditMode">
-                                    <template #item="{ item }">
-                                        <div class="color-item">
-                                            <span class="color-bullet" :style="{ backgroundColor: item.value }"></span>
-                                            {{ item.label }}
-                                        </div>
-                                    </template>
-                                </Select>
+                              <FloatLabel variant="on">
+                                  <Select v-model="bodyType" class="full-width" :options="bodyTypes" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="bodyType">Body Type</label>
+                              </FloatLabel>
 
-                                <Select v-model="passengers" :options="passengerOptions" optionLabel="label" optionValue="value" placeholder="Passengers" :disabled="isViewMode && !isEditMode"/>
-                                <Select v-model="fuelType" :options="fuelTypes" optionLabel="label" optionValue="value" placeholder="Fuel Type" :disabled="isViewMode && !isEditMode"/>
-                                <Select v-model="transmission" :options="transmissions" optionLabel="label" optionValue="value" placeholder="Transmission" :disabled="isViewMode && !isEditMode"/>
-                                <InputText v-model="baseKmDay" type="number" placeholder="Base Km per Day" :disabled="isViewMode && !isEditMode"/>
-                                <InputText v-model="kmExtraPrice" type="number" placeholder="Extra Km Price" :disabled="isViewMode && !isEditMode"/>
-                                <InputText v-model="basicDailyPrice" type="number" placeholder="Basic Daily Price" :disabled="isViewMode && !isEditMode"/>
-                                <InputText v-model="franchise" type="number" placeholder="Franchise" :disabled="isViewMode && !isEditMode"/>
-                                <InputText v-model="deposit" type="number" placeholder="Deposit" :disabled="isViewMode && !isEditMode"/>
-                            </div>
-                        </div>
-                    </TabPanel>
+                              <FloatLabel variant="on">
+                                  <InputText type="number" class="full-width" v-model="year" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="year">Year</label>
+                              </FloatLabel>
 
-                    <TabPanel value="1">
+                              <FloatLabel variant="on">
+                                  <Select v-model="location" class="full-width" :options="Locations" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="location">Location</label>
+                              </FloatLabel>
 
-                        <div class="photo-upload-grid">
-                            <div class="photo-upload-item" v-for="(photo, index) in photos" :key="index">
-                                <div v-if="isViewMode">
-                                    <img :src="imageUrl" alt="Vehicle Image" class="uploaded-photo"/>
-                                </div>
-                                <div v-else>
-                                    <div v-if="!photo">
-                                        <FileUpload
-                                            mode="basic"
-                                            @select="onFileSelect(index)"
-                                            customUpload
-                                            auto
-                                            severity="secondary"
-                                            class="p-button-outlined"
-                                        />
-                                    </div>
-                                    <div v-else class="photo-container">
-                                        <img :src="photo" alt="Uploaded Photo" class="uploaded-photo"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                              <FloatLabel variant="on">
+                                  <InputText type="text" class="full-width" v-model="plate" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="plate">Plate</label>
+                              </FloatLabel>
+                          </div>
+                      </div>
+                      <div class="vehicle-specs">
+                          <Divider><strong>Vehicle Specs</strong></Divider>
 
-                    </TabPanel>
+                          <div class="input-group">
+                              <FloatLabel variant="on">
+                                  <InputText v-model="odometer" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="odometer">Odometer</label>
+                              </FloatLabel>
 
-                    <TabPanel value="2">
-                        <div class="damage-section">
-                            <h3 class="font-semibold text-xl mb-3">Vehicle Damages</h3>
-                            <div v-if="!isViewMode">
-                                <div class="input-group">
-                                    <Textarea
-                                        v-model="damageDescription"
-                                        placeholder="Describe the damages"
-                                        rows="5"
-                                        autoResize
-                                        class="w-full"
-                                        :disabled="isViewMode && !isEditMode"
-                                    />
-                                </div>
+                              <FloatLabel variant="on">
+                                  <Select v-model="externalColour" class="full-width" :options="colorOptions" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode">
+                                      <template #item="{ item }">
+                                          <div class="color-item">
+                                              <span class="color-bullet" :style="{ backgroundColor: item.value }"></span>
+                                              {{ item.label }}
+                                          </div>
+                                      </template>
+                                  </Select>
+                                  <label for="externalColour">External Colour</label>
+                              </FloatLabel>
 
-                                <div class="input-group mt-6">
-                                    <Select
-                                        v-model="damageSeverity"
-                                        :options="damageSeverities"
-                                        optionLabel="label"
-                                        optionValue="value"
-                                        placeholder="Select Damage Severity"
-                                        class="w-full"
-                                        :disabled="isViewMode && !isEditMode"
-                                    />
-                                </div>
+                              <FloatLabel variant="on">
+                                  <Select v-model="passengers" class="full-width" :options="passengerOptions" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="passengers">Passengers</label>
+                              </FloatLabel>
 
-                                <div class="input-group mt-4">
-                                    <h4 class="font-semibold">Upload Damage Photos</h4>
-                                    <div class="photo-upload-grid">
-                                        <div class="photo-upload-item" v-for="(damagePhoto, index) in damagePhotos" :key="index">
-                                            <div v-if="!damagePhoto">
-                                                <FileUpload
-                                                    mode="basic"
-                                                    @select="onDamagePhotoSelect(index)"
-                                                    customUpload
-                                                    auto
-                                                    severity="secondary"
-                                                    class="p-button-outlined"
-                                                    :disabled="isViewMode && !isEditMode"
-                                                />
-                                            </div>
-                                            <div v-else class="photo-container">
-                                                <img :src="damagePhoto" alt="Damage Photo" class="uploaded-photo"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </TabPanel>
-                </TabPanels>
-            </Tabs>
-            <div v-if="isViewMode && !isEditMode">
-                <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
-            </div>
-            <div v-else-if="isEditMode">
-                <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
-                <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
-            </div>
-        </template>
-    </Card>
+                              <FloatLabel variant="on">
+                                  <Select v-model="fuelType" class="full-width" :options="fuelTypes" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="fuelType">Fuel Type</label>
+                              </FloatLabel>
+
+                              <FloatLabel variant="on">
+                                  <Select v-model="transmission" class="full-width" :options="transmissions" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="transmission">Transmission</label>
+                              </FloatLabel>
+
+                              <FloatLabel variant="on">
+                                  <InputText v-model="baseKmDay" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="baseKmDay">Base Km per Day</label>
+                              </FloatLabel>
+
+                              <FloatLabel variant="on">
+                                  <InputText v-model="kmExtraPrice" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="kmExtraPrice">Extra Km Price</label>
+                              </FloatLabel>
+
+                              <FloatLabel variant="on">
+                                  <InputText v-model="basicDailyPrice" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="basicDailyPrice">Basic Daily Price</label>
+                              </FloatLabel>
+
+                              <FloatLabel variant="on">
+                                  <InputText v-model="franchise" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="franchise">Franchise</label>
+                              </FloatLabel>
+
+                              <FloatLabel variant="on">
+                                  <InputText v-model="deposit" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <label for="deposit">Deposit</label>
+                              </FloatLabel>
+                          </div>
+                      </div>
+                  </TabPanel>
+
+                  <TabPanel value="1">
+                      <div class="photo-upload-grid">
+                          <div class="photo-upload-item" v-for="(photo, index) in photos" :key="index">
+                              <div v-if="isViewMode">
+                                  <img :src="imageUrl" alt="Vehicle Image" class="uploaded-photo"/>
+                              </div>
+                              <div v-else>
+                                  <div v-if="!photo">
+                                      <FileUpload
+                                          mode="basic"
+                                          @select="onFileSelect(index)"
+                                          customUpload
+                                          auto
+                                          severity="secondary"
+                                          class="p-button-outlined"
+                                      />
+                                  </div>
+                                  <div v-else class="photo-container">
+                                      <img :src="photo" alt="Uploaded Photo" class="uploaded-photo"/>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </TabPanel>
+
+                  <TabPanel value="2">
+                      <div class="damage-section">
+                          <h3 class="font-semibold text-xl mb-3">Vehicle Damages</h3>
+                          <div v-if="isViewMode">
+                            lista danni
+                          </div>
+                          <DataTable :value="products" tableStyle="min-width: 50rem">
+                            <Column field="code" header="Code"></Column>
+                            <Column field="name" header="Name"></Column>
+                            <Column field="category" header="Category"></Column>
+                            <Column field="quantity" header="Quantity"></Column>
+                        </DataTable>
+                      </div>
+                  </TabPanel>
+              </TabPanels>
+          </Tabs>
+          <div v-if="isViewMode && !isEditMode">
+              <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+          </div>
+          <div v-else-if="isEditMode">
+              <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
+              <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
+          </div>
+      </template>
+  </Card>
 </template>
 
 <script>
@@ -155,6 +176,11 @@ import Divider from 'primevue/divider';
 import FileUpload from 'primevue/fileupload';
 import Button from 'primevue/button';
 import Textarea from 'primevue/textarea';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';
+import Row from 'primevue/row';
+import FloatLabel from 'primevue/floatlabel';
 
 export default {
   name: 'AddVehicle',
@@ -178,7 +204,12 @@ export default {
     Divider,
     FileUpload,
     Button,
-    Textarea
+    Textarea,
+    DataTable,
+    Column,
+    ColumnGroup,
+    Row,
+    FloatLabel
   },
   data() {
     return {
@@ -421,5 +452,9 @@ export default {
     max-width: 100%;
     max-height: 100%;
     object-fit: cover; /* Aggiungi questa linea */
+}
+
+.full-width {
+  width: 100%;
 }
 </style>
