@@ -12,6 +12,10 @@
               </TabList>
               <TabPanels>
                   <TabPanel value="0">
+                    <FloatLabel v-if="isViewMode || isEditMode" variant="on">
+                      <Select v-model="status" :options="statusOptions" optionLabel="label" optionValue="value"/>
+                      <label for="status">Status</label>
+                    </FloatLabel>
                       <div class="vehicle-info">
                           <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'">
                           <div class="input-group">
@@ -240,6 +244,12 @@ export default {
       franchise: this.vehicle ? this.vehicle.franchise : '',
       deposit: this.vehicle ? this.vehicle.deposit : '',
       imageUrl: this.vehicle ? this.vehicle.imageUrl : '',
+      status: this.vehicle ? this.vehicle.status : '',
+      statusOptions: [
+        { label: 'Available', value: 'available' },
+        { label: 'Unavailable', value: 'unavailable' },
+        { label: 'Maintenance', value: 'maintenance' }
+      ],
       brands: [
         { label: 'Toyota', value: 'Toyota' },
         { label: 'Honda', value: 'Honda' },

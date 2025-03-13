@@ -49,7 +49,7 @@
             <Column field="location" header="Location" style="width: 100px;" />
             <Column header="Status" style="width: 100px;">
               <template #body="slotProps">
-                <Tag :value="slotProps.data.status" :severity="getSeverity(slotProps.data)" />
+                <Tag :value="capitalize(slotProps.data.status)" :severity="getSeverity(slotProps.data)" />
               </template>
             </Column>
           </DataTable>
@@ -129,7 +129,7 @@
           bodyType: 'sedan',
           location: 'Torino',
           dailyPrice: '$50',
-          status: 'Available',
+          status: 'available',
           odometer: 120000,
           fuel_type: 'petrol',
           km_per_day: 100,
@@ -151,7 +151,7 @@
           bodyType: 'sedan',
           location: 'Milano',
           dailyPrice: '$45',
-          status: 'Unavailable',
+          status: 'unavailable',
           odometer: 90000,
           fuel_type: 'petrol',
           km_per_day: 80,
@@ -173,7 +173,7 @@
           bodyType: 'sedan',
           location: 'Torino',
           dailyPrice: '$40',
-          status: 'Available',
+          status: 'maintenance',
           odometer: 100000,
           fuel_type: 'diesel',
           km_per_day: 120,
@@ -198,7 +198,13 @@
       };
 
       const getSeverity = (vehicle) => {
-        return vehicle.status === 'Available' ? 'success' : 'danger';
+        if (vehicle.status === 'available') {
+          return 'success';
+        } else if (vehicle.status === 'maintenance') {
+          return 'warn';
+        } else {
+          return 'danger';
+        }
       };
 
       const items = [
