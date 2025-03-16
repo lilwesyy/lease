@@ -33,7 +33,7 @@
     </Card>
 
     <Dialog v-model:visible="dialogVisible" v-if="selectedClient" header="Client Details" :modal="true" :style="{ width: '50vw' }">
-        <AddCustomer :client="selectedClient" :isViewMode="true" />
+      <AddCustomer :client="selectedClient" :isViewMode="true" />
     </Dialog>
 
     <ConfirmPopup />
@@ -174,17 +174,17 @@ export default {
     }
     ]);
 
-
+    const selectedClient = ref({});
     const dialogVisible = ref(false);
-    const selectedClient = ref(null);
     const isEditing = ref(false);
     const metaKey = ref(true);
+    const value1 = ref('');
 
     // **IMPORTANTE: Inizializza useConfirm() all'interno di setup**
     const confirm = useConfirm();
 
     const showClientDetails = (event) => {
-      selectedClient.value = event.data;
+      selectedClient.value = event.data || {}; // Ensure selectedClient is not null
       dialogVisible.value = true;
       isEditing.value = false; // Lock inputs when dialog is opened
     };
@@ -236,7 +236,8 @@ export default {
       isEditing,
       metaKey,
       confirm,
-      items
+      items,
+      value1
     };
   }
 };

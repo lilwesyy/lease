@@ -20,3 +20,7 @@
     border: none;
   }
 
+  .select-readonly {
+    pointer-events: none;
+    background-color: #f5f5f5;
+  }

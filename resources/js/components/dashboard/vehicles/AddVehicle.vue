@@ -20,32 +20,32 @@
                           <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'">
                           <div class="input-group">
                               <FloatLabel variant="on">
-                                  <Select id="brand" class="full-width" v-model="selectedBrand" :options="brands" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <Select id="brand" class="full-width" v-model="selectedBrand" :options="brands" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="brand">Brand</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="model" class="full-width" :options="filteredModels" optionLabel="label" optionValue="value" :disabled="(!selectedBrand || isViewMode) && !isEditMode"/>
+                                  <Select v-model="model" class="full-width" :options="filteredModels" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="model">Model</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="bodyType" class="full-width" :options="bodyTypes" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <Select v-model="bodyType" class="full-width" :options="bodyTypes" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="bodyType">Body Type</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText type="number" class="full-width" v-model="year" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText type="number" class="full-width" v-model="year" :readonly="isViewMode && !isEditMode"/>
                                   <label for="year">Year</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="location" class="full-width" :options="Locations" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <Select v-model="location" class="full-width" :options="Locations" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="location">Location</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText type="text" class="full-width" v-model="plate" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText type="text" class="full-width" v-model="plate" :readonly="isViewMode && !isEditMode"/>
                                   <label for="plate">Plate</label>
                               </FloatLabel>
                           </div>
@@ -55,12 +55,12 @@
 
                           <div class="input-group">
                               <FloatLabel variant="on">
-                                  <InputText v-model="odometer" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText v-model="odometer" class="full-width" type="number" :readonly="isViewMode && !isEditMode"/>
                                   <label for="odometer">Odometer</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="externalColour" class="full-width" :options="colorOptions" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode">
+                                  <Select v-model="externalColour" class="full-width" :options="colorOptions" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }">
                                       <template #item="{ item }">
                                           <div class="color-item">
                                               <span class="color-bullet" :style="{ backgroundColor: item.value }"></span>
@@ -72,44 +72,51 @@
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="passengers" class="full-width" :options="passengerOptions" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <Select v-model="passengers" class="full-width" :options="passengerOptions" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="passengers">Passengers</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="fuelType" class="full-width" :options="fuelTypes" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <Select v-model="fuelType" class="full-width" :options="fuelTypes" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="fuelType">Fuel Type</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <Select v-model="transmission" class="full-width" :options="transmissions" optionLabel="label" optionValue="value" :disabled="isViewMode && !isEditMode"/>
+                                  <Select v-model="transmission" class="full-width" :options="transmissions" optionLabel="label" optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                                   <label for="transmission">Transmission</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText v-model="baseKmDay" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText v-model="baseKmDay" class="full-width" type="number" :readonly="isViewMode && !isEditMode"/>
                                   <label for="baseKmDay">Base Km per Day</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText v-model="kmExtraPrice" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText v-model="kmExtraPrice" class="full-width" type="number" :readonly="isViewMode && !isEditMode"/>
                                   <label for="kmExtraPrice">Extra Km Price</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText v-model="basicDailyPrice" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText v-model="basicDailyPrice" class="full-width" type="number" :readonly="isViewMode && !isEditMode"/>
                                   <label for="basicDailyPrice">Basic Daily Price</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText v-model="franchise" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText v-model="franchise" class="full-width" type="number" :readonly="isViewMode && !isEditMode"/>
                                   <label for="franchise">Franchise</label>
                               </FloatLabel>
 
                               <FloatLabel variant="on">
-                                  <InputText v-model="deposit" class="full-width" type="number" :disabled="isViewMode && !isEditMode"/>
+                                  <InputText v-model="deposit" class="full-width" type="number" :readonly="isViewMode && !isEditMode"/>
                                   <label for="deposit">Deposit</label>
                               </FloatLabel>
+                          </div>
+                          <div v-if="isViewMode && !isEditMode">
+                              <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+                          </div>
+                          <div v-else-if="isEditMode">
+                              <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
+                              <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
                           </div>
                       </div>
                   </TabPanel>
@@ -141,27 +148,12 @@
 
                   <TabPanel value="2">
                       <div class="damage-section">
-                          <h3 class="font-semibold text-xl mb-3">Vehicle Damages</h3>
-                          <div v-if="isViewMode">
-                            lista danni
-                          </div>
-                          <DataTable :value="products" tableStyle="min-width: 50rem">
-                            <Column field="code" header="Code"></Column>
-                            <Column field="name" header="Name"></Column>
-                            <Column field="category" header="Category"></Column>
-                            <Column field="quantity" header="Quantity"></Column>
-                        </DataTable>
+                        <VehicleDamage :isViewMode="isViewMode" :isEditMode="isEditMode" :vehicle="vehicle" :damages="damages"/>
+
                       </div>
                   </TabPanel>
               </TabPanels>
           </Tabs>
-          <div v-if="isViewMode && !isEditMode">
-              <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
-          </div>
-          <div v-else-if="isEditMode">
-              <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
-              <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
-          </div>
       </template>
   </Card>
 </template>
@@ -185,6 +177,7 @@ import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
 import FloatLabel from 'primevue/floatlabel';
+import VehicleDamage from './VehicleDamage.vue';
 
 export default {
   name: 'AddVehicle',
@@ -193,7 +186,30 @@ export default {
       type: Boolean,
       default: false
     },
-    vehicle: Object
+    vehicle: {
+    type: Object,
+    default: () => ({
+      make: '',
+      model: '',
+      bodyType: '',
+      year: '',
+      location: '',
+      plateNumber: '',
+      odometer: '',
+      color: '',
+      seats: '',
+      fuel_type: '',
+      transmission: '',
+      km_per_day: '',
+      extra_km_price: '',
+      basic_daily_price: '',
+      franchise: '',
+      deposit: '',
+      imageUrl: '',
+      status: '',
+      damages: []
+    })
+  }
   },
   components: {
     Breadcrumb,
@@ -213,110 +229,118 @@ export default {
     Column,
     ColumnGroup,
     Row,
-    FloatLabel
+    FloatLabel,
+    VehicleDamage
   },
   data() {
-    return {
-      isEditMode: false,
-      items: [
-        { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-        { label: 'Add Vehicles', url: '/dashboard/add-vehicles' }
+  return {
+    isEditMode: false,
+    items: [
+      { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+      { label: 'Add Vehicles', url: '/dashboard/add-vehicles' }
+    ],
+    photos: [null, null, null],
+    damagePhotos: [null, null, null],
+    damageDescription: '',
+    damageSeverity: '',
+    damages: this.vehicle ? this.vehicle.damages : [
+      {
+        damagePosition: 'Front Bumper',
+        damageSeverity: 'High',
+        damageType: 'Dent',
+        damageDescription: 'Severe dent and scratches'
+      }
+    ],
+    selectedBrand: this.vehicle ? this.vehicle.make : '',
+    model: this.vehicle ? this.vehicle.model : '',
+    bodyType: this.vehicle ? this.vehicle.bodyType : '',
+    year: this.vehicle ? this.vehicle.year : '',
+    location: this.vehicle ? this.vehicle.location : '',
+    plate: this.vehicle ? this.vehicle.plateNumber : '',
+    odometer: this.vehicle ? this.vehicle.odometer : '',
+    externalColour: this.vehicle ? this.vehicle.color : '',
+    passengers: this.vehicle ? this.vehicle.seats : '',
+    fuelType: this.vehicle ? this.vehicle.fuel_type : '',
+    transmission: this.vehicle ? this.vehicle.transmission : '',
+    baseKmDay: this.vehicle ? this.vehicle.km_per_day : '',
+    kmExtraPrice: this.vehicle ? this.vehicle.extra_km_price : '',
+    basicDailyPrice: this.vehicle ? this.vehicle.basic_daily_price : '',
+    franchise: this.vehicle ? this.vehicle.franchise : '',
+    deposit: this.vehicle ? this.vehicle.deposit : '',
+    imageUrl: this.vehicle ? this.vehicle.imageUrl : '',
+    status: this.vehicle ? this.vehicle.status : '',
+    statusOptions: [
+      { label: 'Available', value: 'available' },
+      { label: 'Unavailable', value: 'unavailable' },
+      { label: 'Maintenance', value: 'maintenance' }
+    ],
+    brands: [
+      { label: 'Toyota', value: 'Toyota' },
+      { label: 'Honda', value: 'Honda' },
+      { label: 'Ford', value: 'Ford' }
+    ],
+    models: {
+      Toyota: [
+        { label: 'Corolla', value: 'Corolla' },
+        { label: 'Camry', value: 'Camry' },
+        { label: 'RAV4', value: 'RAV4' }
       ],
-      photos: [null, null, null],
-      damagePhotos: [null, null, null],
-      damageDescription: '',
-      damageSeverity: '',
-      damages: [],
-      selectedBrand: this.vehicle ? this.vehicle.make : '',
-      model: this.vehicle ? this.vehicle.model : '',
-      bodyType: this.vehicle ? this.vehicle.bodyType : '',
-      year: this.vehicle ? this.vehicle.year : '',
-      location: this.vehicle ? this.vehicle.location : '',
-      plate: this.vehicle ? this.vehicle.plateNumber : '',
-      odometer: this.vehicle ? this.vehicle.odometer : '',
-      externalColour: this.vehicle ? this.vehicle.color : '',
-      passengers: this.vehicle ? this.vehicle.seats : '',
-      fuelType: this.vehicle ? this.vehicle.fuel_type : '',
-      transmission: this.vehicle ? this.vehicle.transmission : '',
-      baseKmDay: this.vehicle ? this.vehicle.km_per_day : '',
-      kmExtraPrice: this.vehicle ? this.vehicle.extra_km_price : '',
-      basicDailyPrice: this.vehicle ? this.vehicle.basic_daily_price : '',
-      franchise: this.vehicle ? this.vehicle.franchise : '',
-      deposit: this.vehicle ? this.vehicle.deposit : '',
-      imageUrl: this.vehicle ? this.vehicle.imageUrl : '',
-      status: this.vehicle ? this.vehicle.status : '',
-      statusOptions: [
-        { label: 'Available', value: 'available' },
-        { label: 'Unavailable', value: 'unavailable' },
-        { label: 'Maintenance', value: 'maintenance' }
+      Honda: [
+        { label: 'Civic', value: 'Civic' },
+        { label: 'Accord', value: 'Accord' },
+        { label: 'CR-V', value: 'CR-V' }
       ],
-      brands: [
-        { label: 'Toyota', value: 'Toyota' },
-        { label: 'Honda', value: 'Honda' },
-        { label: 'Ford', value: 'Ford' }
-      ],
-      models: {
-        Toyota: [
-          { label: 'Corolla', value: 'Corolla' },
-          { label: 'Camry', value: 'Camry' },
-          { label: 'RAV4', value: 'RAV4' }
-        ],
-        Honda: [
-          { label: 'Civic', value: 'Civic' },
-          { label: 'Accord', value: 'Accord' },
-          { label: 'CR-V', value: 'CR-V' }
-        ],
-        Ford: [
-          { label: 'Focus', value: 'Focus' },
-          { label: 'Mustang', value: 'Mustang' },
-          { label: 'Explorer', value: 'Explorer' }
-        ]
-      },
-      damageSeverities: [
-        { label: 'Minor', value: 'minor' },
-        { label: 'Moderate', value: 'moderate' },
-        { label: 'Severe', value: 'severe' }
-      ],
-      bodyTypes: [
-        { label: 'Wagon/Estate', value: 'wagon' },
-        { label: 'Passenger Van', value: 'van' },
-        { label: 'Sedan/Limousine', value: 'sedan' },
-        { label: 'Convertible', value: 'convertible' },
-        { label: 'Sport', value: 'sport' },
-        { label: 'SUV/4x4', value: 'suv' }
-      ],
-      Locations: [
-        { label: 'Torino', value: 'Torino' },
-        { label: 'Milano', value: 'Milano' },
-        { label: 'Roma', value: 'Roma' }
-      ],
-      fuelTypes: [
-        { label: 'Petrol', value: 'petrol' },
-        { label: 'Diesel', value: 'diesel' },
-        { label: 'Electric', value: 'electric' },
-        { label: 'Hybrid', value: 'hybrid' }
-      ],
-      transmissions: [
-        { label: 'Automatic', value: 'automatic' },
-        { label: 'Manual', value: 'manual' }
-      ],
-      colorOptions: [
-        { label: 'Red', value: 'red', style: 'background-color: red;' },
-        { label: 'Blue', value: 'blue', style: 'background-color: blue;' },
-        { label: 'Green', value: 'green', style: 'background-color: green;' },
-        { label: 'Black', value: 'black', style: 'background-color: black;' },
-        { label: 'White', value: 'white', style: 'background-color: white;' },
-        { label: 'Silver', value: 'silver', style: 'background-color: silver;' }
-      ],
-      passengerOptions: [
-        { label: '2', value: 2 },
-        { label: '4', value: 4 },
-        { label: '5', value: 5 },
-        { label: '7', value: 7 }
-      ],
-      originalData: {}
-    };
-  },
+      Ford: [
+        { label: 'Focus', value: 'Focus' },
+        { label: 'Mustang', value: 'Mustang' },
+        { label: 'Explorer', value: 'Explorer' }
+      ]
+    },
+    damageSeverities: [
+      { label: 'Minor', value: 'minor' },
+      { label: 'Moderate', value: 'moderate' },
+      { label: 'Severe', value: 'severe' }
+    ],
+    bodyTypes: [
+      { label: 'Wagon/Estate', value: 'wagon' },
+      { label: 'Passenger Van', value: 'van' },
+      { label: 'Sedan/Limousine', value: 'sedan' },
+      { label: 'Convertible', value: 'convertible' },
+      { label: 'Sport', value: 'sport' },
+      { label: 'SUV/4x4', value: 'suv' }
+    ],
+    Locations: [
+      { label: 'Torino', value: 'Torino' },
+      { label: 'Milano', value: 'Milano' },
+      { label: 'Roma', value: 'Roma' }
+    ],
+    fuelTypes: [
+      { label: 'Petrol', value: 'petrol' },
+      { label: 'Diesel', value: 'diesel' },
+      { label: 'Electric', value: 'electric' },
+      { label: 'Hybrid', value: 'hybrid' }
+    ],
+    transmissions: [
+      { label: 'Automatic', value: 'automatic' },
+      { label: 'Manual', value: 'manual' }
+    ],
+    colorOptions: [
+      { label: 'Red', value: 'red', style: 'background-color: red;' },
+      { label: 'Blue', value: 'blue', style: 'background-color: blue;' },
+      { label: 'Green', value: 'green', style: 'background-color: green;' },
+      { label: 'Black', value: 'black', style: 'background-color: black;' },
+      { label: 'White', value: 'white', style: 'background-color: white;' },
+      { label: 'Silver', value: 'silver', style: 'background-color: silver;' }
+    ],
+    passengerOptions: [
+      { label: '2', value: 2 },
+      { label: '4', value: 4 },
+      { label: '5', value: 5 },
+      { label: '7', value: 7 }
+    ],
+    originalData: {}
+  };
+},
   methods: {
     onFileSelect(index) {
       const file = event.files[0];
@@ -344,6 +368,7 @@ export default {
     saveChanges() {
       this.isEditMode = false;
       // Logica per salvare le modifiche
+      this.$showToast('success', 'Success', 'Vehicle details saved successfully');
     },
     cancelEditMode() {
       Object.assign(this.$data, this.originalData); // Ripristina i dati originali

@@ -1,16 +1,15 @@
 import { createApp } from 'vue';
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
+import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import App from './App.vue';
 import router from './router';
 import 'primeicons/primeicons.css';
 import '../css/app.css';
-// import axios from 'axios';
+import ToastPlugin from './plugins/toast';
 
 const app = createApp(App);
-
-// axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 app.use(PrimeVue, {
     theme: {
@@ -22,5 +21,8 @@ app.use(PrimeVue, {
 });
 
 app.use(router);
+app.use(ToastService);
+app.use(ToastPlugin);
 app.use(ConfirmationService);
+
 app.mount('#app');

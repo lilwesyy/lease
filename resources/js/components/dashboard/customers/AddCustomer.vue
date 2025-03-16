@@ -13,25 +13,25 @@
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="firstName" placeholder="First Name" :disabled="isViewMode && !isEditMode"/>
+                        <InputText v-model="firstName" placeholder="First Name" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-user"></i>
                         </InputGroupAddon>
-                        <InputText v-model="lastName" placeholder="Last Name" :disabled="isViewMode && !isEditMode"/>
+                        <InputText v-model="lastName" placeholder="Last Name" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-calendar"></i>
                         </InputGroupAddon>
-                        <Calendar v-model="birthDate" placeholder="Birth Date" :disabled="isViewMode && !isEditMode"/>
+                        <DatePicker v-model="birthDate" placeholder="Birth Date" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-globe"></i>
                         </InputGroupAddon>
-                        <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" :disabled="isViewMode && !isEditMode"/>
+                        <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
                     </InputGroup>
                 </div>
                 <div class="input-group-row">
@@ -39,19 +39,19 @@
                         <InputGroupAddon>
                             <i class="pi pi-phone"></i>
                         </InputGroupAddon>
-                        <InputText v-model="phone" placeholder="Phone Number" :disabled="isViewMode && !isEditMode"/>
+                        <InputText v-model="phone" placeholder="Phone Number" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-envelope"></i>
                         </InputGroupAddon>
-                        <InputText v-model="email" placeholder="Email" :disabled="isViewMode && !isEditMode" />
+                        <InputText v-model="email" placeholder="Email" :readonly="isViewMode && !isEditMode" />
                     </InputGroup>
                     <InputGroup>
                         <InputGroupAddon>
                             <i class="pi pi-home"></i>
                         </InputGroupAddon>
-                        <AutoComplete v-model="selectedAddress" :suggestions="filteredAddresses" completeMethod="searchAddress" placeholder="Address" :disabled="isViewMode && !isEditMode"/>
+                        <AutoComplete v-model="selectedAddress" :suggestions="filteredAddresses" completeMethod="searchAddress" placeholder="Address" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-id-card"></i>
                         </InputGroupAddon>
-                        <InputText v-model="driverLicenseNumber" placeholder="Serial Number" :disabled="isViewMode && !isEditMode"/>
+                        <InputText v-model="driverLicenseNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
                 <div>
@@ -78,7 +78,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-calendar"></i>
                         </InputGroupAddon>
-                        <Calendar v-model="driverLicenseValidUntil" placeholder="Valid Until" :disabled="isViewMode && !isEditMode"/>
+                        <DatePicker v-model="driverLicenseValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
 
@@ -92,7 +92,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-id-card"></i>
                         </InputGroupAddon>
-                        <InputText v-model="identityCardNumber" placeholder="Serial Number" :disabled="isViewMode && !isEditMode"/>
+                        <InputText v-model="identityCardNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
                 <div>
@@ -100,7 +100,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-calendar"></i>
                         </InputGroupAddon>
-                        <Calendar v-model="identityCardValidUntil" placeholder="Valid Until" :disabled="isViewMode && !isEditMode"/>
+                        <DatePicker v-model="identityCardValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
             </div>
@@ -116,7 +116,7 @@
                         <InputGroupAddon>
                             <i class="pi pi-credit-card"></i>
                         </InputGroupAddon>
-                        <InputText v-model="cardNumber" type="number" placeholder="Card Number" :disabled="isViewMode && !isEditMode"/>
+                        <InputText v-model="cardNumber" type="number" placeholder="Card Number" :readonly="isViewMode && !isEditMode"/>
                     </InputGroup>
                 </div>
 
@@ -124,21 +124,21 @@
                     <InputGroupAddon>
                         <i class="pi pi-calendar"></i>
                     </InputGroupAddon>
-                    <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" :disabled="isViewMode && !isEditMode"/>
+                    <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" :readonly="isViewMode && !isEditMode"/>
                 </InputGroup>
 
                 <InputGroup>
                     <InputGroupAddon>
                         <i class="pi pi-lock"></i>
                     </InputGroupAddon>
-                    <InputText v-model="cvv" type="number" placeholder="CVV2" :disabled="isViewMode && !isEditMode"/>
+                    <InputText v-model="cvv" type="number" placeholder="CVV2" :readonly="isViewMode && !isEditMode"/>
                 </InputGroup>
 
                 <InputGroup>
                     <InputGroupAddon>
                         <i class="pi pi-user"></i>
                     </InputGroupAddon>
-                    <InputText v-model="cardHolder" type="text" placeholder="Card Holder" :disabled="isViewMode && !isEditMode"/>
+                    <InputText v-model="cardHolder" type="text" placeholder="Card Holder" :readonly="isViewMode && !isEditMode"/>
                 </InputGroup>
             </div>
 
@@ -167,7 +167,7 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
-import Calendar from 'primevue/calendar';
+import DatePicker from 'primevue/datepicker';
 
 export default {
   name: 'AddCustomer',
@@ -190,7 +190,7 @@ export default {
     Button,
     InputGroup,
     InputGroupAddon,
-    Calendar
+    DatePicker
   },
   data() {
     return {
@@ -263,6 +263,7 @@ export default {
     saveChanges() {
       this.isEditMode = false;
       // Logica per salvare le modifiche
+      this.$showToast('success', 'Success', 'Customer details saved successfully');
     },
     cancelEditMode() {
       Object.assign(this.$data, this.originalData); // Ripristina i dati originali

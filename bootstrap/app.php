@@ -16,3 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+    $app->middleware([
+        \Illuminate\Http\Middleware\HandleCors::class, // Questo gestisce i CORS
+        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+    ]);

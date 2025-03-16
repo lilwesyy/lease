@@ -2,8 +2,6 @@
     <div>
       <h1 class="font-bold text-3xl">Vehicles List</h1>
       <Breadcrumb :model="items" class="custom-breadcrumb" />
-
-
       <Card>
         <template #content>
             <header class="p-d-flex p-ai-center p-gap-2 inline-header">
@@ -56,13 +54,6 @@
         </template>
       </Card>
 
-      <AddVehicleDialog
-        :showModal="showModal"
-        :newVehicle="newVehicle"
-        :addVehicle="addVehicle"
-        @update:showModal="showModal = $event"
-      />
-
       <Dialog :visible="showDetailsModal" header="Vehicle Details" modal @update:visible="showDetailsModal = $event" :style="{ width: '70vw'}">
         <AddVehicle :vehicle="selectedVehicle" :isViewMode="true"/>
       </Dialog>
@@ -84,8 +75,8 @@
   import InputIcon from 'primevue/inputicon';
   import InputText from 'primevue/inputtext';
   import Divider from 'primevue/divider';
-  import AddVehicle from './AddVehicle.vue'; // Importa il componente AddVehicle
-
+  import AddVehicle from './AddVehicle.vue';
+  
   export default {
     name: 'VehiclesList',
     components: {
@@ -116,73 +107,107 @@
     };
       const value1 = ref('');
       const vehicles = ref([
-        {
-          id: 1,
-          logo: 'https://www.carlogos.org/car-logos/toyota-logo-2005-640.png',
-          make: 'Toyota',
-          model: 'Corolla',
-          year: 2020,
-          seats: 5,
-          transmission: 'automatic',
-          color: 'white',
-          plateNumber: 'ABC1234',
-          bodyType: 'sedan',
-          location: 'Torino',
-          dailyPrice: '$50',
-          status: 'available',
-          odometer: 120000,
-          fuel_type: 'petrol',
-          km_per_day: 100,
-          extra_km_price: 0.5,
-          basic_daily_price: 50,
-          franchise: 500,
-          imageUrl: 'https://media.ed.edmunds-media.com/toyota/corolla-hatchback/2020/oem/2020_toyota_corolla-hatchback_4dr-hatchback_nightshade-edition_fq_oem_1_1600.jpg'
-        },
-        {
-          id: 2,
-          logo: 'https://www.carlogos.org/car-logos/honda-logo-2000-full-640.png',
-          make: 'Honda',
-          model: 'Civic',
-          year: 2019,
-          seats: 5,
-          transmission: 'manual',
-          color: 'black',
-          plateNumber: 'XYZ5678',
-          bodyType: 'sedan',
-          location: 'Milano',
-          dailyPrice: '$45',
-          status: 'unavailable',
-          odometer: 90000,
-          fuel_type: 'petrol',
-          km_per_day: 80,
-          extra_km_price: 0.4,
-          basic_daily_price: 45,
-          franchise: 400,
-          imageUrl: 'https://www.cnet.com/a/img/resize/df2edfd143035974957c05a677468f2fbd767569/hub/2019/05/20/95e44f16-4eda-427d-aae4-1df5309547f6/2019-honda-civic-touring-sedan-1.jpg?auto=webp&width=768'
-        },
-        {
-          id: 3,
-          logo: 'https://www.carlogos.org/car-logos/ford-logo-2017-640.png',
-          make: 'Ford',
-          model: 'Focus',
-          year: 2018,
-          seats: 5,
-          transmission: 'automatic',
-          color: 'blue',
-          plateNumber: 'LMN8765',
-          bodyType: 'sedan',
-          location: 'Torino',
-          dailyPrice: '$40',
-          status: 'maintenance',
-          odometer: 100000,
-          fuel_type: 'diesel',
-          km_per_day: 120,
-          extra_km_price: 0.6,
-          basic_daily_price: 40,
-          franchise: 450,
-          imageUrl: 'https://rcs.cdn.publieditor.it/w640/M1273_01.jpg'
-        }
-      ]);
+          {
+            id: 1,
+            logo: 'https://www.carlogos.org/car-logos/toyota-logo-2005-640.png',
+            make: 'Toyota',
+            model: 'Corolla',
+            year: 2020,
+            seats: 5,
+            transmission: 'automatic',
+            color: 'white',
+            plateNumber: 'ABC1234',
+            bodyType: 'sedan',
+            location: 'Torino',
+            dailyPrice: '$50',
+            status: 'available',
+            odometer: 120000,
+            fuel_type: 'petrol',
+            km_per_day: 100,
+            extra_km_price: 0.5,
+            basic_daily_price: 50,
+            franchise: 500,
+            imageUrl: 'https://media.ed.edmunds-media.com/toyota/corolla-hatchback/2020/oem/2020_toyota_corolla-hatchback_4dr-hatchback_nightshade-edition_fq_oem_1_1600.jpg',
+            damages: [
+            {
+              damagePosition: 'front_bumper',
+              damagePositionLabel: 'Front Bumper',
+              damageSeverity: 'severe',
+              damageSeverityLabel: 'Severe',
+              damageType: 'dent',
+              damageTypeLabel: 'Dent',
+              damageDescription: 'Severe dent and scratches'
+            }
+            ]
+          },
+          {
+            id: 2,
+            logo: 'https://www.carlogos.org/car-logos/honda-logo-2000-full-640.png',
+            make: 'Honda',
+            model: 'Civic',
+            year: 2019,
+            seats: 5,
+            transmission: 'manual',
+            color: 'black',
+            plateNumber: 'XYZ5678',
+            bodyType: 'sedan',
+            location: 'Milano',
+            dailyPrice: '$45',
+            status: 'unavailable',
+            odometer: 90000,
+            fuel_type: 'petrol',
+            km_per_day: 80,
+            extra_km_price: 0.4,
+            basic_daily_price: 45,
+            franchise: 400,
+            imageUrl: 'https://www.cnet.com/a/img/resize/df2edfd143035974957c05a677468f2fbd767569/hub/2019/05/20/95e44f16-4eda-427d-aae4-1df5309547f6/2019-honda-civic-touring-sedan-1.jpg?auto=webp&width=768',
+            damages: [
+            {
+              damagePosition: 'rear_bumper',
+              damagePositionLabel: 'Rear Bumper',
+              damageSeverity: 'moderate',
+              damageSeverityLabel: 'Moderate',
+              damageType: 'scratch',
+              damageTypeLabel: 'Scratch',
+              damageDescription: 'Moderate scratches'
+            }
+            ]
+          },
+          {
+            id: 3,
+            logo: 'https://www.carlogos.org/car-logos/ford-logo-2017-640.png',
+            make: 'Ford',
+            model: 'Focus',
+            year: 2018,
+            seats: 5,
+            transmission: 'automatic',
+            color: 'blue',
+            plateNumber: 'LMN8765',
+            bodyType: 'sedan',
+            location: 'Torino',
+            dailyPrice: '$40',
+            status: 'maintenance',
+            odometer: 100000,
+            fuel_type: 'diesel',
+            km_per_day: 120,
+            extra_km_price: 0.6,
+            basic_daily_price: 40,
+            franchise: 450,
+            imageUrl: 'https://rcs.cdn.publieditor.it/w640/M1273_01.jpg',
+            damages: [
+            {
+              damagePosition: 'rear_bumper',
+              damagePositionLabel: 'Rear Bumper',
+              damageSeverity: 'moderate',
+              damageSeverityLabel: 'Moderate',
+              damageType: 'scratch',
+              damageTypeLabel: 'Scratch',
+              damageDescription: 'Moderate scratches'
+            }
+            ]
+          }
+        ]);
+
       const showModal = ref(false);
       const showDetailsModal = ref(false);
       const selectedVehicle = ref(null); // <-- aggiunto per memorizzare il veicolo selezionato
