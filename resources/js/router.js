@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import axios from 'axios'; // Importa Axios per controllare l'autenticazione
+import axios from 'axios';
+import store from './store'; // Importa lo store Vuex
 import Login from '@/views/Login.vue';
 import Home from '@/views/Home.vue';
 import NotFound from '@/views/NotFound.vue';
@@ -61,15 +62,21 @@ const router = createRouter({
 
 // 🚀 Middleware per controllare l'autenticazione
 router.beforeEach(async (to, from, next) => {
-  console.log(`Navigating to: ${to.path}`);
+//   console.log(`Navigating to: ${to.path}`);
   if (to.meta.requiresAuth) {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.log('No auth token found');
+      return next('/login');
+    }
     try {
-      const response = await axios.get('/api/user', { withCredentials: true });
-      if (response.data) {
-        console.log('User is authenticated');
+      await store.dispatch('fetchUser');
+      const user = store.getters.user;
+      if (user) {
+        // console.log('User is authenticated');
         next(); // Se l'utente è autenticato, accede alla pagina
       } else {
-        console.log('User is not authenticated');
+        // console.log('User is not authenticated');
         next('/login'); // Se non autenticato, viene reindirizzato al login
       }
     } catch (error) {

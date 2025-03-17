@@ -7,6 +7,7 @@ import App from './App.vue';
 import router from './router';
 import 'primeicons/primeicons.css';
 import '../css/app.css';
+import store from './store';
 import ToastPlugin from './plugins/toast';
 
 const app = createApp(App);
@@ -20,6 +21,7 @@ app.use(PrimeVue, {
     }
 });
 
+app.use(store);
 app.use(router);
 app.use(ToastService);
 app.use(ToastPlugin);
