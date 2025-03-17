@@ -228,7 +228,7 @@
       },
       async logout() {
         try {
-          await axios.get('/api/logout'); // Chiamata all'API di logout
+          await axios.post('/logout'); // Chiamata all'API di logout
           localStorage.removeItem('authToken'); // Rimuovi il token di autenticazione
           this.showLogoutDialog = false;
           this.$router.push('/login'); // Reindirizza alla pagina di login

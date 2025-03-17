@@ -12,44 +12,49 @@
             </IconField>
           </header>
 
-          <DataTable :value="vehicles" selectionMode="single" class="p-datatable-no-gridlines" @row-click="onRowClick">
-            <Column header="Brand and Model">
-              <template #body="slotProps">
-                <div style="display: flex; align-items: center;">
-                  <img :src="slotProps.data.logo" :alt="`${slotProps.data.make} logo`" width="90" height="90" v-if="slotProps.data.logo" style="margin-right: 8px;" />
-                  <div>
-                    <div>{{ slotProps.data.make }} {{ slotProps.data.model }}</div>
-                    <div style="font-size: 0.8em; color: grey;">
-                      {{ slotProps.data.year }}, {{ capitalize(slotProps.data.fuel_type) }}, {{ capitalize(slotProps.data.transmission) }}
+          <div v-if="vehicles.length > 0">
+            <DataTable :value="vehicles" selectionMode="single" class="p-datatable-no-gridlines" @row-click="onRowClick">
+              <Column header="Brand and Model">
+                <template #body="slotProps">
+                  <div style="display: flex; align-items: center;">
+                    <img :src="slotProps.data.logo" :alt="`${slotProps.data.make} logo`" width="90" height="90" v-if="slotProps.data.logo" style="margin-right: 8px;" />
+                    <div>
+                      <div>{{ slotProps.data.make }} {{ slotProps.data.model }}</div>
+                      <div style="font-size: 0.8em; color: grey;">
+                        {{ slotProps.data.year }}, {{ capitalize(slotProps.data.fuel_type) }}, {{ capitalize(slotProps.data.transmission) }}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-            </Column>
-            <Column header="Color" style="width: 50px;">
-              <template #body="slotProps">
-                <div :style="{
-                  backgroundColor: slotProps.data.color,
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  border: slotProps.data.color.toLowerCase() === 'white' ? '1px solid grey' : 'none'
-                }"></div>
-              </template>
-            </Column>
-            <Column header="KM" style="width: 120px;">
-              <template #body="slotProps">
-                {{ formatNumber(slotProps.data.odometer) }} km
-              </template>
-            </Column>
-            <Column field="plateNumber" header="Plate" style="width: 100px;" />
-            <Column field="location" header="Location" style="width: 100px;" />
-            <Column header="Status" style="width: 100px;">
-              <template #body="slotProps">
-                <Tag :value="capitalize(slotProps.data.status)" :severity="getSeverity(slotProps.data)" />
-              </template>
-            </Column>
-          </DataTable>
+                </template>
+              </Column>
+              <Column header="Color" style="width: 50px;">
+                <template #body="slotProps">
+                  <div :style="{
+                    backgroundColor: slotProps.data.color,
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    border: slotProps.data.color.toLowerCase() === 'white' ? '1px solid grey' : 'none'
+                  }"></div>
+                </template>
+              </Column>
+              <Column header="KM" style="width: 120px;">
+                <template #body="slotProps">
+                  {{ formatNumber(slotProps.data.odometer) }} km
+                </template>
+              </Column>
+              <Column field="plateNumber" header="Plate" style="width: 100px;" />
+              <Column field="location" header="Location" style="width: 100px;" />
+              <Column header="Status" style="width: 100px;">
+                <template #body="slotProps">
+                  <Tag :value="capitalize(slotProps.data.status)" :severity="getSeverity(slotProps.data)" />
+                </template>
+              </Column>
+            </DataTable>
+          </div>
+          <div v-else>
+            <p class="text-center text-gray-500 mt-5">No vehicles found. Please add a vehicle.</p>
+          </div>
         </template>
       </Card>
 

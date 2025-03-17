@@ -145,7 +145,7 @@
             <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
             <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode"/>
 
-            <Button v-if="!isViewMode" label="Create Customer" severity="contrast" class="ml-2" icon="pi pi-user" />
+            <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" severity="contrast" class="ml-2" icon="pi pi-user" />
 
             <div v-if="isViewMode && !isEditMode">
                 <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
@@ -153,6 +153,7 @@
             <div v-else-if="isEditMode">
                 <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
                 <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
+                <Button @click="deleteCustomer" label="Delete" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
             </div>
         </template>
     </Card>
@@ -168,6 +169,7 @@ import Button from 'primevue/button';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
 import DatePicker from 'primevue/datepicker';
+import axios from 'axios';
 
 export default {
   name: 'AddCustomer',
@@ -192,6 +194,7 @@ export default {
     InputGroupAddon,
     DatePicker
   },
+  emits: ['close'],
   data() {
     return {
       isEditMode: false,
@@ -247,6 +250,66 @@ export default {
     }
   },
   methods: {
+    async deleteCustomer() {
+      try {
+        await axios.delete(`/customer/delete/${this.client.id}`);
+        this.$router.push('/dashboard/customers');
+        this.$showToast('success', 'Success', 'Customer deleted successfully');
+        this.$emit('close'); // Emetti l'evento 'close'
+      } catch (error) {
+        this.$showToast('error', 'Error', 'Failed to delete customer');
+      }
+    },
+    async createCustomer() {
+      try {
+        const response = await axios.post('/customer/create', {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          birthDate: this.birthDate,
+          language: this.selectedLanguage,
+          phone: this.phone,
+          email: this.email,
+          address: this.selectedAddress,
+          licenseNumber: this.driverLicenseNumber,
+          licenseValidUntil: this.driverLicenseValidUntil,
+          nationalID: this.identityCardNumber,
+          identityCardValidUntil: this.identityCardValidUntil,
+          cardNumber: this.cardNumber,
+          expirationDate: this.expirationDate,
+          cvv: this.cvv,
+          cardHolder: this.cardHolder
+        });
+        this.$router.push('/dashboard/customers');
+        this.$showToast('success', 'Success', 'Customer created successfully');
+      } catch (error) {
+        this.$showToast('error', 'Error', 'Failed to create customer');
+      }
+    },
+    async editCustomer() {
+      try {
+        const response = await axios.put(`/customer/edit/${this.client.id}`, {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          birthDate: this.birthDate,
+          language: this.selectedLanguage,
+          phone: this.phone,
+          email: this.email,
+          address: this.selectedAddress,
+          licenseNumber: this.driverLicenseNumber,
+          licenseValidUntil: this.driverLicenseValidUntil,
+          nationalID: this.identityCardNumber,
+          identityCardValidUntil: this.identityCardValidUntil,
+          cardNumber: this.cardNumber,
+          expirationDate: this.expirationDate,
+          cvv: this.cvv,
+          cardHolder: this.cardHolder
+        });
+        this.$router.push('/dashboard/customers');
+        this.$showToast('success', 'Success', 'Customer updated successfully');
+      } catch (error) {
+        this.$showToast('error', 'Error', 'Failed to update customer');
+      }
+    },
     searchAddress(event) {
       // Implementa la logica per cercare gli indirizzi qui
       // Ad esempio, puoi fare una chiamata API per ottenere gli indirizzi
@@ -262,8 +325,7 @@ export default {
     },
     saveChanges() {
       this.isEditMode = false;
-      // Logica per salvare le modifiche
-      this.$showToast('success', 'Success', 'Customer details saved successfully');
+      this.editCustomer(); // Chiama la funzione per salvare le modifiche
     },
     cancelEditMode() {
       Object.assign(this.$data, this.originalData); // Ripristina i dati originali

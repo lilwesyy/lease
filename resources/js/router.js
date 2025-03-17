@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import axios from 'axios';
-import store from './store'; // Importa lo store Vuex
+import store from './store';
 import Login from '@/views/Login.vue';
 import Home from '@/views/Home.vue';
 import NotFound from '@/views/NotFound.vue';
