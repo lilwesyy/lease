@@ -16,9 +16,11 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 // Vehicles
 Route::post('/vehicles', [VehicleController::class, 'getVehicles']);
+Route::post('/vehicle-makes', [VehicleController::class, 'getVehicleMakes']);
 
 // Customers
 Route::post('/customer', [CustomerController::class, 'getCustomers']);
 Route::post('/customer/create', [CustomerController::class, 'createCustomer']);
 Route::delete('/customer/delete/{id}', [CustomerController::class, 'deleteCustomer']);
 Route::put('/customer/edit/{id}', [CustomerController::class, 'editCustomer']);
+

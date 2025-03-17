@@ -41,7 +41,7 @@
         <AddCustomer :client="selectedClient" :isViewMode="true" @close="handleClose" />
       </Dialog>
 
-      <ConfirmPopup />
+      <!-- <ConfirmPopup /> -->
     </div>
   </template>
 
@@ -56,7 +56,6 @@
   import TabPanel from 'primevue/tabpanel';
   import InputGroup from 'primevue/inputgroup';
   import InputGroupAddon from 'primevue/inputgroupaddon';
-  import ConfirmPopup from 'primevue/confirmpopup';
   import { useConfirm } from "primevue/useconfirm";
   import InputText from 'primevue/inputtext';
   import Tooltip from 'primevue/tooltip';
@@ -77,7 +76,6 @@
       TabPanel,
       InputGroup,
       InputGroupAddon,
-      ConfirmPopup,
       InputText,
       Breadcrumb,
       Card,

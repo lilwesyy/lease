@@ -81,7 +81,7 @@
         </div>
       </div>
     </Dialog>
-    <ConfirmPopup />
+    <!-- <ConfirmPopup /> -->
   </div>
 </template>
 
@@ -99,7 +99,7 @@ import Dropdown from 'primevue/dropdown';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
 import Select from 'primevue/select';
-import ConfirmPopup from 'primevue/confirmpopup';
+// import ConfirmPopup from 'primevue/confirmpopup';
 import { useConfirm } from "primevue/useconfirm";
 
 export default {
@@ -116,7 +116,7 @@ export default {
     InputGroup,
     InputGroupAddon,
     Select,
-    ConfirmPopup
+    // ConfirmPopup
   },
   setup() {
     const user = ref({

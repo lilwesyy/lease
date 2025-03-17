@@ -6,9 +6,9 @@
       <template #content>
           <Tabs value="0">
               <TabList>
-                  <Tab value="0" icon="pi pi-car">Vehicle Information</Tab>
-                  <Tab value="1" icon="pi pi-upload">{{ isViewMode ? 'Photos' : 'Upload Photos' }}</Tab>
-                  <Tab value="2" icon="pi pi-wrench">Damages</Tab>
+                  <Tab value="0"><i class="pi pi-car mr-2"></i>Vehicle Information</Tab>
+                  <Tab value="1"><i class="pi pi-image mr-2"></i>{{ isViewMode ? 'Photos' : 'Upload Photos' }}</Tab>
+                  <Tab value="2"><i class="pi pi-cog mr-2"></i>Damages</Tab>
               </TabList>
               <TabPanels>
                   <TabPanel value="0">
@@ -159,6 +159,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Breadcrumb from 'primevue/breadcrumb';
 import Card from 'primevue/card';
 import Tabs from 'primevue/tabs';
@@ -187,29 +188,29 @@ export default {
       default: false
     },
     vehicle: {
-    type: Object,
-    default: () => ({
-      make: '',
-      model: '',
-      bodyType: '',
-      year: '',
-      location: '',
-      plateNumber: '',
-      odometer: '',
-      color: '',
-      seats: '',
-      fuel_type: '',
-      transmission: '',
-      km_per_day: '',
-      extra_km_price: '',
-      basic_daily_price: '',
-      franchise: '',
-      deposit: '',
-      imageUrl: '',
-      status: '',
-      damages: []
-    })
-  }
+      type: Object,
+      default: () => ({
+        make: '',
+        model: '',
+        bodyType: '',
+        year: '',
+        location: '',
+        plateNumber: '',
+        odometer: '',
+        color: '',
+        seats: '',
+        fuel_type: '',
+        transmission: '',
+        km_per_day: '',
+        extra_km_price: '',
+        basic_daily_price: '',
+        franchise: '',
+        deposit: '',
+        imageUrl: '',
+        status: '',
+        damages: []
+      })
+    },
   },
   components: {
     Breadcrumb,
@@ -233,115 +234,163 @@ export default {
     VehicleDamage
   },
   data() {
-  return {
-    isEditMode: false,
-    items: [
-      { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-      { label: 'Add Vehicles', url: '/dashboard/add-vehicles' }
-    ],
-    photos: [null, null, null],
-    damagePhotos: [null, null, null],
-    damageDescription: '',
-    damageSeverity: '',
-    damages: this.vehicle ? this.vehicle.damages : [
-      {
-        damagePosition: 'Front Bumper',
-        damageSeverity: 'High',
-        damageType: 'Dent',
-        damageDescription: 'Severe dent and scratches'
-      }
-    ],
-    selectedBrand: this.vehicle ? this.vehicle.make : '',
-    model: this.vehicle ? this.vehicle.model : '',
-    bodyType: this.vehicle ? this.vehicle.bodyType : '',
-    year: this.vehicle ? this.vehicle.year : '',
-    location: this.vehicle ? this.vehicle.location : '',
-    plate: this.vehicle ? this.vehicle.plateNumber : '',
-    odometer: this.vehicle ? this.vehicle.odometer : '',
-    externalColour: this.vehicle ? this.vehicle.color : '',
-    passengers: this.vehicle ? this.vehicle.seats : '',
-    fuelType: this.vehicle ? this.vehicle.fuel_type : '',
-    transmission: this.vehicle ? this.vehicle.transmission : '',
-    baseKmDay: this.vehicle ? this.vehicle.km_per_day : '',
-    kmExtraPrice: this.vehicle ? this.vehicle.extra_km_price : '',
-    basicDailyPrice: this.vehicle ? this.vehicle.basic_daily_price : '',
-    franchise: this.vehicle ? this.vehicle.franchise : '',
-    deposit: this.vehicle ? this.vehicle.deposit : '',
-    imageUrl: this.vehicle ? this.vehicle.imageUrl : '',
-    status: this.vehicle ? this.vehicle.status : '',
-    statusOptions: [
-      { label: 'Available', value: 'available' },
-      { label: 'Unavailable', value: 'unavailable' },
-      { label: 'Maintenance', value: 'maintenance' }
-    ],
-    brands: [
-      { label: 'Toyota', value: 'Toyota' },
-      { label: 'Honda', value: 'Honda' },
-      { label: 'Ford', value: 'Ford' }
-    ],
-    models: {
-      Toyota: [
-        { label: 'Corolla', value: 'Corolla' },
-        { label: 'Camry', value: 'Camry' },
-        { label: 'RAV4', value: 'RAV4' }
+    return {
+      isEditMode: false,
+      items: [
+        { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+        { label: 'Add Vehicles', url: '/dashboard/add-vehicles' }
       ],
-      Honda: [
-        { label: 'Civic', value: 'Civic' },
-        { label: 'Accord', value: 'Accord' },
-        { label: 'CR-V', value: 'CR-V' }
+      photos: [null, null, null],
+      damagePhotos: [null, null, null],
+      damageDescription: '',
+      damageSeverity: '',
+      damages: this.vehicle ? this.vehicle.damages : [
+        {
+          damagePosition: 'Front Bumper',
+          damageSeverity: 'High',
+          damageType: 'Dent',
+          damageDescription: 'Severe dent and scratches'
+        }
       ],
-      Ford: [
-        { label: 'Focus', value: 'Focus' },
-        { label: 'Mustang', value: 'Mustang' },
-        { label: 'Explorer', value: 'Explorer' }
-      ]
+      selectedBrand: '',
+      model: '',
+      bodyType: '',
+      year: '',
+      location: '',
+      plate: '',
+      odometer: '',
+      externalColour: '',
+      passengers: '',
+      fuelType: '',
+      transmission: '',
+      baseKmDay: '',
+      kmExtraPrice: '',
+      basicDailyPrice: '',
+      franchise: '',
+      deposit: '',
+      imageUrl: '',
+      status: '',
+      statusOptions: [
+        { label: 'Available', value: 'available' },
+        { label: 'Unavailable', value: 'unavailable' },
+        { label: 'Maintenance', value: 'maintenance' }
+      ],
+      brands: [],
+      models: {},
+      damageSeverities: [
+        { label: 'Minor', value: 'minor' },
+        { label: 'Moderate', value: 'moderate' },
+        { label: 'Severe', value: 'severe' }
+      ],
+      bodyTypes: [
+        { label: 'Wagon/Estate', value: 'wagon' },
+        { label: 'Passenger Van', value: 'van' },
+        { label: 'Sedan/Limousine', value: 'sedan' },
+        { label: 'Convertible', value: 'convertible' },
+        { label: 'Sport', value: 'sport' },
+        { label: 'SUV/4x4', value: 'suv' }
+      ],
+      Locations: [
+        { label: 'Torino', value: 'Torino' },
+        { label: 'Milano', value: 'Milano' },
+        { label: 'Roma', value: 'Roma' }
+      ],
+      fuelTypes: [
+        { label: 'Petrol', value: 'petrol' },
+        { label: 'Diesel', value: 'diesel' },
+        { label: 'Electric', value: 'electric' },
+        { label: 'Hybrid', value: 'hybrid' }
+      ],
+      transmissions: [
+        { label: 'Automatic', value: 'automatic' },
+        { label: 'Manual', value: 'manual' }
+      ],
+      colorOptions: [
+        { label: 'Red', value: 'red', style: 'background-color: red;' },
+        { label: 'Blue', value: 'blue', style: 'background-color: blue;' },
+        { label: 'Green', value: 'green', style: 'background-color: green;' },
+        { label: 'Black', value: 'black', style: 'background-color: black;' },
+        { label: 'White', value: 'white', style: 'background-color: white;' },
+        { label: 'Silver', value: 'silver', style: 'background-color: silver;' }
+      ],
+      passengerOptions: [
+        { label: '2', value: 2 },
+        { label: '4', value: 4 },
+        { label: '5', value: 5 },
+        { label: '7', value: 7 }
+      ],
+      originalData: {}
+    };
+  },
+  mounted() {
+    this.fetchBrandsAndModels();
+  },
+  watch: {
+    vehicle: {
+      handler(newVal) {
+        this.selectedBrand = newVal.make;
+        this.model = newVal.model;
+        this.bodyType = newVal.bodyType;
+        this.year = newVal.year;
+        this.location = newVal.location;
+        this.plate = newVal.plateNumber;
+        this.odometer = newVal.odometer;
+        this.externalColour = newVal.color;
+        this.passengers = newVal.seats;
+        this.fuelType = newVal.fuel_type;
+        this.transmission = newVal.transmission;
+        this.baseKmDay = newVal.km_per_day;
+        this.kmExtraPrice = newVal.extra_km_price;
+        this.basicDailyPrice = newVal.basic_daily_price;
+        this.franchise = newVal.franchise;
+        this.deposit = newVal.deposit;
+        this.imageUrl = newVal.imageUrl;
+        this.status = newVal.status;
+      },
+      immediate: true,
+      deep: true
     },
-    damageSeverities: [
-      { label: 'Minor', value: 'minor' },
-      { label: 'Moderate', value: 'moderate' },
-      { label: 'Severe', value: 'severe' }
-    ],
-    bodyTypes: [
-      { label: 'Wagon/Estate', value: 'wagon' },
-      { label: 'Passenger Van', value: 'van' },
-      { label: 'Sedan/Limousine', value: 'sedan' },
-      { label: 'Convertible', value: 'convertible' },
-      { label: 'Sport', value: 'sport' },
-      { label: 'SUV/4x4', value: 'suv' }
-    ],
-    Locations: [
-      { label: 'Torino', value: 'Torino' },
-      { label: 'Milano', value: 'Milano' },
-      { label: 'Roma', value: 'Roma' }
-    ],
-    fuelTypes: [
-      { label: 'Petrol', value: 'petrol' },
-      { label: 'Diesel', value: 'diesel' },
-      { label: 'Electric', value: 'electric' },
-      { label: 'Hybrid', value: 'hybrid' }
-    ],
-    transmissions: [
-      { label: 'Automatic', value: 'automatic' },
-      { label: 'Manual', value: 'manual' }
-    ],
-    colorOptions: [
-      { label: 'Red', value: 'red', style: 'background-color: red;' },
-      { label: 'Blue', value: 'blue', style: 'background-color: blue;' },
-      { label: 'Green', value: 'green', style: 'background-color: green;' },
-      { label: 'Black', value: 'black', style: 'background-color: black;' },
-      { label: 'White', value: 'white', style: 'background-color: white;' },
-      { label: 'Silver', value: 'silver', style: 'background-color: silver;' }
-    ],
-    passengerOptions: [
-      { label: '2', value: 2 },
-      { label: '4', value: 4 },
-      { label: '5', value: 5 },
-      { label: '7', value: 7 }
-    ],
-    originalData: {}
-  };
-},
+    selectedBrand(newBrand) {
+      this.model = ''; // Reset the model when the brand changes
+    }
+  },
   methods: {
+    fetchBrandsAndModels() {
+        axios.post('/vehicle-makes')
+      .then(response => {
+        this.brands = response.data.map(make => ({ label: make.name, value: make.id, icon: make.icon }));
+        this.models = response.data.reduce((acc, make) => {
+          acc[make.id] = make.models.map(model => ({ label: model.name, value: model.id }));
+          return acc;
+        }, {});
+
+        // Only set these values AFTER brands and models are loaded
+        if (this.vehicle && this.isViewMode) {
+          // If vehicle.make is a name/string, find the corresponding ID
+          if (typeof this.vehicle.make === 'string') {
+            const matchedBrand = this.brands.find(brand =>
+              brand.label.toLowerCase() === this.vehicle.make.toLowerCase());
+            this.selectedBrand = matchedBrand ? matchedBrand.value : '';
+          } else {
+            this.selectedBrand = this.vehicle.make;
+          }
+
+          // Same for model - handle if it's a string name vs an ID
+          setTimeout(() => {
+            if (typeof this.vehicle.model === 'string' && this.filteredModels.length) {
+              const matchedModel = this.filteredModels.find(model =>
+                model.label.toLowerCase() === this.vehicle.model.toLowerCase());
+              this.model = matchedModel ? matchedModel.value : '';
+            } else {
+              this.model = this.vehicle.model;
+            }
+          }, 100);
+        }
+      })
+        .catch(error => {
+          console.error('Error fetching vehicle makes and models:', error);
+        });
+    },
     onFileSelect(index) {
       const file = event.files[0];
       const reader = new FileReader();
@@ -377,16 +426,8 @@ export default {
   },
   computed: {
     brandLogo() {
-      switch (this.selectedBrand) {
-        case 'Toyota':
-          return 'https://www.carlogos.org/car-logos/toyota-logo-2005-640.png';
-        case 'Honda':
-          return 'https://www.carlogos.org/car-logos/honda-logo-2000-full-640.png';
-        case 'Ford':
-          return 'https://www.carlogos.org/car-logos/ford-logo-2017-640.png';
-        default:
-          return '/brand-logo.svg';
-      }
+      const selectedBrand = this.brands.find(brand => brand.value === this.selectedBrand);
+      return selectedBrand ? selectedBrand.icon : '/brand-logo.svg';
     },
     filteredModels() {
       return this.selectedBrand ? this.models[this.selectedBrand] || [] : [];

@@ -246,3 +246,79 @@
     }
   };
   </script>
+
+
+<style>
+.p-panelmenu-panel{
+    border-width: 0px!important;
+}
+.p-menubar{
+    border:none!important;
+}
+.main-content-bg{
+    background-color: #f0f0f08f;
+}
+
+.scrollable-content {
+    overflow-y: auto;
+    max-height: calc(100vh - 2%); /* Assicura che il contenuto possa scrollare */
+    margin-top: 2%;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Occupa tutta l'altezza della viewport */
+    overflow-y: auto; /* Modificato da hidden ad auto per abilitare lo scroll */
+}
+
+.main-content .container {
+    flex: 1; /* Permette al contenuto di adattarsi */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Abilita lo scroll */
+    min-height: 0; /* Evita problemi di overflow con flex */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        margin: 0;
+        padding: 1rem;
+        display: none; /* Nasconde la sidebar di default */
+    }
+
+    .sidebar-open {
+        display: block; /* Mostra la sidebar quando è aperta */
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 425px) {
+    .sidebar {
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem;
+        display: none;
+    }
+
+    .sidebar-open {
+        display: block;
+    }
+
+    .main-content {
+        padding: 0.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow-y: auto; /* Modificato per consentire lo scrolling */
+    }
+}
+
+
+</style>
