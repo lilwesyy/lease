@@ -100,7 +100,7 @@
 
         if (field === 'username') {
           if (!this.initialValues.username) {
-            this.formErrors[field].push('Username is required');
+            this.formErrors[field].push('Email is required');
           }
         }
 

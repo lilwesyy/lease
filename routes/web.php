@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\DamageImageController;
 
 Route::get('/{any}', function () {
     return view('welcome');
@@ -16,9 +17,14 @@ Route::get('/{any}', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/user', [AuthController::class, 'getUser']);
+Route::delete('/user/delete/{id}', [AuthController::class, 'deleteUser']);
 
 // Users Roles
 Route::post('/roles', [RoleController::class, 'getUsersWithRoles']);
+Route::post('/roles/update', [RoleController::class, 'updateRole']);
+
+//Damage Images
+Route::post('/damages/upload', [DamageImageController::class, 'upload']);
 
 // Booking
 Route::post('/booking', [BookingController::class, 'getBookings']);
@@ -36,6 +42,8 @@ Route::post('/vehicle-makes', [VehicleController::class, 'getVehicleMakes']);
 Route::put('/vehicles/edit/{id}', [VehicleController::class, 'editVehicle']);
 Route::delete('/vehicles/delete/{id}', [VehicleController::class, 'deleteVehicle']);
 Route::put('/vehicles/update-status/{id}', [VehicleController::class, 'updateStatus']);
+Route::post('/vehicles/upload-photo', [VehicleController::class, 'uploadPhoto']);
+Route::post('/vehicles/upload-multiple-photos', [VehicleController::class, 'uploadMultiplePhotos']);
 
 // Customers
 Route::post('/customer', [CustomerController::class, 'getCustomers']);

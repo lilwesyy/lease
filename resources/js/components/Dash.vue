@@ -102,7 +102,7 @@
 
     <!-- Toggle Button for Mobile -->
 
-    <Dialog header="Confirm Logout" v-model:visible="showLogoutDialog" modal>
+    <!-- <Dialog header="Confirm Logout" v-model:visible="showLogoutDialog" modal>
       <span>Are you sure you want to log out?</span>
       <template #footer>
         <div class="w-full flex justify-center">
@@ -115,7 +115,9 @@
           />
         </div>
       </template>
-    </Dialog>
+    </Dialog> -->
+
+    <ConfirmDialog></ConfirmDialog>
 
     <!-- Main Content -->
     <div class="main-content flex-1 flex flex-col main-content-bg">
@@ -145,7 +147,8 @@
   import Ripple from 'primevue/ripple';
   import Menubar from 'primevue/menubar';
   import Dialog from 'primevue/dialog';
-  import axios from 'axios'; // Importa axios per le richieste HTTP
+  import axios from 'axios';
+  import ConfirmDialog from 'primevue/confirmdialog';
   import { mapGetters } from 'vuex';
 
   export default {
@@ -161,7 +164,8 @@
       Divider,
       Avatar,
       Menubar,
-      Dialog
+      Dialog,
+      ConfirmDialog
     },
     directives: {
       ripple: Ripple // Register the ripple directive
@@ -255,9 +259,9 @@
         ],
         pageTitle: 'Dashboard',
         navbarItems: [
-          { label: 'Bookings', icon: 'pi pi-fw pi-calendar', to: '/' },
-          { label: 'New Booking', icon: 'pi pi-fw pi-plus', to: '/about' },
-          { label: 'Vehicles', icon: 'pi pi-fw pi-car', to: '/dashboard/vehicles' },
+          { label: 'Add Customer', icon: 'pi pi-fw pi-user-plus', url: '/dashboard/add-customer' },
+          { label: 'Add Booking', icon: 'pi pi-fw pi-calendar-plus', url: '/dashboard/add-booking' },
+          { label: 'Add Vehicle', icon: 'pi pi-fw pi-car', url: '/dashboard/add-vehicles' },
 
         ]
       };
@@ -293,8 +297,20 @@
         this.pageTitle = `Dashboard - ${route.meta.title || 'Dashboard'}`;
       },
       confirmLogout() {
-        this.showLogoutDialog = true;
-      },
+        this.$confirm.require({
+            message: 'Are you sure you want to log out?',
+            header: 'Confirm Logout',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'p-button-danger',
+            rejectClass: 'p-button-secondary',
+            accept: () => {
+            this.logout();
+            },
+            reject: () => {
+            // Optional: handle rejection
+            }
+        });
+     },
       async logout() {
         try {
           await axios.post('/logout');

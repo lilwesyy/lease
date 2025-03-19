@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Vehicle;
 use App\Models\VehicleMake;
 use App\Models\VehicleModel;
+use App\Models\VehicleImage; // Aggiungi questa importazione
 use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
@@ -16,7 +17,8 @@ class VehicleController extends Controller
             $vehicles = Vehicle::with([
                 'damages',
                 'make:id,name,icon',
-                'model'
+                'model',
+                'images' // Aggiungi le immagini ai dati caricati
             ])->get();
 
             return response()->json($vehicles);
@@ -54,6 +56,7 @@ class VehicleController extends Controller
                 'deposit' => 'required|numeric',
                 'status' => 'required|string',
                 'photos.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'indices.*' => 'nullable|integer|min:0|max:2',
             ]);
 
             $vehicle = new Vehicle();
@@ -79,26 +82,35 @@ class VehicleController extends Controller
 
             $vehicle->save();
 
+            // Gestisci il caricamento delle immagini come elementi separati
             if ($request->hasFile('photos')) {
-                $photos = [];
-                foreach ($request->file('photos') as $index => $photo) {
+                foreach ($request->file('photos') as $key => $photo) {
+                    // Ottieni l'indice dalla richiesta o usa la chiave
+                    $index = $request->indices[$key] ?? $key;
+
+                    // Memorizza l'immagine nella cartella vehicle_photos
                     $path = $photo->store('vehicle_photos', 'public');
-                    $photos[] = $path;
-                }
-                $vehicle->photos = json_encode($photos);
 
-                // Se ci sono foto caricate, usa la prima come imageUrl
-                if (count($photos) > 0) {
-                    $vehicle->imageUrl = $photos[0];
-                }
+                    // Crea un nuovo record VehicleImage
+                    $vehicleImage = new VehicleImage();
+                    $vehicleImage->vehicle_id = $vehicle->id;
+                    $vehicleImage->url = '/storage/' . $path;
+                    $vehicleImage->position = $index;
+                    $vehicleImage->save();
 
-                $vehicle->save();
+                    // Se è la prima immagine, imposta anche imageUrl del veicolo
+                    if ($key === array_key_first($request->file('photos'))) {
+                        $vehicle->imageUrl = $path;
+                        $vehicle->save();
+                    }
+                }
             }
 
             $createdVehicle = Vehicle::with([
                 'damages',
                 'make:id,name,icon',
-                'model'
+                'model',
+                'images' // Carica anche le immagini
             ])->findOrFail($vehicle->id);
 
             return response()->json([
@@ -168,25 +180,49 @@ class VehicleController extends Controller
 
             // Gestione delle foto se presenti nella richiesta
             if ($request->hasFile('photos')) {
-                $photos = [];
-                foreach ($request->file('photos') as $index => $photo) {
+                foreach ($request->file('photos') as $key => $photo) {
+                    // Ottieni l'indice dalla richiesta o usa la chiave
+                    $index = $request->indices[$key] ?? $key;
+
+                    // Controlla se esiste già un'immagine a questa posizione
+                    $existingImage = VehicleImage::where('vehicle_id', $id)
+                        ->where('position', $index)
+                        ->first();
+
+                    // Salva l'immagine
                     $path = $photo->store('vehicle_photos', 'public');
-                    $photos[] = $path;
-                }
-                $vehicle->photos = json_encode($photos);
 
-                // Se ci sono nuove foto, usa la prima come imageUrl
-                if (count($photos) > 0) {
-                    $vehicle->imageUrl = $photos[0];
-                }
+                    if ($existingImage) {
+                        // Elimina il vecchio file
+                        if (Storage::disk('public')->exists(str_replace('/storage/', '', $existingImage->url))) {
+                            Storage::disk('public')->delete(str_replace('/storage/', '', $existingImage->url));
+                        }
 
-                $vehicle->save();
+                        // Aggiorna il record esistente
+                        $existingImage->url = '/storage/' . $path;
+                        $existingImage->save();
+                    } else {
+                        // Crea un nuovo record
+                        $vehicleImage = new VehicleImage();
+                        $vehicleImage->vehicle_id = $id;
+                        $vehicleImage->url = '/storage/' . $path;
+                        $vehicleImage->position = $index;
+                        $vehicleImage->save();
+                    }
+
+                    // Aggiorna l'imageUrl principale del veicolo se è la prima foto
+                    if ($key === array_key_first($request->file('photos'))) {
+                        $vehicle->imageUrl = $path;
+                        $vehicle->save();
+                    }
+                }
             }
 
             $updatedVehicle = Vehicle::with([
                 'damages',
                 'make:id,name,icon',
-                'model'
+                'model',
+                'images' // Carica anche le immagini
             ])->findOrFail($id);
 
             return response()->json([
@@ -209,14 +245,18 @@ class VehicleController extends Controller
         try {
             $vehicle = Vehicle::findOrFail($id);
 
-            // Elimina le foto associate se necessario
-            if (!empty($vehicle->photos)) {
-                $photos = json_decode($vehicle->photos, true);
-                foreach ($photos as $photo) {
-                    Storage::disk('public')->delete($photo);
+            // Recupera le immagini associate
+            $images = VehicleImage::where('vehicle_id', $id)->get();
+
+            // Elimina i file fisici delle immagini
+            foreach ($images as $image) {
+                $path = str_replace('/storage/', '', $image->url);
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
                 }
             }
 
+            // La cancellazione a cascata gestirà l'eliminazione dei record delle immagini
             $vehicle->delete();
 
             return response()->json(['message' => 'Veicolo eliminato con successo']);
@@ -251,6 +291,146 @@ class VehicleController extends Controller
             return response()->json(['error' => 'Dati non validi', 'details' => $e->errors()], 422);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Errore nell\'aggiornamento dello stato: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function uploadPhoto(Request $request)
+    {
+        try {
+            $request->validate([
+                'photo' => 'required|image|max:5048', // 5MB max
+                'index' => 'required|integer|min:0|max:2',
+                'vehicle_id' => 'nullable|exists:vehicles,id'
+            ]);
+
+            $vehicleId = $request->vehicle_id;
+            $index = $request->index;
+
+            // Salva l'immagine
+            $path = $request->file('photo')->store('vehicle_photos', 'public');
+            $imageUrl = '/storage/' . $path;
+
+            // Se abbiamo un vehicle_id, collega la foto ad esso
+            if ($vehicleId) {
+                $vehicle = Vehicle::findOrFail($vehicleId);
+
+                // Controlla se esiste già un'immagine in questa posizione
+                $existingImage = VehicleImage::where('vehicle_id', $vehicleId)
+                    ->where('position', $index)
+                    ->first();
+
+                if ($existingImage) {
+                    // Elimina il vecchio file se esiste
+                    $oldPath = str_replace('/storage/', '', $existingImage->url);
+                    if (Storage::disk('public')->exists($oldPath)) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+
+                    // Aggiorna il record esistente
+                    $existingImage->url = $imageUrl;
+                    $existingImage->save();
+                    $photo_id = $existingImage->id;
+                } else {
+                    // Crea un nuovo record immagine
+                    $image = new VehicleImage();
+                    $image->vehicle_id = $vehicleId;
+                    $image->url = $imageUrl;
+                    $image->position = $index;
+                    $image->save();
+                    $photo_id = $image->id;
+                }
+
+                // Aggiorna l'imageUrl del veicolo se è la prima immagine (posizione 0)
+                if ($index == 0) {
+                    $vehicle->imageUrl = $path;
+                    $vehicle->save();
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'photo_id' => $photo_id,
+                    'url' => $imageUrl
+                ]);
+            } else {
+                // Restituisci solo il percorso per un uso temporaneo
+                return response()->json([
+                    'success' => true,
+                    'url' => $imageUrl
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Errore nel caricamento dell\'immagine: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadMultiplePhotos(Request $request)
+    {
+        try {
+            $request->validate([
+                'vehicle_id' => 'required|exists:vehicles,id',
+                'photos.*' => 'required|image|max:5048', // 5MB max
+                'indices.*' => 'required|integer|min:0|max:2',
+            ]);
+
+            $vehicleId = $request->vehicle_id;
+            $vehicle = Vehicle::findOrFail($vehicleId);
+
+            // Elabora ogni foto
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $key => $photo) {
+                    $index = $request->indices[$key];
+
+                    // Salva l'immagine
+                    $path = $photo->store('vehicle_photos', 'public');
+                    $imageUrl = '/storage/' . $path;
+
+                    // Controlla se esiste già un'immagine in questa posizione
+                    $existingImage = VehicleImage::where('vehicle_id', $vehicleId)
+                        ->where('position', $index)
+                        ->first();
+
+                    if ($existingImage) {
+                        // Elimina il vecchio file se esiste
+                        $oldPath = str_replace('/storage/', '', $existingImage->url);
+                        if (Storage::disk('public')->exists($oldPath)) {
+                            Storage::disk('public')->delete($oldPath);
+                        }
+
+                        // Aggiorna il record esistente
+                        $existingImage->url = $imageUrl;
+                        $existingImage->save();
+                    } else {
+                        // Crea un nuovo record
+                        $image = new VehicleImage();
+                        $image->vehicle_id = $vehicleId;
+                        $image->url = $imageUrl;
+                        $image->position = $index;
+                        $image->save();
+                    }
+
+                    // Aggiorna l'imageUrl del veicolo se è la prima immagine (posizione 0)
+                    if ($index == 0) {
+                        $vehicle->imageUrl = $path;
+                        $vehicle->save();
+                    }
+                }
+            }
+
+            // Ricarica il veicolo con le immagini
+            $vehicle = Vehicle::with('images')->find($vehicleId);
+
+            return response()->json([
+                'success' => true,
+                'vehicle' => $vehicle
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Errore nel caricamento delle immagini: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

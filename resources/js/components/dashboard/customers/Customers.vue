@@ -8,7 +8,7 @@
             <Button label="Add Customer" icon="pi pi-plus" @click="$router.push('/dashboard/add-customer')" />
             <IconField class="p-d-flex p-ai-center">
               <InputIcon class="pi pi-search" />
-              <InputText v-model="value1" placeholder="Search" />
+              <InputText v-model="value1" placeholder="Search Customers" />
             </IconField>
           </header>
 

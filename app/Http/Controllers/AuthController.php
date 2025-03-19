@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -41,6 +42,33 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'roles' => $user->roles
+        ]);
+    }
+
+    public function deleteUser(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Controllo dei permessi (opzionale, ma consigliato)
+        // if ($request->user()->cannot('delete', $user)) {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Unauthorized'
+        //     ], 403);
+        // }
+
+        $user->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User deleted successfully'
         ]);
     }
 }

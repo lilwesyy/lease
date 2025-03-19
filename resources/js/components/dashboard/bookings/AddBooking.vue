@@ -4,208 +4,282 @@
 
     <Card>
       <template #content>
-        <Tabs value="0">
-          <TabList>
-            <Tab value="0"><i class="pi pi-car mr-2"></i>Date & Vehicle</Tab>
-            <Tab value="1"><i class="pi pi-user mr-2"></i>Customer</Tab>
-            <Tab value="2"><i class="pi pi-list-check mr-2"></i>Summary</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel value="0">
-              <p class="mt-2 mb-2 grey">Fill out the info needed to create a new booking</p>
-              <DatePicker v-model="dates" showIcon fluid iconDisplay="input" selectionMode="range" placeholder="Select Dates" :manualInput="false" />
-
-              <div class="input-group-row">
-                <InputGroup>
-                  <InputGroupAddon>
-                    <i class="pi pi-map-marker"></i>
-                  </InputGroupAddon>
-                  <Select v-model="deliveryLocation" :options="locations" optionLabel="label" placeholder="Delivery Location" />
-                </InputGroup>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <i class="pi pi-map-marker"></i>
-                  </InputGroupAddon>
-                  <Select v-model="pickupLocation" :options="locations" optionLabel="label" placeholder="PickUp Location" />
-                </InputGroup>
+        <TabView v-model:activeIndex="activeTabIndex">
+          <TabPanel>
+            <template #header>
+              <div class="tab-header-content">
+                <i class="pi pi-car mr-2"></i>
+                <span>Date & Vehicle</span>
               </div>
-              <a href="#" class="add-location-link mt-2 block" @click.prevent="openLocationModal">Missing location? Add New</a>
-              <IconField class="p-d-flex p-ai-center mt-5">
-                <InputIcon class="pi pi-search" />
-                <InputText v-model="vehicleSearch" placeholder="Search Vehicles" @keyup.enter="searchVehicles" />
-                <Button label="Add Vehicle"  class="ml-3" icon="pi pi-plus" @click="$router.push('/dashboard/add-vehicles')" />
-              </IconField>
-              <div v-if="vehicles.length > 0">
-                <DataTable
-                  :value="vehicles"
+            </template>
+            <p class="mt-2 mb-2 grey">Fill out the info needed to create a new booking</p>
+            <DatePicker
+                v-model="dates"
+                showIcon
+                fluid
+                iconDisplay="input"
+                selectionMode="range"
+                placeholder="Select Dates"
+                :manualInput="false"
+                @date-select="onDateSelect"
+            />
+            <div class="input-group-row">
+              <InputGroup>
+                <InputGroupAddon>
+                  <i class="pi pi-map-marker"></i>
+                </InputGroupAddon>
+                <Select v-model="deliveryLocation" :options="locations" optionLabel="label" placeholder="Delivery Location" />
+              </InputGroup>
+              <InputGroup>
+                <InputGroupAddon>
+                  <i class="pi pi-map-marker"></i>
+                </InputGroupAddon>
+                <Select v-model="pickupLocation" :options="locations" optionLabel="label" placeholder="PickUp Location" />
+              </InputGroup>
+            </div>
+            <a href="#" class="add-location-link mt-2 block" @click.prevent="openLocationModal">Missing location? Add New</a>
+            <IconField class="p-d-flex p-ai-center mt-5">
+              <InputIcon class="pi pi-search" />
+              <InputText v-model="vehicleSearch" placeholder="Search Vehicles" />
+              <Button label="Add Vehicle"  class="ml-3" icon="pi pi-plus" @click="$router.push('/dashboard/add-vehicles')" />
+            </IconField>
+            <div v-if="vehicles.length > 0">
+              <DataTable
+                  :value="filteredVehicles"
                   selectionMode="single"
                   class="p-datatable-no-gridlines"
                   @row-click="onRowClick"
-                >
-                  <Column header="Select" style="width: 50px">
-                    <template #body="slotProps">
-                      <RadioButton
-                        v-model="selectedVehicleId"
-                        :inputId="`vehicle-${slotProps.data.id}`"
-                        :name="`selectedVehicle`"
-                        :value="slotProps.data.id"
+                  :paginator="true"
+                  :rows="10"
+                  :rowsPerPageOptions="[5, 10, 20, 50]"
+                  paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+              >
+                <Column header="Select" style="width: 50px">
+                  <template #body="slotProps">
+                    <RadioButton
+                      v-model="selectedVehicleId"
+                      :inputId="`vehicle-${slotProps.data.id}`"
+                      :name="`selectedVehicle`"
+                      :value="slotProps.data.id"
+                    />
+                  </template>
+                </Column>
+                <Column header="Brand and Model">
+                  <template #body="slotProps">
+                    <div style="display: flex; align-items: center">
+                      <img
+                          :src="slotProps.data.make?.icon"
+                          :alt="`${slotProps.data.make?.name} logo`"
+                          width="90"
+                          height="90"
+                          v-if="slotProps.data.make?.icon"
+                          style="margin-right: 8px;"
                       />
-                    </template>
-                  </Column>
-                  <Column header="Brand and Model">
-                    <template #body="slotProps">
-                      <div style="display: flex; align-items: center">
-                        <img
-                            :src="slotProps.data.make?.icon"
-                            :alt="`${slotProps.data.make?.name} logo`"
-                            width="90"
-                            height="90"
-                            v-if="slotProps.data.make?.icon"
-                            style="margin-right: 8px;"
-                        />
-                        <div>
-                            <div>{{ slotProps.data.make?.name }} {{ slotProps.data.model?.name }}</div>
-                          <div style="font-size: 0.8em; color: grey">
-                            {{ slotProps.data.year }},
-                            {{ capitalize(slotProps.data.fuel_type) }},
-                            {{ capitalize(slotProps.data.transmission) }}
-                          </div>
+                      <div>
+                          <div>{{ slotProps.data.make?.name }} {{ slotProps.data.model?.name }}</div>
+                        <div style="font-size: 0.8em; color: grey">
+                          {{ capitalize(slotProps.data.fuel_type) }},
+                          {{ capitalize(slotProps.data.transmission) }}
                         </div>
                       </div>
-                    </template>
-                  </Column>
-                  <Column header="Color" style="width: 50px">
-                    <template #body="slotProps">
-                      <div
-                        :style="{
-                          backgroundColor: slotProps.data.color,
-                          width: '20px',
-                          height: '20px',
-                          borderRadius: '50%',
-                          border: slotProps.data.color.toLowerCase() === 'white' ? '1px solid grey' : 'none'
-                        }"
-                      ></div>
-                    </template>
-                  </Column>
-                  <Column header="KM" style="width: 120px">
-                    <template #body="slotProps">
-                      {{ formatNumber(slotProps.data.odometer) }} km
-                    </template>
-                  </Column>
-                  <Column
-                    field="plateNumber"
-                    header="Plate"
-                    style="width: 100px"
-                  />
-                  <Column
-                    field="location"
-                    header="Location"
-                    style="width: 100px"
-                  />
-                  <Column header="Status" style="width: 100px">
-                    <template #body="slotProps">
-                      <Tag
-                        :value="capitalize(slotProps.data.status)"
-                        :severity="getSeverity(slotProps.data)"
-                      />
-                    </template>
-                  </Column>
-                </DataTable>
-              </div>
-              <div v-else>
-                <p class="text-center text-gray-500 mt-5">
-                  No vehicles found. Please add a vehicle.
-                </p>
-              </div>
-            </TabPanel>
-            <TabPanel value="1">
-                <IconField class="p-d-flex p-ai-center mb-3">
-                    <InputIcon class="pi pi-search" />
-                    <InputText v-model="clientSearch" placeholder="Search Customers" @keyup.enter="searchClients" />
-                    <Button label="Add New Customer" icon="pi pi-plus" @click="$router.push('/dashboard/add-customer')" class="ml-3" />
-
-                </IconField>
-
-                <div v-if="clients.length > 0">
-                    <DataTable
-                        :value="clients"
-                        selectionMode="single"
-                        dataKey="id"
-                        @row-click="onClientRowClick"
-                        class="p-datatable-no-gridlines"
-                    >
-                        <Column header="Select" style="width: 50px">
-                            <template #body="slotProps">
-                                <RadioButton
-                                    v-model="selectedClientId"
-                                    :inputId="`client-${slotProps.data.id}`"
-                                    :name="`selectedClient`"
-                                    :value="slotProps.data.id"
-                                />
-                            </template>
-                        </Column>
-                        <Column header="Name">
-                            <template #body="slotProps">
-                            <div>
-                                {{ slotProps.data.firstName }} {{ slotProps.data.lastName }}
-                                <div class="text-sm text-gray-500">{{ slotProps.data.email }}</div>
-                            </div>
-                            </template>
-                        </Column>
-                        <Column field="phone" header="Phone" />
-                        <Column field="address" header="Address" />
-                        <Column header="Documents">
-                            <template #body="">
-                            <i class="pi pi-file"></i>
-                            </template>
-                        </Column>
-                    </DataTable>
-                </div>
-                <div v-else>
-                    <p class="text-center text-gray-500 mt-5">No customers found. Please add a customer.</p>
-                </div>
-            </TabPanel>
-            <TabPanel value="2">
-              <div v-if="selectedVehicleId && selectedClient && dates">
-                <h2 class="font-bold text-xl mb-4">Booking Summary</h2>
-
-                <div class="summary-row">
-                  <div class="summary-column">
-                    <h3 class="font-bold text-lg mb-2">Customer</h3>
-                    <div><strong>Name:</strong> {{ selectedClient.firstName }} {{ selectedClient.lastName }}</div>
-                    <div><strong>Email:</strong> {{ selectedClient.email }}</div>
-                    <div><strong>Phone:</strong> {{ selectedClient.phone }}</div>
-                  </div>
-
-                  <div class="summary-column">
-                    <h3 class="font-bold text-lg mb-2">Vehicle</h3>
-                    <div v-if="selectedVehicle">
-                      <div><strong>Make & Model:</strong> {{ selectedVehicle.make }} {{ selectedVehicle.model }}</div>
-                      <div><strong>Year:</strong> {{ selectedVehicle.year }}</div>
-                      <div><strong>Plate:</strong> {{ selectedVehicle.plateNumber }}</div>
                     </div>
+                  </template>
+                </Column>
+                <Column header="Color" style="width: 50px">
+                  <template #body="slotProps">
+                    <div
+                      :style="{
+                        backgroundColor: slotProps.data.color,
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        border: slotProps.data.color.toLowerCase() === 'white' ? '1px solid grey' : 'none'
+                      }"
+                    ></div>
+                  </template>
+                </Column>
+                <Column header="KM" style="width: 120px">
+                  <template #body="slotProps">
+                    {{ formatNumber(slotProps.data.odometer) }} km
+                  </template>
+                </Column>
+                <Column
+                  field="plateNumber"
+                  header="Plate"
+                  style="width: 100px"
+                />
+                <Column
+                  field="location"
+                  header="Location"
+                  style="width: 100px"
+                />
+                <Column header="Status" style="width: 100px">
+                  <template #body="slotProps">
+                    <Tag
+                      :value="capitalize(slotProps.data.status)"
+                      :severity="getSeverity(slotProps.data)"
+                    />
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
+            <div v-else>
+              <p class="text-center text-gray-500 mt-5">
+                No vehicles found. Please add a vehicle.
+              </p>
+            </div>
+
+            <div class="flex justify-content-end mt-4">
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                :disabled="!isDateVehicleTabComplete"
+                @click="goToCustomerTab"
+                class="p-button-primary"
+              />
+            </div>
+          </TabPanel>
+          <TabPanel :disabled="!isDateVehicleTabComplete">
+            <template #header>
+              <div class="tab-header-content">
+                <i class="pi pi-user mr-2"></i>
+                <span>Customer</span>
+              </div>
+            </template>
+            <IconField class="p-d-flex p-ai-center mb-3">
+              <InputIcon class="pi pi-search" />
+              <InputText v-model="clientSearch" placeholder="Search Customers" @keyup.enter="searchClients" />
+              <Button label="Add New Customer" icon="pi pi-plus" @click="$router.push('/dashboard/add-customer')" class="ml-3" />
+            </IconField>
+
+            <div v-if="clients.length > 0">
+              <DataTable
+                  :value="clients"
+                  selectionMode="single"
+                  dataKey="id"
+                  @row-click="onClientRowClick"
+                  class="p-datatable-no-gridlines"
+                  :paginator="true"
+                  :rows="10"
+                  :rowsPerPageOptions="[5, 10, 20, 50]"
+                  paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+              >
+                <Column header="Select" style="width: 50px">
+                  <template #body="slotProps">
+                    <RadioButton
+                      v-model="selectedClientId"
+                      :inputId="`client-${slotProps.data.id}`"
+                      :name="`selectedClient`"
+                      :value="slotProps.data.id"
+                    />
+                  </template>
+                </Column>
+                <Column header="Name">
+                  <template #body="slotProps">
+                  <div>
+                      {{ slotProps.data.firstName }} {{ slotProps.data.lastName }}
+                      <div class="text-sm text-gray-500">{{ slotProps.data.email }}</div>
+                  </div>
+                  </template>
+                </Column>
+                <Column field="phone" header="Phone" />
+                <Column field="address" header="Address" />
+                <Column header="Documents">
+                  <template #body="">
+                  <i class="pi pi-file"></i>
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
+            <div v-else>
+              <p class="text-center text-gray-500 mt-5">No customers found. Please add a customer.</p>
+            </div>
+
+            <div class="flex justify-content-between mt-4">
+              <Button
+                label="Previous"
+                icon="pi pi-arrow-left"
+                class="p-button-secondary"
+                @click="goToDateVehicleTab"
+              />
+              <Button
+                label="Next"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                :disabled="!isCustomerTabComplete"
+                @click="goToSummaryTab"
+                class="p-button-primary"
+              />
+            </div>
+          </TabPanel>
+          <TabPanel :disabled="!isCustomerTabComplete">
+            <template #header>
+              <div class="tab-header-content">
+                <i class="pi pi-list-check mr-2"></i>
+                <span>Summary</span>
+              </div>
+            </template>
+            <div v-if="selectedVehicleId && selectedClient && dates">
+              <h2 class="font-bold text-xl mb-4">Booking Summary</h2>
+
+              <div class="summary-row">
+                <div class="summary-column">
+                  <h3 class="font-bold text-lg mb-2">Customer</h3>
+                  <div><strong>Name:</strong> {{ selectedClient.firstName }} {{ selectedClient.lastName }}</div>
+                  <div><strong>Email:</strong> {{ selectedClient.email }}</div>
+                  <div><strong>Phone:</strong> {{ selectedClient.phone }}</div>
+                </div>
+
+                <div class="summary-column">
+                  <h3 class="font-bold text-lg mb-2">Vehicle</h3>
+                  <div v-if="selectedVehicle">
+                    <div><strong>Make & Model:</strong> {{ selectedVehicle.make?.name }} {{ selectedVehicle.model?.name }}</div>
+                    <div><strong>Year:</strong> {{ selectedVehicle.year }}</div>
+                    <div><strong>Plate:</strong> {{ selectedVehicle.plateNumber }}</div>
                   </div>
                 </div>
-
-                <div class="summary-section">
-                  <h3 class="font-bold text-lg mb-2">Booking Details</h3>
-                  <div><strong>From:</strong> {{ formatDate(dates[0]) }}</div>
-                  <div><strong>To:</strong> {{ formatDate(dates[1]) }}</div>
-                  <div><strong>Delivery Location:</strong> {{ getLocationName(deliveryLocation) }}</div>
-                  <div><strong>Pickup Location:</strong> {{ getLocationName(pickupLocation) }}</div>
-                  <div><strong>Duration:</strong> {{ calculateDuration() }} days</div>
-                </div>
-
-                <Button label="Confirm Booking" icon="pi pi-check" @click="confirmBooking" class="mt-4" />
               </div>
-              <div v-else>
-                <p class="text-center text-red-500 mt-5">
-                  Please complete all previous steps before proceeding to booking confirmation.
-                </p>
+
+              <div class="summary-section">
+                <h3 class="font-bold text-lg mb-2">Booking Details</h3>
+                <div><strong>From:</strong> {{ formatDate(dates[0]) }}</div>
+                <div><strong>To:</strong> {{ formatDate(dates[1]) }}</div>
+                <div><strong>Delivery Location:</strong> {{ getLocationName(deliveryLocation) }}</div>
+                <div><strong>Pickup Location:</strong> {{ getLocationName(pickupLocation) }}</div>
+                <div><strong>Duration:</strong> {{ calculateDuration() }} days</div>
               </div>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+
+              <div class="flex justify-content-between mt-4">
+                <Button
+                  label="Previous"
+                  icon="pi pi-arrow-left"
+                  class="p-button-secondary"
+                  @click="goToCustomerTab"
+                />
+                <Button
+                  label="Confirm Booking"
+                  icon="pi pi-check"
+                  @click="confirmBooking"
+                  class="p-button-success"
+                />
+              </div>
+            </div>
+            <div v-else>
+              <p class="text-center text-red-500 mt-5">
+                Please complete all previous steps before proceeding to booking confirmation.
+              </p>
+              <div class="flex justify-content-start mt-4">
+                <Button
+                  label="Previous"
+                  icon="pi pi-arrow-left"
+                  class="p-button-secondary"
+                  @click="goToCustomerTab"
+                />
+              </div>
+            </div>
+          </TabPanel>
+        </TabView>
       </template>
     </Card>
 
@@ -236,7 +310,7 @@
   </template>
 
 <script>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -245,10 +319,7 @@ import Card from 'primevue/card';
 import Breadcrumb from 'primevue/breadcrumb';
 import Tag from 'primevue/tag';
 import RadioButton from 'primevue/radiobutton';
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import Tab from 'primevue/tab';
-import TabPanels from 'primevue/tabpanels';
+import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import DatePicker from 'primevue/datepicker';
 import InputText from 'primevue/inputtext';
@@ -258,6 +329,10 @@ import Select from 'primevue/select';
 import Dialog from 'primevue/dialog';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import ProgressSpinner from 'primevue/progressspinner';
+import { useRouter } from 'vue-router';
+import { useToast } from "primevue/usetoast";
+import Toast from 'primevue/toast';
 
 export default {
   name: 'Bookings',
@@ -269,10 +344,7 @@ export default {
     Breadcrumb,
     Tag,
     RadioButton,
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
+    TabView,
     TabPanel,
     DatePicker,
     InputText,
@@ -281,7 +353,9 @@ export default {
     Select,
     Dialog,
     IconField,
-    InputIcon
+    InputIcon,
+    ProgressSpinner,
+    Toast
   },
   setup() {
     const vehicles = ref([]);
@@ -295,13 +369,77 @@ export default {
     const selectedClientId = ref(null);
     const clientSearch = ref('');
     const vehicleSearch = ref('');
+    const loading = ref(false);
+    const error = ref(null);
+    const activeTabIndex = ref(0);
+    const router = useRouter();
+    const toast = useToast();
 
-    // Watch for changes in selectedClientId
-    watch(selectedClientId, (newValue) => {
-      if (newValue) {
-        selectedClient.value = clients.value.find(c => c.id === newValue) || null;
-        console.log('Client selected by ID:', selectedClient.value);
+    // Computed properties for tab validation
+    const isDateVehicleTabComplete = computed(() => {
+      return dates.value &&
+             dates.value.length === 2 &&
+             deliveryLocation.value &&
+             pickupLocation.value &&
+             selectedVehicleId.value;
+    });
+
+    const isCustomerTabComplete = computed(() => {
+      return selectedClientId.value !== null && selectedClient.value !== null;
+    });
+
+    const onDateSelect = (event) => {
+      if (event.value && event.value.length === 2) {
+        event.target.hide();
       }
+    };
+
+    // Tab navigation methods
+    const goToDateVehicleTab = () => {
+      activeTabIndex.value = 0;
+    };
+
+    const goToCustomerTab = () => {
+      if (isDateVehicleTabComplete.value) {
+        activeTabIndex.value = 1;
+      }
+    };
+
+    const goToSummaryTab = () => {
+      if (isCustomerTabComplete.value) {
+        activeTabIndex.value = 2;
+      }
+    };
+
+    const filteredClients = computed(() => {
+    if (!clientSearch.value.trim()) return clients.value;
+
+    const searchTerm = clientSearch.value.toLowerCase();
+    return clients.value.filter(client =>
+        (client.firstName?.toLowerCase() || '').includes(searchTerm) ||
+        (client.lastName?.toLowerCase() || '').includes(searchTerm) ||
+        (client.email?.toLowerCase() || '').includes(searchTerm) ||
+        (client.phone?.toLowerCase() || '').includes(searchTerm) ||
+        (client.address?.toLowerCase() || '').includes(searchTerm)
+    );
+    });
+
+    const filteredVehicles = computed(() => {
+      if (!vehicleSearch.value.trim()) return vehicles.value;
+
+      const searchTerm = vehicleSearch.value.toLowerCase();
+      return vehicles.value.filter(vehicle => {
+        return (
+          (vehicle.make?.name || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.model?.name || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.plateNumber || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.location || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.year?.toString() || '').includes(searchTerm) ||
+          (vehicle.fuel_type || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.transmission || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.status || '').toLowerCase().includes(searchTerm)
+        );
+      });
     });
 
     // Computed property to get the selected vehicle
@@ -319,14 +457,19 @@ export default {
     });
 
     // Fetch clients data
-    const fetchClients = async (searchTerm = '') => {
-      try {
-        // You can add search parameter to filter clients
-        const response = await axios.post('/customer', { search: searchTerm });
+    const fetchClients = async () => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+        const response = await axios.post('/customer');
         clients.value = response.data;
-      } catch (error) {
-        console.error('Error fetching clients:', error);
-      }
+    } catch (err) {
+        console.error('Error fetching clients:', err);
+        error.value = 'Failed to load customers. Please try again later.';
+    } finally {
+        loading.value = false;
+    }
     };
 
     // Show client details when a row is selected
@@ -340,17 +483,12 @@ export default {
     const onClientRowClick = (event) => {
       selectedClientId.value = event.data.id;
       selectedClient.value = event.data;
-      console.log('Client row clicked:', event.data);
+    //   console.log('Client row clicked:', event.data);
     };
 
     // Search clients based on input
     const searchClients = () => {
       fetchClients(clientSearch.value);
-    };
-
-    // Search vehicles based on input
-    const searchVehicles = () => {
-      fetchVehicles(vehicleSearch.value);
     };
 
     const openLocationModal = () => {
@@ -454,40 +592,58 @@ export default {
 
     // Submit the booking
     const confirmBooking = async () => {
-      try {
-        if (!selectedVehicleId.value || !selectedClient.value || !dates.value) {
-          console.error('Please complete all required fields');
-          return;
-        }
+  try {
+    if (!selectedVehicleId.value || !selectedClient.value || !dates.value) {
+      console.error('Please complete all required fields');
+      return;
+    }
 
-        if (!deliveryLocation.value || !pickupLocation.value) {
-          console.error('Please select both delivery and pickup locations');
-          return;
-        }
+    if (!deliveryLocation.value || !pickupLocation.value) {
+      console.error('Please select both delivery and pickup locations');
+      return;
+    }
 
-        const bookingData = {
-          vehicleId: selectedVehicleId.value,
-          customerId: selectedClient.value.id,
-          startDate: dates.value[0],
-          endDate: dates.value[1],
-          deliveryLocationId: typeof deliveryLocation.value === 'object' ?
-                              deliveryLocation.value.value :
-                              deliveryLocation.value,
-          pickupLocationId: typeof pickupLocation.value === 'object' ?
-                           pickupLocation.value.value :
-                           pickupLocation.value
-        };
-
-        // Submit booking to the backend
-        const response = await axios.post('/booking/create', bookingData);
-        console.log('Booking created successfully:', response.data);
-
-        // Redirect to booking list or show success message
-        // this.$router.push('/dashboard/bookings');
-      } catch (error) {
-        console.error('Error creating booking:', error);
-      }
+    const bookingData = {
+      vehicleId: selectedVehicleId.value,
+      customerId: selectedClient.value.id,
+      startDate: dates.value[0],
+      endDate: dates.value[1],
+      deliveryLocationId: typeof deliveryLocation.value === 'object' ?
+                          deliveryLocation.value.value :
+                          deliveryLocation.value,
+      pickupLocationId: typeof pickupLocation.value === 'object' ?
+                       pickupLocation.value.value :
+                       pickupLocation.value
     };
+
+    // Submit booking to the backend
+    const response = await axios.post('/booking/create', bookingData);
+
+    // Show success message using toast service
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Booking created successfully',
+      life: 3000
+    });
+
+    // Wait a short moment before redirecting
+    setTimeout(() => {
+      router.push('/dashboard/bookings');
+    }, 1000);
+
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    // Show error message from response if available
+    const errorMessage = error.response?.data?.message || 'Failed to create booking';
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: errorMessage,
+      life: 3000
+    });
+  }
+};
 
     onMounted(() => {
       fetchVehicles();
@@ -515,12 +671,21 @@ export default {
       clientSearch,
       searchClients,
       vehicleSearch,
-      searchVehicles,
       formatDate,
       getLocationName,
       calculateDuration,
       confirmBooking,
-      onClientRowClick
+      onClientRowClick,
+      loading,
+      error,
+      filteredVehicles,
+      activeTabIndex,
+      isDateVehicleTabComplete,
+      isCustomerTabComplete,
+      goToDateVehicleTab,
+      goToCustomerTab,
+      goToSummaryTab,
+      onDateSelect
     };
   },
   data() {
@@ -528,13 +693,28 @@ export default {
       items: [
         { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
         { label: 'Add Booking', url: '/dashboard/add-booking' }
-      ]
+      ],
+      searchTerm: '',
     };
+  },
+  computed: {
+    filteredBookings() {
+      // Filtra i veicoli in base al termine di ricerca
+      const searchTermLower = this.searchTerm.toLowerCase();
+      return this.bookings.filter(booking => {
+        return (
+          booking.customerName.toLowerCase().includes(searchTermLower) ||
+          booking.vehicleName.toLowerCase().includes(searchTermLower) ||
+          booking.status.toLowerCase().includes(searchTermLower) ||
+          booking.paymentStatus.toLowerCase().includes(searchTermLower)
+        );
+      });
+    }
   },
   methods: {
     onRowClick(event) {
       this.selectedVehicleId = event.data.id;
-      console.log('Row clicked:', event.data);
+    //   console.log('Row clicked:', event.data);
       // Handle row click event
     },
     formatNumber(value) {
@@ -628,6 +808,7 @@ export default {
   .text-red-500 {
     color: #dc3545;
   }
+
   .summary-row {
     display: flex;
     gap: 1.5rem;
@@ -640,5 +821,92 @@ export default {
     background-color: #f8f9fa;
     border-radius: 0.5rem;
     border: 1px solid #e9ecef;
+  }
+
+  /* New styles for navigation */
+  .flex {
+    display: flex;
+  }
+
+  .justify-content-between {
+    justify-content: space-between;
+  }
+
+  .justify-content-end {
+    justify-content: flex-end;
+  }
+
+  .justify-content-start {
+    justify-content: flex-start;
+  }
+
+  .mt-4 {
+    margin-top: 1.5rem;
+  }
+
+  /* Tab header styles */
+  .tab-header-content {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Ensure the tabview is properly displayed */
+  :deep(.p-tabview) {
+    width: 100%;
+  }
+
+  :deep(.p-tabview .p-tabview-nav) {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    border-width: 0 0 1px 0;
+    border-color: #dee2e6;
+  }
+
+  :deep(.p-tabview .p-tabview-nav li) {
+    margin-right: 2px;
+  }
+
+  :deep(.p-tabview .p-tabview-panels) {
+    padding: 1.5rem 0;
+  }
+
+  /* Style for DataTable to ensure it displays correctly */
+  :deep(.p-datatable) {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  :deep(.p-datatable-table) {
+    min-width: 100%;
+    table-layout: auto;
+  }
+
+  /* Style for disabled tabs */
+  :deep(.p-disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Custom styles for the active tab */
+  :deep(.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+
+  :deep(.p-tabview .p-tabview-nav li:not(.p-highlight):not(.p-disabled):hover .p-tabview-nav-link) {
+    border-color: #dee2e6;
+    color: #495057;
+  }
+
+  /* Make sure tables have proper spacing */
+  :deep(.p-datatable .p-datatable-thead > tr > th) {
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  :deep(.p-datatable .p-datatable-tbody > tr > td) {
+    padding: 0.75rem 1rem;
   }
 </style>

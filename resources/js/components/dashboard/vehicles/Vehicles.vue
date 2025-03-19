@@ -7,9 +7,14 @@
           <header class="p-d-flex p-ai-center p-gap-2 inline-header">
             <Button label="Add Vehicle" icon="pi pi-plus" @click="$router.push('/dashboard/add-vehicles')" />
             <IconField class="p-d-flex p-ai-center">
-              <InputIcon class="pi pi-search" />
-              <InputText v-model="value1" placeholder="Search" />
-            </IconField>
+                <InputIcon class="pi pi-search" />
+                    <InputText
+                    v-model="value1"
+                    placeholder="Search Vehicles"
+                    @input="onSearchInput"
+                    class="w-full"
+                    />
+                </IconField>
           </header>
 
           <div v-if="loading" class="flex justify-center p-4">
@@ -143,18 +148,22 @@
 
       // Filtered vehicles based on search input
       const filteredVehicles = computed(() => {
-        if (!value1.value.trim()) return vehicles.value;
+      if (!value1.value.trim()) return vehicles.value;
 
-        return vehicles.value.filter(vehicle => {
-          const searchTerm = value1.value.toLowerCase();
-          return (
-            (vehicle.make?.name || '').toLowerCase().includes(searchTerm) ||
-            (vehicle.model?.name || '').toLowerCase().includes(searchTerm) ||
-            (vehicle.plateNumber || '').toLowerCase().includes(searchTerm) ||
-            (vehicle.location || '').toLowerCase().includes(searchTerm)
-          );
-        });
+      const searchTerm = value1.value.toLowerCase();
+      return vehicles.value.filter(vehicle => {
+        return (
+          (vehicle.make?.name || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.model?.name || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.plateNumber || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.location || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.year?.toString() || '').includes(searchTerm) ||
+          (vehicle.fuel_type || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.transmission || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.status || '').toLowerCase().includes(searchTerm)
+        );
       });
+    });
 
       const onRowClick = (event) => {
         selectedVehicle.value = event.data;

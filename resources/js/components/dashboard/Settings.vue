@@ -36,7 +36,6 @@
                     </TabPanel>
                     <TabPanel header="Users">
                         <div class="users-settings">
-                            <h3>Website Users</h3>
                             <ProgressSpinner v-if="loading" />
                             <div v-else class="user-cards">
                                 <div v-for="user in users" :key="user.id" class="user-card" @click="editUser(user)">
@@ -112,6 +111,7 @@ import { useConfirm } from "primevue/useconfirm";
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 import Breadcrumb from 'primevue/breadcrumb';
+import ConfirmDialog from 'primevue/confirmdialog';
 
 export default {
     components: {
@@ -129,7 +129,8 @@ export default {
         Select,
         ProgressSpinner,
         Breadcrumb,
-        Card
+        Card,
+        ConfirmDialog
     },
     data() {
         return {
@@ -246,22 +247,40 @@ export default {
 
         const saveUser = async () => {
             try {
-                const index = users.value.findIndex(u => u.id === selectedUser.value.id);
-                if (index !== -1) {
-                    users.value[index] = { ...selectedUser.value };
-                }
+                const response = await axios.post('/roles/update', {
+                    user_id: selectedUser.value.id,
+                    role: selectedUser.value.role
+                });
 
-                toast.add({ severity: 'success', summary: 'Success', detail: 'User updated successfully', life: 3000 });
-                isDialogVisible.value = false;
+                if (response.data.status === 'success') {
+                    const index = users.value.findIndex(u => u.id === selectedUser.value.id);
+                    if (index !== -1) {
+                        users.value[index] = { ...selectedUser.value };
+                    }
+
+                    toast.add({ severity: 'success', summary: 'Success', detail: 'User role updated successfully', life: 3000 });
+                    isDialogVisible.value = false;
+
+                    // Refresh the users list to ensure we have the latest data
+                    await fetchUsers();
+                } else {
+                    throw new Error(response.data.message || 'Failed to update user role');
+                }
             } catch (error) {
                 console.error('Error saving user:', error);
-                toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update user', life: 3000 });
+                toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error.response?.data?.message || 'Failed to update user role',
+                    life: 3000
+                });
             }
         };
 
         const confirmDeleteUser = (event) => {
             confirm.require({
                 target: event.currentTarget,
+                header: 'Confirm Deletion',
                 message: 'Are you sure you want to delete this user?',
                 icon: 'pi pi-exclamation-triangle',
                 acceptLabel: 'Delete',
@@ -279,10 +298,17 @@ export default {
 
         const deleteUser = async () => {
             try {
-                users.value = users.value.filter(u => u.id !== selectedUser.value.id);
+                const response = await axios.delete(`/user/delete/${selectedUser.value.id}`);
 
-                toast.add({ severity: 'success', summary: 'Success', detail: 'User deleted successfully', life: 3000 });
-                isDialogVisible.value = false;
+                if (response.data.status === 'success') {
+                    // Rimuovi l'utente dalla lista locale
+                    users.value = users.value.filter(u => u.id !== selectedUser.value.id);
+
+                    toast.add({ severity: 'success', summary: 'Success', detail: 'User deleted successfully', life: 3000 });
+                    isDialogVisible.value = false;
+                } else {
+                    throw new Error(response.data.message || 'Failed to delete user');
+                }
             } catch (error) {
                 console.error('Error deleting user:', error);
                 toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete user', life: 3000 });

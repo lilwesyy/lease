@@ -263,42 +263,97 @@
             </TabPanel>
 
             <TabPanel value="1">
-              <div class="photo-upload-grid">
-                <div
-                  class="photo-upload-item"
-                  v-for="(photo, index) in photos"
-                  :key="index"
-                >
-                  <div v-if="isViewMode">
-                    <img
-                      :src="imageUrl"
-                      alt="Vehicle Image"
-                      class="uploaded-photo"
-                    />
-                  </div>
-                  <div v-else>
-                    <div v-if="!photo">
-                      <FileUpload
-                        mode="basic"
-                        @select="onFileSelect(index)"
-                        customUpload
-                        auto
-                        severity="secondary"
-                        class="p-button-outlined"
-                      />
-                    </div>
-                    <div v-else class="photo-container">
-                      <img
-                        :src="photo"
-                        alt="Uploaded Photo"
-                        class="uploaded-photo"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabPanel>
+  <div v-if="isViewMode">
+    <!-- Messaggio se non ci sono immagini -->
+    <div v-if="!hasVehicleImages" class="no-images">
+        <div @click="enableEditMode('1')" class="add-photo-content clickable">
+  <i class="pi pi-plus-circle" style="font-size: 2rem; color: #6c757d;"></i>
+  <p>Nessuna immagine disponibile. Clicca per aggiungere foto.</p>
+</div>
+    </div>
 
+    <!-- In modalità visualizzazione: mostra le foto esistenti e permette di aggiungerne altre (solo se ci sono immagini) -->
+    <div v-else class="photo-upload-grid">
+      <!-- Prima mostriamo le foto esistenti -->
+      <div
+        class="photo-upload-item"
+        v-for="image in vehicle.images"
+        :key="image.id"
+      >
+        <img
+          :src="image.url"
+          alt="Vehicle Image"
+          class="uploaded-photo"
+        />
+      </div>
+
+      <!-- Mostra un pulsante per aggiungere un'altra foto se ci sono meno di 3 foto -->
+      <div
+        v-if="vehicle.images && vehicle.images.length < 3"
+        class="photo-upload-item add-photo-button"
+        @click="enableEditMode"
+      >
+        <div class="add-photo-content">
+          <i class="pi pi-plus-circle" style="font-size: 2rem; color: #6c757d;"></i>
+          <p>Aggiungi foto</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div v-else>
+  <!-- In modalità modifica o creazione: mostra i 3 slot -->
+  <div class="photo-upload-grid">
+    <div
+      class="photo-upload-item"
+      v-for="index in 3"
+      :key="index-1"
+    >
+    <div v-if="!photos[index-1]" class="upload-container">
+    <!-- Usa label invece di div per migliore accessibilità e compatibilità -->
+    <label :for="'file-upload-' + (index-1)" class="custom-file-upload">
+      <i class="pi pi-cloud-upload" style="font-size: 2.5rem; color: #3498db;"></i>
+      <span style="margin-top: 10px; font-weight: bold;">Click to Upload Image</span>
+      <span style="font-size: 0.8rem; margin-top: 5px; color: #6c757d;">Max size: 5MB</span>
+    </label>
+    <input
+      :id="'file-upload-' + (index-1)"
+      type="file"
+      accept="image/*"
+      class="hidden-file-input"
+      @change="handleFileUpload($event, index-1)"
+    />
+  </div>
+      <div v-else class="photo-container">
+        <img
+          :src="photos[index-1]"
+          alt="Uploaded Photo"
+          class="uploaded-photo"
+        />
+        <Button
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger p-button-sm delete-photo-btn"
+          @click="removePhoto(index-1)"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div v-if="isEditMode" class="mt-4">
+    <Button
+      @click="savePhotos"
+      label="Save Photos"
+      icon="pi pi-check"
+    />
+    <Button
+      @click="cancelEditMode"
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-secondary ml-2"
+    />
+  </div>
+</TabPanel>
             <TabPanel value="2">
               <div class="damage-section">
                 <VehicleDamage
@@ -393,6 +448,7 @@
       },
       data() {
         return {
+            fileInputs: [],
           isEditMode: false,
           items: [
             { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
@@ -400,6 +456,7 @@
           ],
           photos: [null, null, null],
           damagePhotos: [null, null, null],
+          photoIds: [null, null, null],
           damageDescription: '',
           damageSeverity: '',
           damages: this.vehicle ? this.vehicle.damages : [
@@ -517,6 +574,67 @@
         }
       },
       methods: {
+        triggerFileInput(index) {
+        console.log(`Attivazione input file per l'indice ${index}`);
+        // Usa un timeout breve per assicurarsi che l'evento di click sia completato
+        setTimeout(() => {
+          const inputElement = document.getElementById(`file-upload-${index}`);
+          if (inputElement) {
+            inputElement.click();
+            console.log('Input file attivato');
+          } else {
+            console.error(`Input file con id file-upload-${index} non trovato`);
+          }
+        }, 10);
+      },
+        handleFileUpload(event, index) {
+  const file = event.target.files[0];
+  if (!file) {
+    console.log("Nessun file selezionato");
+    return;
+  }
+
+  console.log(`File selezionato per index ${index}:`, file.name, file.size);
+
+  // Size validation
+  if (file.size > 5000000) {
+    this.$showToast('error', 'Error', 'File size must be less than 5MB');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    // Aggiorna l'array delle foto con la nuova immagine
+    this.photos[index] = e.target.result;
+    console.log(`Immagine caricata in index ${index}:`, this.photos[index].substring(0, 50) + '...');
+  };
+  reader.onerror = (e) => {
+    console.error("Errore durante la lettura del file:", e);
+    this.$showToast('error', 'Error', 'Failed to read the image file');
+  };
+  reader.readAsDataURL(file);
+},
+        getVehicleImageUrl(index) {
+    // Controlla se il veicolo esiste e ha immagini
+    if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
+      // Cerca un'immagine con la posizione corrispondente all'indice
+      const image = this.vehicle.images.find(img => img.position === index);
+
+      // Se trova un'immagine con la posizione specificata, usa il suo URL
+      if (image && image.url) {
+        return image.url;
+      }
+
+      // Alternativa: cerca un'immagine all'indice specificato nell'array
+      // (utile se le immagini non hanno la proprietà position)
+      if (this.vehicle.images[index] && this.vehicle.images[index].url) {
+        return this.vehicle.images[index].url;
+      }
+    }
+
+    // Se non ci sono immagini o l'immagine non esiste, mostra l'immagine predefinita
+    return '/images/no-image.png';
+  },
         handleStatusChange() {
     // No need to access event parameter, directly use this.status
 
@@ -567,34 +685,33 @@
         });
     }
   },
-        createVehicle() {
-          // Validate required fields
-          if (!this.selectedBrand || !this.model || !this.year || !this.plate) {
-            this.$showToast('error', 'Error', 'Please fill in all required fields');
-            return;
-          }
+  createVehicle() {
+    // Validate required fields
+    if (!this.selectedBrand || !this.model || !this.year || !this.plate) {
+      this.$showToast('error', 'Error', 'Please fill in all required fields');
+      return;
+    }
 
-          // Create the vehicle object
-          const newVehicle = {
-            make_id: this.selectedBrand,
-            model_id: this.model,
-            bodyType: this.bodyType,
-            year: this.year,
-            location: this.location,
-            plateNumber: this.plate,
-            odometer: this.odometer,
-            color: this.externalColour,
-            seats: this.passengers,
-            fuel_type: this.fuelType,
-            transmission: this.transmission,
-            km_per_day: this.baseKmDay,
-            extra_km_price: this.kmExtraPrice,
-            basic_daily_price: this.basicDailyPrice,
-            dailyPrice: this.basicDailyPrice,
-            franchise: this.franchise,
-            deposit: this.deposit,
-            status: 'available' // Default status for new vehicles
-          };
+    const newVehicle = {
+      make_id: this.selectedBrand,
+      model_id: this.model,
+      bodyType: this.bodyType,
+      year: this.year,
+      location: this.location,
+      plateNumber: this.plate,
+      odometer: this.odometer,
+      color: this.externalColour,
+      seats: this.passengers,
+      fuel_type: this.fuelType,
+      transmission: this.transmission,
+      km_per_day: this.baseKmDay,
+      extra_km_price: this.kmExtraPrice,
+      basic_daily_price: this.basicDailyPrice,
+      dailyPrice: this.basicDailyPrice,
+      franchise: this.franchise,
+      deposit: this.deposit,
+      status: 'available' // Default status for new vehicles
+    };
 
           // Handle any images that were uploaded
           const formData = new FormData();
@@ -604,35 +721,37 @@
             formData.append(key, newVehicle[key]);
           });
 
-          // Add any uploaded photos
-          this.photos.forEach((photo, index) => {
-            if (photo) {
-              // Convert base64 back to file if needed
-              const photoFile = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
-              formData.append(`photos[${index}]`, photoFile);
-            }
-          });
+          let hasPhotos = false;
+    this.photos.forEach((photo, index) => {
+      if (photo) {
+        hasPhotos = true;
+        // Convert base64 back to file if needed
+        const photoFile = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
+        formData.append(`photos[${index}]`, photoFile);
+        formData.append(`indices[${index}]`, index);
+      }
+    });
 
           // Send the request to the API
           axios.post('/vehicles/create', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-          .then(response => {
-            this.$showToast('success', 'Success', 'Vehicle created successfully');
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    .then(response => {
+      this.$showToast('success', 'Success', 'Vehicle created successfully');
 
-            // Reset form or redirect to vehicles list
-            this.resetForm();
+      // Reset form or redirect to vehicles list
+      this.resetForm();
 
-            // Optionally navigate to the vehicles list
-            this.$router.push('/dashboard/vehicles');
-          })
-          .catch(error => {
-            console.error('Error creating vehicle:', error);
-            this.$showToast('error', 'Error', 'Failed to create vehicle');
-          });
-        },
+      // Optionally navigate to the vehicles list
+      this.$router.push('/dashboard/vehicles');
+    })
+    .catch(error => {
+      console.error('Error creating vehicle:', error);
+      this.$showToast('error', 'Error', 'Failed to create vehicle');
+    });
+  },
 
         // Helper method to convert base64 to File object
         dataURLtoFile(dataURL, filename) {
@@ -693,29 +812,161 @@
           console.error('Error fetching vehicle makes and models:', error);
         });
         },
-        onFileSelect(index) {
-          const file = event.files[0];
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.$set(this.photos, index, e.target.result); // Add file as image
-          };
-          reader.readAsDataURL(file);
-        },
-        onDamagePhotoSelect(index) {
-          // Gestisci l'evento di selezione delle foto dei danni
-          return (event) => {
-            const file = event.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              this.$set(this.damagePhotos, index, e.target.result); // Aggiungi il file caricato come immagine
-            };
-            reader.readAsDataURL(file); // Leggi il file come URL Data
-          };
-        },
-        enableEditMode() {
-          this.isEditMode = true;
-          this.originalData = JSON.parse(JSON.stringify(this.$data)); // Salva i dati originali (deep copy)
-        },
+        onFileSelect(event, index) {
+  const file = event.files[0];
+  if (!file) return;
+
+  // Size validation
+  if (file.size > 5000000) {
+    this.$showToast('error', 'Error', 'File size must be less than 5MB');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    // Aggiorna l'array delle foto con la nuova immagine
+    this.photos[index] = e.target.result;
+
+    console.log(`Immagine caricata in index ${index}:`, this.photos[index].substring(0, 50) + '...');
+  };
+  reader.readAsDataURL(file);
+},
+
+removePhoto(index) {
+  // Replace this.$set with direct assignment
+  this.photos[index] = null;
+},
+
+uploadPhoto(file, index) {
+  const formData = new FormData();
+  formData.append('photo', file);
+  formData.append('index', index);
+
+  if (this.vehicle && this.vehicle.id) {
+    formData.append('vehicle_id', this.vehicle.id);
+  }
+
+  axios.post('/vehicles/upload-photo', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  .then(response => {
+    this.$showToast('success', 'Success', 'Photo uploaded successfully');
+
+    // If we have a photo ID from the server, store it
+    if (response.data && response.data.photo_id) {
+      // Create or update photoIds array
+      if (!this.photoIds) this.photoIds = Array(3).fill(null);
+      // Replace this.$set with direct assignment
+      this.photoIds[index] = response.data.photo_id;
+    }
+  })
+  .catch(error => {
+    console.error('Error uploading photo:', error);
+    this.$showToast('error', 'Error', 'Failed to upload photo');
+  });
+},
+
+savePhotos() {
+  // Collect all files that need to be uploaded
+  const uploads = [];
+
+  this.photos.forEach((photo, index) => {
+    if (photo && photo.startsWith('data:')) {
+      // This is a new photo that needs to be uploaded
+      const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
+      uploads.push({ file, index });
+    }
+  });
+
+  if (uploads.length === 0) {
+    this.$showToast('info', 'Info', 'No new photos to upload');
+    return;
+  }
+
+  // Create a form data object to send all photos
+  const formData = new FormData();
+  formData.append('vehicle_id', this.vehicle.id);
+
+  uploads.forEach(({ file, index }) => {
+    formData.append(`photos[${index}]`, file);
+    formData.append(`indices[${index}]`, index);
+  });
+
+  axios.post('/vehicles/upload-multiple-photos', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  .then(response => {
+    this.$showToast('success', 'Success', 'Photos saved successfully');
+
+    // Aggiorna il veicolo con le nuove immagini
+    if (response.data && response.data.vehicle && response.data.vehicle.images) {
+      // Aggiorna l'oggetto vehicle con le nuove immagini
+      const updatedVehicle = {
+        ...this.vehicle,
+        images: response.data.vehicle.images
+      };
+
+      // Aggiorna il veicolo locale
+      this.vehicle = updatedVehicle;
+
+      // Resetta le foto selezionate dopo il salvataggio
+      this.photos = [null, null, null];
+
+      // Emetti evento per aggiornare i componenti genitori
+      this.$emit('vehicle-updated', updatedVehicle);
+    }
+  })
+  .catch(error => {
+    console.error('Error saving photos:', error);
+    this.$showToast('error', 'Error', 'Failed to save photos');
+  });
+},
+
+  onDamagePhotoSelect(index) {
+  // Handle damage photo selection event
+  return (event) => {
+    const file = event.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Replace this.$set with direct assignment
+      this.damagePhotos[index] = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+},
+enableEditMode(tabValue) {
+  // Inizializza l'array delle foto per la modifica
+  this.photos = [null, null, null];
+
+  // Se ci sono foto esistenti, le prepariamo per la modifica
+  if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
+    // Per ogni immagine esistente, prepara il riferimento
+    this.vehicle.images.forEach((image, idx) => {
+      if (idx < 3) {
+        // Assicurati che l'array photos esista e sia inizializzato
+        this.photos[idx] = image.url;
+      }
+    });
+  }
+
+  // Imposta la modalità di modifica
+  this.isEditMode = true;
+
+  // Se è specificato un valore di tab, impostiamo la tab corrente
+  if (tabValue) {
+    this.activeTabIndex = tabValue;
+  }
+
+  // Log per debug
+  console.log('Photos array after enableEditMode:', this.photos);
+
+  // Salva i dati originali per poterli ripristinare in caso di annullamento
+  this.originalData = JSON.parse(JSON.stringify(this.$data));
+},
         saveChanges() {
       // Create the updated vehicle object
       const updatedVehicle = {
@@ -816,7 +1067,10 @@
         },
         filteredModels() {
           return this.selectedBrand ? this.models[this.selectedBrand] || [] : [];
-        }
+        },
+        hasVehicleImages() {
+    return this.vehicle && this.vehicle.images && this.vehicle.images.length > 0;
+  }
       }
     };
   </script>
@@ -845,6 +1099,19 @@
   .vehicle-specs .input-group > * {
     flex: 1 1 calc(33.333% - 1rem); /* Riduce il numero di colonne a 3 su schermi grandi */
   }
+
+  .no-images {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+  background-color: #f8f9fa;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  color: #6c757d;
+}
+
 
   .color-option {
     display: flex;
@@ -897,24 +1164,206 @@
   }
 
   .photo-upload-item {
-    flex: 1 1 calc(33.333% - 1rem);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px dashed #ccc;
-    padding: 1rem;
-    height: 200px;
-  }
+  flex: 1 1 calc(33.333% - 1rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #ccc;
+  padding: 1rem;
+  height: 200px;
+  position: relative;
+  background-color: #f8f9fa;
+  overflow: hidden; /* Aggiunto per contenere meglio le immagini */
+}
 
-  .uploaded-photo {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-  }
+.uploaded-photo {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover; /* Mantiene le proporzioni riempiendo il contenitore */
+  object-position: center; /* Centra l'immagine */
+}
+
+/* Stile per le immagini in modalità visualizzazione */
+.isViewMode .photo-upload-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.isViewMode .photo-upload-item {
+  flex: 0 0 calc(33.333% - 1rem);
+  height: 240px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.isViewMode .photo-upload-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
   .full-width {
     width: 100%;
   }
+
+  .photo-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.delete-photo-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0.8;
+}
+
+.delete-photo-btn:hover {
+  opacity: 1;
+}
+
+.photo-upload-item {
+  flex: 1 1 calc(33.333% - 1rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #ccc;
+  padding: 1rem;
+  height: 200px;
+  position: relative;
+  background-color: #f8f9fa;
+}
+
+.add-photo-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+}
+
+.add-photo-button {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-photo-button:hover {
+  background-color: #e9ecef;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Stile specifico per il pulsante di upload */
+:deep(.upload-button) {
+  width: 90%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+:deep(.upload-button .p-button) {
+  background-color: #f3f3f3;
+  border: 1px solid #ced4da;
+  color: #495057;
+  font-weight: normal;
+  width: 100%;
+  padding: 0.75rem;
+}
+
+:deep(.upload-button .p-button:hover) {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #495057;
+}
+
+.upload-container .p-fileupload-buttonbar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.upload-container .p-button-outlined {
+  width: 100%;
+  height: 48px;
+}
+
+.custom-file-upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .custom-file-upload:hover {
+    background-color: #e9ecef;
+    border-color: #6c757d;
+  }
+
+  .hidden-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  padding: 20px;
+  text-align: center;
+}
+
+.upload-label i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #3498db;
+}
+
+.hidden-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.clickable {
+  cursor: pointer;
+}
   </style>
