@@ -17,12 +17,12 @@ class BookingController extends Controller
      * @return JsonResponse
      */
 
-    public function getBookings(Request $request): JsonResponse
-    {
-        $bookings = Booking::all();
+     public function getBookings(Request $request): JsonResponse
+     {
+         $bookings = Booking::with(['customer', 'vehicle.make', 'vehicle.model'])->get();
 
-        return response()->json($bookings);
-    }
+         return response()->json($bookings);
+     }
 
     public function createBooking(Request $request): JsonResponse
     {

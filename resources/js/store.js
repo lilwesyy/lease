@@ -13,7 +13,7 @@ const store = createStore({
   actions: {
     async fetchUser({ commit }) {
       try {
-        const response = await axios.get('/api/user', { withCredentials: true });
+        const response = await axios.post('/user', { withCredentials: true });
         commit('setUser', response.data);
       } catch (error) {
         console.error('Error fetching user data', error);

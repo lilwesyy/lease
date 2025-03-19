@@ -15,7 +15,7 @@ Route::get('/{any}', function () {
 // Authentication
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
-// Route::post('/user', [AuthController::class, 'getUser']);
+Route::post('/user', [AuthController::class, 'getUser']);
 
 // Users Roles
 Route::post('/roles', [RoleController::class, 'getUsersWithRoles']);

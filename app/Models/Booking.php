@@ -31,7 +31,7 @@ class Booking extends Model
         return $this->belongsTo(Vehicle::class, 'vehicleId');
     }
 
-    public function customer(): BelongsTo
+    public function customer()
     {
         return $this->belongsTo(Customer::class, 'customerId');
     }
@@ -44,5 +44,15 @@ class Booking extends Model
     public function pickupLocation(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'pickupLocationId');
+    }
+
+    public function make()
+    {
+        return $this->belongsTo(Make::class, 'make_id');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo(Model::class, 'model_id');
     }
 }

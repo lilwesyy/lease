@@ -1,26 +1,51 @@
 <template>
     <!-- Sidebar -->
-    <div :class="['sidebar', { 'sidebar-open': isSidebarOpen }]" class="w-64 flex flex-col justify-between m-6 rounded-lg">
+    <div
+      :class="['sidebar', { 'sidebar-open': isSidebarOpen }]"
+      class="w-64 flex flex-col justify-between m-6 rounded-lg"
+    >
       <div>
         <div class="font-xl text-center p-4">
           <!-- <h1 class="font-bold text-4xl">Lease</h1> -->
-          <img src="/logo.png" alt="">
+          <img src="/logo.png" alt="" />
           <!-- <h2 class="text-xl text-gray-500 company-name">Rental Company Name</h2> -->
         </div>
         <Divider />
         <PanelMenu :model="menuItems" class="w-full">
           <template #item="{ item }">
-            <router-link v-if="item.to" v-slot="{ href, navigate }" :to="item.to" custom>
-              <a v-ripple class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2" :href="href" @click="navigate">
+            <router-link
+              v-if="item.to"
+              v-slot="{ href, navigate }"
+              :to="item.to"
+              custom
+            >
+              <a
+                v-ripple
+                class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2"
+                :href="href"
+                @click="navigate"
+              >
                 <span :class="item.icon" />
                 <span class="ml-2">{{ item.label }}</span>
-                <span v-if="item.items" class="pi pi-angle-down text-primary ml-auto" />
+                <span
+                  v-if="item.items"
+                  class="pi pi-angle-down text-primary ml-auto"
+                />
               </a>
             </router-link>
-            <a v-else v-ripple class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2" :href="item.url" :target="item.target">
+            <a
+              v-else
+              v-ripple
+              class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2"
+              :href="item.url"
+              :target="item.target"
+            >
               <span :class="item.icon" />
               <span class="ml-2">{{ item.label }}</span>
-              <span v-if="item.items" class="pi pi-angle-down text-primary ml-auto" />
+              <span
+                v-if="item.items"
+                class="pi pi-angle-down text-primary ml-auto"
+              />
             </a>
           </template>
         </PanelMenu>
@@ -28,17 +53,39 @@
       <div class="mb-4">
         <PanelMenu :model="bottomMenuItems" class="w-full">
           <template #item="{ item }">
-            <router-link v-if="item.to" v-slot="{ href, navigate }" :to="item.to" custom>
-              <a v-ripple class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2" :href="href" @click="navigate">
+            <router-link
+              v-if="item.to"
+              v-slot="{ href, navigate }"
+              :to="item.to"
+              custom
+            >
+              <a
+                v-ripple
+                class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2"
+                :href="href"
+                @click="navigate"
+              >
                 <span :class="item.icon" />
                 <span class="ml-2">{{ item.label }}</span>
-                <span v-if="item.items" class="pi pi-angle-down text-primary ml-auto" />
+                <span
+                  v-if="item.items"
+                  class="pi pi-angle-down text-primary ml-auto"
+                />
               </a>
             </router-link>
-            <a v-else v-ripple class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2" :href="item.url" :target="item.target">
+            <a
+              v-else
+              v-ripple
+              class="flex items-center cursor-pointer text-surface-700 dark:text-surface-0 px-4 py-2"
+              :href="item.url"
+              :target="item.target"
+            >
               <span :class="item.icon" />
               <span class="ml-2">{{ item.label }}</span>
-              <span v-if="item.items" class="pi pi-angle-down text-primary ml-auto" />
+              <span
+                v-if="item.items"
+                class="pi pi-angle-down text-primary ml-auto"
+              />
             </a>
           </template>
         </PanelMenu>
@@ -47,7 +94,7 @@
           <Avatar :label="userInitial" class="mr-2" size="large" shape="circle" />
           <div class="text-center">
             <div class="font-bold">{{ userName }}</div>
-            <div class="text-sm text-gray-500">Administrator</div>
+            <div class="text-sm text-gray-500">{{ userRole }}</div>
           </div>
         </div>
       </div>
@@ -59,7 +106,13 @@
       <span>Are you sure you want to log out?</span>
       <template #footer>
         <div class="w-full flex justify-center">
-          <Button label="Yes" icon="pi pi-check" severity="danger" class="w-full text-lg py-3" @click="logout" />
+          <Button
+            label="Yes"
+            icon="pi pi-check"
+            severity="danger"
+            class="w-full text-lg py-3"
+            @click="logout"
+          />
         </div>
       </template>
     </Dialog>
@@ -116,8 +169,9 @@
     data() {
       return {
         showLogoutDialog: false,
-        isSidebarOpen: false, // New data property for sidebar visibility
-        userName: '', // New data property for user name
+        isSidebarOpen: false,
+        userName: '',
+        userRole: '',
         menuItems: [
           {
             label: 'Dashboard',
@@ -220,6 +274,21 @@
       }
     },
     methods: {
+        async fetchUserData() {
+            try {
+    const response = await axios.post('/user'); // Endpoint per ottenere i dati dell'utente
+    const userData = response.data.user;
+
+    // Imposta il nome e il ruolo
+    this.userName = userData.name;
+    this.userRole = userData.roles.length > 0
+      ? userData.roles[0].role.charAt(0).toUpperCase() + userData.roles[0].role.slice(1)
+      : 'N/A'; // Prendi il primo ruolo e capitalizza la prima lettera
+  } catch (error) {
+    console.error('Errore nel recupero dei dati utente:', error);
+  }
+    },
+
       updatePageTitle(route) {
         this.pageTitle = `Dashboard - ${route.meta.title || 'Dashboard'}`;
       },
@@ -228,10 +297,10 @@
       },
       async logout() {
         try {
-          await axios.post('/logout'); // Chiamata all'API di logout
-          localStorage.removeItem('authToken'); // Rimuovi il token di autenticazione
+          await axios.post('/logout');
+          localStorage.removeItem('authToken');
           this.showLogoutDialog = false;
-          this.$router.push('/login'); // Reindirizza alla pagina di login
+          this.$router.push('/login');
         } catch (error) {
           console.error('Logout failed:', error);
         }
@@ -242,83 +311,81 @@
     },
     mounted() {
       this.updatePageTitle(this.$route);
-      this.userName = localStorage.getItem('name'); // Recupera il nome dell'utente da localStorage
+      this.fetchUserData();
+    //   this.userName = localStorage.getItem('name'); // Recupera il nome dell'utente da localStorage
     }
   };
   </script>
 
-
-<style>
-.p-panelmenu-panel{
-    border-width: 0px!important;
-}
-.p-menubar{
-    border:none!important;
-}
-.main-content-bg{
+  <style>
+  .p-panelmenu-panel {
+    border-width: 0px !important;
+  }
+  .p-menubar {
+    border: none !important;
+  }
+  .main-content-bg {
     background-color: #f0f0f08f;
-}
+  }
 
-.scrollable-content {
+  .scrollable-content {
     overflow-y: auto;
     max-height: calc(100vh - 2%); /* Assicura che il contenuto possa scrollare */
     margin-top: 2%;
-}
+  }
 
-.main-content {
+  .main-content {
     display: flex;
     flex-direction: column;
     height: 100vh; /* Occupa tutta l'altezza della viewport */
     overflow-y: auto; /* Modificato da hidden ad auto per abilitare lo scroll */
-}
+  }
 
-.main-content .container {
+  .main-content .container {
     flex: 1; /* Permette al contenuto di adattarsi */
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* Abilita lo scroll */
     min-height: 0; /* Evita problemi di overflow con flex */
-}
+  }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
+  /* Responsive Styles */
+  @media (max-width: 768px) {
     .sidebar {
-        width: 100%;
-        margin: 0;
-        padding: 1rem;
-        display: none; /* Nasconde la sidebar di default */
+      width: 100%;
+      margin: 0;
+      padding: 1rem;
+      display: none; /* Nasconde la sidebar di default */
     }
 
     .sidebar-open {
-        display: block; /* Mostra la sidebar quando è aperta */
+      display: block; /* Mostra la sidebar quando è aperta */
     }
 
     .main-content {
-        padding: 1rem;
+      padding: 1rem;
     }
-}
+  }
 
-@media (max-width: 425px) {
+  @media (max-width: 425px) {
     .sidebar {
-        width: 100%;
-        margin: 0;
-        padding: 0.5rem;
-        display: none;
+      width: 100%;
+      margin: 0;
+      padding: 0.5rem;
+      display: none;
     }
 
     .sidebar-open {
-        display: block;
+      display: block;
     }
 
     .main-content {
-        padding: 0.5rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow-y: auto; /* Modificato per consentire lo scrolling */
+      padding: 0.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
     }
-}
-
-
-</style>
+  }
+  </style>

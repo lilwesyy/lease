@@ -17,12 +17,13 @@
 
           <div v-if="bookings.length > 0">
             <DataTable :value="bookings" selectionMode="single" class="p-datatable-no-gridlines" @row-click="onRowClick">
-              <Column field="name" header="Name"></Column>
-              <Column field="date" header="Date"></Column>
-              <Column field="status" header="Status" :body="statusTemplate"></Column>
-              <Column field="customer" header="Customer" :body="customerTemplate"></Column>
-              <Column field="amount" header="Amount"></Column>
-              <Column field="paymentStatus" header="Payment Status" :body="paymentStatusTemplate"></Column>
+            <Column field="name" header="Name"></Column>
+            <Column field="date" header="Date"></Column>
+            <Column field="status" header="Status" :body="statusTemplate"></Column>
+            <Column field="customerName" header="Customer"></Column>
+            <Column field="vehicleName" header="Vehicle"></Column>
+            <Column field="amount" header="Amount"></Column>
+            <Column field="paymentStatus" header="Payment Status" :body="paymentStatusTemplate"></Column>
             </DataTable>
           </div>
           <div v-else>
@@ -30,6 +31,18 @@
           </div>
         </template>
     </Card>
+
+    <Dialog v-model="showDialog" header="Booking Details">
+        <div v-if="selectedRow">
+            <p><strong>Name:</strong> {{ selectedRow.name }}</p>
+            <p><strong>Date:</strong> {{ selectedRow.date }}</p>
+            <p><strong>Status:</strong> {{ selectedRow.status }}</p>
+            <p><strong>Customer:</strong> {{ selectedRow.customerName }}</p>
+            <p><strong>Vehicle:</strong> {{ selectedRow.vehicleName }}</p>
+            <p><strong>Amount:</strong> {{ selectedRow.amount }}</p>
+            <p><strong>Payment Status:</strong> {{ selectedRow.paymentStatus }}</p>
+        </div>
+    </Dialog>
 
 </template>
 
@@ -41,10 +54,10 @@ import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Breadcrumb from 'primevue/breadcrumb';
 import InputText from 'primevue/inputtext';
+import Dialog from 'primevue/dialog';
 import axios from 'axios';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
-
 
 export default {
   name: 'Bookings',
@@ -56,7 +69,8 @@ export default {
     Breadcrumb,
     InputText,
     IconField,
-    InputIcon
+    InputIcon,
+    Dialog
   },
   data() {
     return {
@@ -65,25 +79,36 @@ export default {
         { label: 'Booking List', url: '/dashboard/bookings' }
       ],
       bookings: [],
-      searchTerm: ''
+      searchTerm: '',
+      showDialog: false, // Stato per il dialog
+      selectedRow: null  // Dati della riga selezionata
     };
   },
   methods: {
     fetchBookings() {
-      axios.post('/booking')
+    axios.post('/booking')
         .then(response => {
-          // Map the response data to include customer name
-          this.bookings = response.data.map(booking => {
+        this.bookings = response.data.map(booking => {
+            // Estrai nome cliente
+            const customerName = booking.customer ?
+            `${booking.customer.firstName} ${booking.customer.lastName}` : 'N/A';
+
+            // Estrai marca e modello del veicolo
+            const vehicleName = booking.vehicle && booking.vehicle.make && booking.vehicle.model ?
+            `${booking.vehicle.make.name} ${booking.vehicle.model.name}` : 'N/A';
+
             return {
-              ...booking,
-              // Adjust this based on your actual data structure
-              customer: booking.user ? booking.user.name :
-                      (booking.customer_data ? booking.customer_data.name : 'N/A')
+            ...booking,
+            customerName: customerName,
+            vehicleName: vehicleName,
+            customer: booking.customer,
+            vehicle: booking.vehicle
             };
-          });
+        });
+        console.log("Bookings processed:", this.bookings);
         })
         .catch(error => {
-          console.error('Error fetching bookings:', error);
+        console.error('Error fetching bookings:', error);
         });
     },
     statusTemplate(slotProps) {
@@ -104,15 +129,24 @@ export default {
 
       return h('span', { class: `p-tag p-tag-${severity[slotProps.data.paymentStatus] || 'info'}` }, slotProps.data.paymentStatus);
     },
-    customerTemplate(slotProps) {
-      // Adjust the data structure based on your actual API response
-      const customer = slotProps.data.user || slotProps.data.customer_data;
-      if (!customer) return 'N/A';
+    // customerTemplate(slotProps) {
+    //     const customer = slotProps.data.customer;
+    //     if (!customer) return 'N/A';
 
-      return h('div', { class: 'customer-info' }, [
-        h('span', {}, customer.name),
-        customer.email ? h('div', { class: 'text-sm text-gray-500' }, customer.email) : null
-      ]);
+    //     return `${customer.firstName} ${customer.lastName}`;
+    // },
+    // vehicleTemplate(slotProps) {
+    //     const vehicle = slotProps.data.vehicle;
+    //     if (!vehicle || !vehicle.make || !vehicle.model) return 'N/A';
+
+    //     return h('div', { class: 'vehicle-info' }, [
+    //         h('span', {}, `${vehicle.make.name} ${vehicle.model.name}`),
+    //         vehicle.year ? h('div', { class: 'text-sm text-gray-500' }, `${vehicle.year} - ${vehicle.color}`) : null
+    //     ]);
+    // },
+    onRowClick(rowData) {
+      this.selectedRow = rowData; // Salva i dati della riga selezionata
+      this.showDialog = true;    // Mostra il dialog
     }
   },
   mounted() {
@@ -138,5 +172,4 @@ export default {
   align-items: center;
   gap: 1rem;
 }
-
 </style>
