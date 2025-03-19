@@ -1,6 +1,9 @@
 <template>
     <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Customer</h1>
-    <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
+    <h1 v-else-if="isEditMode" class="font-bold text-3xl">Edit Customer</h1>
+    <h1 v-else class="font-bold text-3xl">View Customer</h1>
+
+    <Breadcrumb :model="breadcrumbItems" class="custom-breadcrumb" />
 
     <ConfirmDialog />
 
@@ -113,7 +116,7 @@
           </div>
         </div>
         <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
-        <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode"/>
+        <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" severity="contrast"/>
 
         <h1 class="font-bold text-2xl mt-10">Card</h1>
         <p class="mb-2 text-gray-500">Fill the customer card info</p>
@@ -151,9 +154,9 @@
         </div>
 
         <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-        <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode"/>
+        <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" severity="contrast"/>
 
-        <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" severity="contrast" class="ml-2" icon="pi pi-user" />
+        <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" class="ml-2 mt-4" icon="pi pi-user" />
 
         <div v-if="isViewMode && !isEditMode">
           <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
@@ -189,7 +192,8 @@
       },
       client: {
         type: Object,
-        required: true
+        required: false,
+        default: () => ({})
       }
     },
     components: {
@@ -235,11 +239,22 @@
         ]
       };
     },
+    computed: {
+      breadcrumbItems() {
+        return [
+          { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+          {
+            label: this.isViewMode ? (this.isEditMode ? 'Edit Customer' : 'View Customer') : 'Add Customer',
+            url: this.isViewMode ? `/dashboard/customers/${this.client?.id || ''}` : '/dashboard/add-customer'
+          }
+        ];
+      }
+    },
     watch: {
       client: {
         immediate: true,
         handler(newClient) {
-          if (newClient) {
+          if (newClient && Object.keys(newClient).length > 0) {
             this.firstName = newClient.firstName || '';
             this.lastName = newClient.lastName || '';
             this.birthDate = newClient.birthDate || null;

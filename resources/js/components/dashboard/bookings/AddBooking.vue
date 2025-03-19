@@ -56,17 +56,15 @@
                     <template #body="slotProps">
                       <div style="display: flex; align-items: center">
                         <img
-                          :src="slotProps.data.logo"
-                          :alt="`${slotProps.data.make} logo`"
-                          width="90"
-                          height="90"
-                          v-if="slotProps.data.logo"
-                          style="margin-right: 8px"
+                            :src="slotProps.data.make?.icon"
+                            :alt="`${slotProps.data.make?.name} logo`"
+                            width="90"
+                            height="90"
+                            v-if="slotProps.data.make?.icon"
+                            style="margin-right: 8px;"
                         />
                         <div>
-                          <div>
-                            {{ slotProps.data.make }} {{ slotProps.data.model }}
-                          </div>
+                            <div>{{ slotProps.data.make?.name }} {{ slotProps.data.model?.name }}</div>
                           <div style="font-size: 0.8em; color: grey">
                             {{ slotProps.data.year }},
                             {{ capitalize(slotProps.data.fuel_type) }},

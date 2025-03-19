@@ -10,7 +10,7 @@ class Vehicle extends Model
     use HasFactory;
 
     protected $fillable = [
-        'logo', 'make', 'model', 'year', 'seats', 'transmission', 'color', 'plateNumber',
+        'make', 'model', 'year', 'seats', 'transmission', 'color', 'plateNumber',
         'bodyType', 'location', 'dailyPrice', 'status', 'odometer', 'fuel_type', 'km_per_day',
         'extra_km_price', 'basic_daily_price', 'franchise', 'imageUrl'
     ];
@@ -18,5 +18,15 @@ class Vehicle extends Model
     public function damages()
     {
         return $this->hasMany(Damage::class);
+    }
+
+    public function make()
+    {
+        return $this->belongsTo(VehicleMake::class, 'make_id');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo(VehicleModel::class, 'model_id');
     }
 }

@@ -12,8 +12,24 @@
             </IconField>
           </header>
 
-          <div v-if="clients.length > 0">
-            <DataTable :value="clients" selectionMode="single" dataKey="id" @row-select="showClientDetails" class="p-datatable-no-gridlines">
+          <div v-if="loading" class="flex justify-center p-4">
+            <ProgressSpinner />
+          </div>
+          <div v-else-if="error" class="p-4 text-red-500 text-center">
+            {{ error }}
+          </div>
+          <div v-else-if="clients.length > 0">
+            <DataTable
+              :value="filteredClients"
+              selectionMode="single"
+              dataKey="id"
+              @row-select="showClientDetails"
+              class="p-datatable-no-gridlines"
+              :paginator="true"
+              :rows="10"
+              :rowsPerPageOptions="[5, 10, 20, 50]"
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            >
               <Column header="Name">
                 <template #body="slotProps">
                   <div>
@@ -37,7 +53,7 @@
         </template>
       </Card>
 
-      <Dialog v-model:visible="dialogVisible" v-if="selectedClient" header="Client Details" :modal="true" :style="{ width: '50vw' }">
+      <Dialog v-model:visible="dialogVisible" v-if="selectedClient" header="Client Details" :modal="true" :style="{ width: '70vw' }">
         <AddCustomer :client="selectedClient" :isViewMode="true" @close="handleClose" />
       </Dialog>
 
@@ -46,7 +62,7 @@
   </template>
 
   <script>
-  import { ref, watch, onMounted } from 'vue';
+  import { ref, watch, onMounted, computed } from 'vue';
   import axios from 'axios';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
@@ -63,6 +79,7 @@
   import Card from 'primevue/card';
   import InputIcon from 'primevue/inputicon';
   import IconField from 'primevue/iconfield';
+  import ProgressSpinner from 'primevue/progressspinner';
   import AddCustomer from './AddCustomer.vue';
 
   export default {
@@ -81,6 +98,7 @@
       Card,
       InputIcon,
       IconField,
+      ProgressSpinner,
       AddCustomer
     },
     directives: {
@@ -93,15 +111,37 @@
       const isEditing = ref(false);
       const metaKey = ref(true);
       const value1 = ref('');
+      const loading = ref(false);
+      const error = ref(null);
 
       const confirm = useConfirm();
 
+      // Filtro clienti in base alla ricerca
+      const filteredClients = computed(() => {
+        if (!value1.value.trim()) return clients.value;
+
+        const searchTerm = value1.value.toLowerCase();
+        return clients.value.filter(client =>
+          (client.firstName?.toLowerCase() || '').includes(searchTerm) ||
+          (client.lastName?.toLowerCase() || '').includes(searchTerm) ||
+          (client.email?.toLowerCase() || '').includes(searchTerm) ||
+          (client.phone?.toLowerCase() || '').includes(searchTerm) ||
+          (client.address?.toLowerCase() || '').includes(searchTerm)
+        );
+      });
+
       const fetchClients = async () => {
+        loading.value = true;
+        error.value = null;
+
         try {
           const response = await axios.post('/customer');
           clients.value = response.data;
-        } catch (error) {
-          console.error('Error fetching clients:', error);
+        } catch (err) {
+          console.error('Error fetching clients:', err);
+          error.value = 'Failed to load customers. Please try again later.';
+        } finally {
+          loading.value = false;
         }
       };
 
@@ -150,7 +190,7 @@
 
       const items = [
         { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-        { label: 'Customer List', url: '/dashboard/clients' }
+        { label: 'Customer List', url: '/dashboard/customers' }
       ];
 
       onMounted(() => {
@@ -159,6 +199,7 @@
 
       return {
         clients,
+        filteredClients,
         dialogVisible,
         selectedClient,
         showClientDetails,
@@ -170,6 +211,8 @@
         confirm,
         items,
         value1,
+        loading,
+        error,
         handleClose
       };
     }
@@ -193,5 +236,11 @@
 
   .full-width {
     width: 100%;
+  }
+
+  .inline-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
   </style>

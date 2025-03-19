@@ -13,7 +13,6 @@ class VehiclesSeeder extends Seeder
         // Dati per i veicoli
         $vehicles = [
             [
-                'logo' => 'https://www.carlogos.org/car-logos/toyota-logo-2005-640.png',
                 'make' => 'Toyota',
                 'model' => 'Corolla',
                 'year' => 2020,
@@ -45,7 +44,6 @@ class VehiclesSeeder extends Seeder
                 ]
             ],
             [
-                'logo' => 'https://www.carlogos.org/car-logos/honda-logo-2000-full-640.png',
                 'make' => 'Honda',
                 'model' => 'Civic',
                 'year' => 2019,
@@ -77,7 +75,6 @@ class VehiclesSeeder extends Seeder
                 ]
             ],
             [
-                'logo' => 'https://www.carlogos.org/car-logos/ford-logo-2017-640.png',
                 'make' => 'Ford',
                 'model' => 'Focus',
                 'year' => 2018,
@@ -114,7 +111,6 @@ class VehiclesSeeder extends Seeder
         foreach ($vehicles as $vehicleData) {
             // Crea il veicolo
             $vehicle = Vehicle::create([
-                'logo' => $vehicleData['logo'],
                 'make' => $vehicleData['make'],
                 'model' => $vehicleData['model'],
                 'year' => $vehicleData['year'],

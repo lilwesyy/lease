@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->string('logo');
-            $table->string('make');
-            $table->string('model');
+            $table->unsignedBigInteger('make_id')->nullable();
+            $table->unsignedBigInteger('model_id')->nullable();
             $table->year('year');
             $table->integer('seats');
             $table->string('transmission');
