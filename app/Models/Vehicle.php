@@ -11,7 +11,7 @@ class Vehicle extends Model
 
     protected $fillable = [
         'make', 'model', 'year', 'seats', 'transmission', 'color', 'plateNumber',
-        'bodyType', 'location', 'dailyPrice', 'status', 'odometer', 'fuel_type', 'km_per_day',
+        'bodyType', 'location_id', 'dailyPrice', 'status', 'odometer', 'fuel_type', 'km_per_day',
         'extra_km_price', 'basic_daily_price', 'franchise', 'imageUrl'
     ];
 
@@ -33,5 +33,10 @@ class Vehicle extends Model
     public function images()
     {
         return $this->hasMany(VehicleImage::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }

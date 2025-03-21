@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Vehicle;
 use App\Models\VehicleMake;
 use App\Models\VehicleModel;
-use App\Models\VehicleImage; // Aggiungi questa importazione
+use App\Models\VehicleImage;
 use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
@@ -18,7 +18,8 @@ class VehicleController extends Controller
                 'damages',
                 'make:id,name,icon',
                 'model',
-                'images' // Aggiungi le immagini ai dati caricati
+                'images',
+                'location'
             ])->get();
 
             return response()->json($vehicles);
@@ -41,7 +42,7 @@ class VehicleController extends Controller
                 'model_id' => 'required|exists:vehicle_models,id',
                 'bodyType' => 'required|string',
                 'year' => 'required|integer',
-                'location' => 'required|string',
+                'location_id' => 'required|numeric',
                 'plateNumber' => 'required|string|unique:vehicles,plateNumber',
                 'odometer' => 'required|numeric',
                 'color' => 'required|string',
@@ -64,7 +65,7 @@ class VehicleController extends Controller
             $vehicle->model_id = $validatedData['model_id'];
             $vehicle->bodyType = $validatedData['bodyType'];
             $vehicle->year = $validatedData['year'];
-            $vehicle->location = $validatedData['location'];
+            $vehicle->location_id = $validatedData['location_id'];
             $vehicle->plateNumber = $validatedData['plateNumber'];
             $vehicle->odometer = $validatedData['odometer'];
             $vehicle->color = $validatedData['color'];
@@ -78,7 +79,6 @@ class VehicleController extends Controller
             $vehicle->franchise = $validatedData['franchise'];
             $vehicle->deposit = $validatedData['deposit'];
             $vehicle->status = $validatedData['status'];
-            $vehicle->imageUrl = 'default-vehicle.jpg'; // Valore predefinito per imageUrl
 
             $vehicle->save();
 
@@ -97,12 +97,6 @@ class VehicleController extends Controller
                     $vehicleImage->url = '/storage/' . $path;
                     $vehicleImage->position = $index;
                     $vehicleImage->save();
-
-                    // Se è la prima immagine, imposta anche imageUrl del veicolo
-                    if ($key === array_key_first($request->file('photos'))) {
-                        $vehicle->imageUrl = $path;
-                        $vehicle->save();
-                    }
                 }
             }
 
@@ -110,7 +104,7 @@ class VehicleController extends Controller
                 'damages',
                 'make:id,name,icon',
                 'model',
-                'images' // Carica anche le immagini
+                'images'
             ])->findOrFail($vehicle->id);
 
             return response()->json([
@@ -136,7 +130,7 @@ class VehicleController extends Controller
                 'model_id' => 'required|exists:vehicle_models,id',
                 'bodyType' => 'required|string',
                 'year' => 'required|integer',
-                'location' => 'required|string',
+                'location_id' => 'required|numeric',
                 'plateNumber' => 'required|string|unique:vehicles,plateNumber,' . $id,
                 'odometer' => 'required|numeric',
                 'color' => 'required|string',
@@ -157,7 +151,7 @@ class VehicleController extends Controller
             $vehicle->model_id = $validatedData['model_id'];
             $vehicle->bodyType = $validatedData['bodyType'];
             $vehicle->year = $validatedData['year'];
-            $vehicle->location = $validatedData['location'];
+            $vehicle->location_id = $validatedData['location_id'];
             $vehicle->plateNumber = $validatedData['plateNumber'];
             $vehicle->odometer = $validatedData['odometer'];
             $vehicle->color = $validatedData['color'];
@@ -170,11 +164,6 @@ class VehicleController extends Controller
             $vehicle->dailyPrice = $validatedData['dailyPrice'];
             $vehicle->franchise = $validatedData['franchise'];
             $vehicle->status = $validatedData['status'];
-
-            // Se non c'è imageUrl, imposta un valore predefinito
-            if (empty($vehicle->imageUrl)) {
-                $vehicle->imageUrl = 'default-vehicle.jpg';
-            }
 
             $vehicle->save();
 
@@ -209,12 +198,6 @@ class VehicleController extends Controller
                         $vehicleImage->position = $index;
                         $vehicleImage->save();
                     }
-
-                    // Aggiorna l'imageUrl principale del veicolo se è la prima foto
-                    if ($key === array_key_first($request->file('photos'))) {
-                        $vehicle->imageUrl = $path;
-                        $vehicle->save();
-                    }
                 }
             }
 
@@ -222,7 +205,7 @@ class VehicleController extends Controller
                 'damages',
                 'make:id,name,icon',
                 'model',
-                'images' // Carica anche le immagini
+                'images'
             ])->findOrFail($id);
 
             return response()->json([
@@ -340,12 +323,6 @@ class VehicleController extends Controller
                     $photo_id = $image->id;
                 }
 
-                // Aggiorna l'imageUrl del veicolo se è la prima immagine (posizione 0)
-                if ($index == 0) {
-                    $vehicle->imageUrl = $path;
-                    $vehicle->save();
-                }
-
                 return response()->json([
                     'success' => true,
                     'photo_id' => $photo_id,
@@ -409,12 +386,6 @@ class VehicleController extends Controller
                         $image->url = $imageUrl;
                         $image->position = $index;
                         $image->save();
-                    }
-
-                    // Aggiorna l'imageUrl del veicolo se è la prima immagine (posizione 0)
-                    if ($index == 0) {
-                        $vehicle->imageUrl = $path;
-                        $vehicle->save();
                     }
                 }
             }

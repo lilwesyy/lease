@@ -24,11 +24,12 @@
                 @date-select="onDateSelect"
             />
             <div class="input-group-row">
-              <InputGroup>
+              <InputGroup  v-tooltip="'Select the vehicle from the table to set delivery location'">
                 <InputGroupAddon>
                   <i class="pi pi-map-marker"></i>
                 </InputGroupAddon>
-                <Select v-model="deliveryLocation" :options="locations" optionLabel="label" placeholder="Delivery Location" />
+                <Select v-model="deliveryLocation" :options="locations" optionLabel="label" placeholder="Delivery Location" class="select-readonly"
+                />
               </InputGroup>
               <InputGroup>
                 <InputGroupAddon>
@@ -54,16 +55,17 @@
                   :rowsPerPageOptions="[5, 10, 20, 50]"
                   paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
               >
-                <Column header="Select" style="width: 50px">
-                  <template #body="slotProps">
-                    <RadioButton
-                      v-model="selectedVehicleId"
-                      :inputId="`vehicle-${slotProps.data.id}`"
-                      :name="`selectedVehicle`"
-                      :value="slotProps.data.id"
-                    />
-                  </template>
-                </Column>
+              <Column header="Select" style="width: 50px">
+                <template #body="slotProps">
+                  <RadioButton
+                    v-model="selectedVehicleId"
+                    :inputId="`vehicle-${slotProps.data.id}`"
+                    :name="`selectedVehicle`"
+                    :value="slotProps.data.id"
+                    @change="updateDeliveryLocation(slotProps.data)"
+                  />
+                </template>
+              </Column>
                 <Column header="Brand and Model">
                   <template #body="slotProps">
                     <div style="display: flex; align-items: center">
@@ -108,11 +110,11 @@
                   header="Plate"
                   style="width: 100px"
                 />
-                <Column
-                  field="location"
-                  header="Location"
-                  style="width: 100px"
-                />
+                <Column header="Location" style="width: 100px;">
+                  <template #body="slotProps">
+                    {{ slotProps.data.location?.name || 'Not specified' }}
+                  </template>
+                </Column>
                 <Column header="Status" style="width: 100px">
                   <template #body="slotProps">
                     <Tag
@@ -310,7 +312,7 @@
   </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -388,6 +390,19 @@ export default {
       return selectedClientId.value !== null && selectedClient.value !== null;
     });
 
+    watch(selectedVehicleId, (newId) => {
+      if (newId) {
+        const vehicle = vehicles.value.find(v => v.id === newId);
+        if (vehicle && vehicle.location) {
+          const vehicleLocationId = vehicle.location.id;
+          const locationOption = locations.value.find(loc => loc.value === vehicleLocationId);
+          if (locationOption) {
+            deliveryLocation.value = locationOption;
+          }
+        }
+      }
+    });
+
     const onDateSelect = (event) => {
       if (event.value && event.value.length === 2) {
         event.target.hide();
@@ -433,7 +448,7 @@ export default {
           (vehicle.make?.name || '').toLowerCase().includes(searchTerm) ||
           (vehicle.model?.name || '').toLowerCase().includes(searchTerm) ||
           (vehicle.plateNumber || '').toLowerCase().includes(searchTerm) ||
-          (vehicle.location || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.location?.name || '').toLowerCase().includes(searchTerm) ||
           (vehicle.year?.toString() || '').includes(searchTerm) ||
           (vehicle.fuel_type || '').toLowerCase().includes(searchTerm) ||
           (vehicle.transmission || '').toLowerCase().includes(searchTerm) ||
@@ -712,10 +727,28 @@ export default {
     }
   },
   methods: {
+    updateDeliveryLocation(vehicle) {
+      if (vehicle.location) {
+        const vehicleLocationId = vehicle.location.id;
+        // Find the matching location in the locations dropdown options
+        const locationOption = this.locations.find(loc => loc.value === vehicleLocationId);
+        if (locationOption) {
+          this.deliveryLocation = locationOption;
+        }
+      }
+    },
     onRowClick(event) {
       this.selectedVehicleId = event.data.id;
-    //   console.log('Row clicked:', event.data);
-      // Handle row click event
+      
+      // Update the delivery location if the vehicle has a location
+      if (event.data.location) {
+        const vehicleLocationId = event.data.location.id;
+        // Find the matching location in the locations dropdown options
+        const locationOption = this.locations.find(loc => loc.value === vehicleLocationId);
+        if (locationOption) {
+          this.deliveryLocation = locationOption;
+        }
+      }
     },
     formatNumber(value) {
       return new Intl.NumberFormat().format(value);
@@ -875,6 +908,11 @@ export default {
   :deep(.p-datatable) {
     width: 100%;
     overflow-x: auto;
+  }
+
+  .select-readonly {
+    pointer-events: none;
+    background-color: #f5f5f5;
   }
 
   :deep(.p-datatable-table) {

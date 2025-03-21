@@ -71,7 +71,11 @@
                 </template>
               </Column>
               <Column field="plateNumber" header="Plate" style="width: 100px;" />
-              <Column field="location" header="Location" style="width: 100px;" />
+              <Column header="Location" style="width: 100px;">
+                <template #body="slotProps">
+                  {{ slotProps.data.location?.name || 'Not specified' }}
+                </template>
+              </Column>
               <Column header="Status" style="width: 100px;">
                 <template #body="slotProps">
                   <Tag :value="capitalize(slotProps.data.status)" :severity="getSeverity(slotProps.data)" />
@@ -156,7 +160,7 @@
           (vehicle.make?.name || '').toLowerCase().includes(searchTerm) ||
           (vehicle.model?.name || '').toLowerCase().includes(searchTerm) ||
           (vehicle.plateNumber || '').toLowerCase().includes(searchTerm) ||
-          (vehicle.location || '').toLowerCase().includes(searchTerm) ||
+          (vehicle.location?.name || '').toLowerCase().includes(searchTerm) ||
           (vehicle.year?.toString() || '').includes(searchTerm) ||
           (vehicle.fuel_type || '').toLowerCase().includes(searchTerm) ||
           (vehicle.transmission || '').toLowerCase().includes(searchTerm) ||

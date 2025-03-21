@@ -80,16 +80,16 @@
                   </FloatLabel>
 
                   <FloatLabel variant="on">
-                    <Select
-                      v-model="location"
-                      class="full-width"
-                      :options="Locations"
-                      optionLabel="label"
-                      optionValue="value"
-                      :class="{ 'select-readonly': isViewMode && !isEditMode }"
-                    />
-                    <label for="location">Location</label>
-                  </FloatLabel>
+                  <Select
+                    v-model="location"
+                    class="full-width"
+                    :options="locations"
+                    optionLabel="name"
+                    optionValue="id"
+                    :class="{ 'select-readonly': isViewMode && !isEditMode }"
+                  />
+                  <label for="location">Location</label>
+                </FloatLabel>
 
                   <FloatLabel variant="on">
                     <InputText
@@ -505,11 +505,7 @@
             { label: 'Sport', value: 'sport' },
             { label: 'SUV/4x4', value: 'suv' }
           ],
-          Locations: [
-            { label: 'Torino', value: 'Torino' },
-            { label: 'Milano', value: 'Milano' },
-            { label: 'Roma', value: 'Roma' }
-          ],
+          locations: [],
           fuelTypes: [
             { label: 'Petrol', value: 'petrol' },
             { label: 'Diesel', value: 'diesel' },
@@ -538,6 +534,7 @@
         };
       },
       mounted() {
+        this.fetchLocations();
         this.fetchBrandsAndModels();
       },
       watch: {
@@ -551,7 +548,7 @@
       // existing values if the new ones are null/undefined
       this.bodyType = newVal.bodyType ?? this.bodyType;
       this.year = newVal.year ?? this.year;
-      this.location = newVal.location ?? this.location;
+      this.location = newVal.location_id ?? this.location;
       this.plate = newVal.plateNumber ?? this.plate;
       this.odometer = newVal.odometer ?? this.odometer;
       this.externalColour = newVal.color ?? this.externalColour;
@@ -574,6 +571,18 @@
         }
       },
       methods: {
+        fetchLocations() {
+          axios.post('/location')
+            .then(response => {
+              // Your API returns an array of location objects with id and name properties
+              this.locations = response.data;
+              // console.log('Locations loaded:', this.locations);
+            })
+            .catch(error => {
+              console.error('Error fetching locations:', error);
+              this.$showToast('error', 'Error', 'Failed to load locations');
+            });
+        },
         triggerFileInput(index) {
         console.log(`Attivazione input file per l'indice ${index}`);
         // Usa un timeout breve per assicurarsi che l'evento di click sia completato
@@ -686,32 +695,32 @@
     }
   },
   createVehicle() {
-    // Validate required fields
-    if (!this.selectedBrand || !this.model || !this.year || !this.plate) {
-      this.$showToast('error', 'Error', 'Please fill in all required fields');
-      return;
-    }
+  // Validate required fields
+  if (!this.selectedBrand || !this.model || !this.year || !this.plate) {
+    this.$showToast('error', 'Error', 'Please fill in all required fields');
+    return;
+  }
 
-    const newVehicle = {
-      make_id: this.selectedBrand,
-      model_id: this.model,
-      bodyType: this.bodyType,
-      year: this.year,
-      location: this.location,
-      plateNumber: this.plate,
-      odometer: this.odometer,
-      color: this.externalColour,
-      seats: this.passengers,
-      fuel_type: this.fuelType,
-      transmission: this.transmission,
-      km_per_day: this.baseKmDay,
-      extra_km_price: this.kmExtraPrice,
-      basic_daily_price: this.basicDailyPrice,
-      dailyPrice: this.basicDailyPrice,
-      franchise: this.franchise,
-      deposit: this.deposit,
-      status: 'available' // Default status for new vehicles
-    };
+      const newVehicle = {
+        make_id: this.selectedBrand,
+        model_id: this.model,
+        bodyType: this.bodyType,
+        year: this.year,
+        location_id: this.location,
+        plateNumber: this.plate,
+        odometer: this.odometer,
+        color: this.externalColour,
+        seats: this.passengers,
+        fuel_type: this.fuelType,
+        transmission: this.transmission,
+        km_per_day: this.baseKmDay,
+        extra_km_price: this.kmExtraPrice,
+        basic_daily_price: this.basicDailyPrice,
+        dailyPrice: this.basicDailyPrice,
+        franchise: this.franchise,
+        deposit: this.deposit,
+        status: 'available' // Default status for new vehicles
+      };
 
           // Handle any images that were uploaded
           const formData = new FormData();
@@ -970,26 +979,26 @@ enableEditMode(tabValue) {
         saveChanges() {
       // Create the updated vehicle object
       const updatedVehicle = {
-          id: this.vehicle.id,
-          make_id: this.selectedBrand,
-          model_id: this.model,
-          bodyType: this.bodyType,
-          year: this.year,
-          location: this.location,
-          plateNumber: this.plate,
-          odometer: this.odometer,
-          color: this.externalColour,
-          seats: this.passengers,
-          fuel_type: this.fuelType,
-          transmission: this.transmission,
-          km_per_day: this.baseKmDay,
-          extra_km_price: this.kmExtraPrice,
-          basic_daily_price: this.basicDailyPrice,
-          dailyPrice: this.basicDailyPrice,
-          franchise: this.franchise,
-          deposit: this.deposit,
-          status: this.status
-      };
+      id: this.vehicle.id,
+      make_id: this.selectedBrand,
+      model_id: this.model,
+      bodyType: this.bodyType,
+      year: this.year,
+      location_id: this.location,
+      plateNumber: this.plate,
+      odometer: this.odometer,
+      color: this.externalColour,
+      seats: this.passengers,
+      fuel_type: this.fuelType,
+      transmission: this.transmission,
+      km_per_day: this.baseKmDay,
+      extra_km_price: this.kmExtraPrice,
+      basic_daily_price: this.basicDailyPrice,
+      dailyPrice: this.basicDailyPrice,
+      franchise: this.franchise,
+      deposit: this.deposit,
+      status: this.status
+    };
 
       // Send the update request to the API
       axios.put(`/vehicles/edit/${this.vehicle.id}`, updatedVehicle)

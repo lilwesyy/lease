@@ -8,6 +8,7 @@ import router from './router';
 import 'primeicons/primeicons.css';
 import '../css/app.css';
 import ToastPlugin from './plugins/toast';
+import Tooltip from 'primevue/tooltip';
 
 const app = createApp(App);
 
@@ -24,5 +25,5 @@ app.use(router);
 app.use(ToastService);
 app.use(ToastPlugin);
 app.use(ConfirmationService);
-
+app.directive('tooltip', Tooltip);
 app.mount('#app');
