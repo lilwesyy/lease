@@ -1,0 +1,30 @@
+
+services:
+  app:
+    build: .
+    container_name: laravel_app
+    working_dir: /var/www
+    volumes:
+      - ./app:/var/www
+    ports:
+      - "8000:8000" # Laravel
+      - "5173:5173" # Vite
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: laravel_db
+    restart: always
+    environment:
+      POSTGRES_DB: lease
+      POSTGRES_USER: lease
+      POSTGRES_PASSWORD: lease
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
