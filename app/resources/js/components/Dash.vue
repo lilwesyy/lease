@@ -2,7 +2,7 @@
     <!-- Sidebar -->
     <div
       :class="['sidebar', { 'sidebar-open': isSidebarOpen }]"
-      class="w-64 flex flex-col justify-between m-6 rounded-lg"
+      class="w-64 flex flex-col justify-between m-6 rounded-lg mobile-mode"
     >
       <div>
         <div class="font-xl text-center p-4">
@@ -121,7 +121,8 @@
 
     <!-- Main Content -->
     <div class="main-content flex-1 flex flex-col main-content-bg">
-      <Menubar :model="navbarItems"></Menubar>
+      <Menubar :model="menuItems" class="menubar-desktop-mode"></Menubar>
+      <Menubar :model="navbarItems" class="mobile-mode"></Menubar>
 
       <div class="p-4">
         <div class="container mx-auto max-w-7xl">
@@ -264,6 +265,7 @@
           { label: 'Add Vehicle', icon: 'pi pi-fw pi-car', url: '/dashboard/add-vehicles' },
 
         ]
+        
       };
     },
     computed: {
@@ -365,43 +367,16 @@
     min-height: 0; /* Evita problemi di overflow con flex */
   }
 
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 100%;
-      margin: 0;
-      padding: 1rem;
-      display: none; /* Nasconde la sidebar di default */
-    }
-
-    .sidebar-open {
-      display: block; /* Mostra la sidebar quando è aperta */
-    }
-
-    .main-content {
-      padding: 1rem;
-    }
+  @media (max-width: 500px) {
+  .mobile-mode {
+    display: none !important;
   }
-
-  @media (max-width: 425px) {
-    .sidebar {
-      width: 100%;
-      margin: 0;
-      padding: 0.5rem;
-      display: none;
-    }
-
-    .sidebar-open {
-      display: block;
-    }
-
-    .main-content {
-      padding: 0.5rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow-y: auto;
-    }
+}
+  @media (min-width: 500px) {
+  .menubar-desktop-mode {
+    display: none !important;
   }
+  }
+  
+
   </style>

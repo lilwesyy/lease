@@ -8,21 +8,30 @@ return new class extends Migration
 {
     public function up()
     {
-        // Aggiungi le nuove colonne
-        Schema::table('vehicles', function (Blueprint $table) {
-            $table->unsignedBigInteger('make_id')->nullable()->after('model');
-            $table->unsignedBigInteger('model_id')->nullable()->after('make_id');
+        // Verifica se le colonne make_id e model_id esistono già
+        if (!Schema::hasColumn('vehicles', 'make_id')) {
+            Schema::table('vehicles', function (Blueprint $table) {
+                $table->unsignedBigInteger('make_id')->nullable()->after('model');
+                $table->foreign('make_id')->references('id')->on('vehicle_makes')->onDelete('set null');
+            });
+        }
 
-            $table->foreign('make_id')->references('id')->on('vehicle_makes')->onDelete('set null');
-            $table->foreign('model_id')->references('id')->on('vehicle_models')->onDelete('set null');
-        });
-
-        // Qui potresti aggiungere codice per migrare i dati dalle colonne stringa alle relazioni
-        // Questo dovrà essere fatto manualmente o con un seeder
+        if (!Schema::hasColumn('vehicles', 'model_id')) {
+            Schema::table('vehicles', function (Blueprint $table) {
+                $table->unsignedBigInteger('model_id')->nullable()->after('make_id');
+                $table->foreign('model_id')->references('id')->on('vehicle_models')->onDelete('set null');
+            });
+        }
 
         // Opzionalmente, rimuovi le vecchie colonne
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->dropColumn(['make', 'model']);
+            // Aggiungi solo se esistono
+            if (Schema::hasColumn('vehicles', 'make')) {
+                $table->dropColumn('make');
+            }
+            if (Schema::hasColumn('vehicles', 'model')) {
+                $table->dropColumn('model');
+            }
         });
     }
 
