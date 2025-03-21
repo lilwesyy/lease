@@ -121,7 +121,7 @@
 
     <!-- Main Content -->
     <div class="main-content flex-1 flex flex-col main-content-bg">
-      <Menubar :model="menuItems" class="menubar-desktop-mode"></Menubar>
+      <Menubar :model="menuItemsMobile" class="menubar-desktop-mode"></Menubar>
       <Menubar :model="navbarItems" class="mobile-mode"></Menubar>
 
       <div class="p-4">
@@ -177,6 +177,71 @@
         isSidebarOpen: false,
         userName: '',
         userRole: '',
+        menuItemsMobile: [
+          {
+            label: 'Dashboard',
+            icon: 'pi pi-fw pi-home',
+            url: '/dashboard/home'
+          },
+          {
+            label: 'Calendar',
+            icon: 'pi pi-fw pi-calendar',
+            url: '/dashboard/calendar'
+          },
+          {
+            label: 'Customers',
+            icon: 'pi pi-fw pi-users',
+            items: [
+              {
+                label: 'Customer List',
+                icon: 'pi pi-fw pi-list',
+                url: '/dashboard/customers'
+              },
+              {
+                label: 'Add Customer',
+                icon: 'pi pi-fw pi-plus',
+                url: '/dashboard/add-customer'
+              }
+            ]
+          },
+          {
+            label: 'Vehicles',
+            icon: 'pi pi-fw pi-car',
+            items: [
+              {
+                label: 'Vehicle List',
+                icon: 'pi pi-fw pi-list',
+                url: '/dashboard/vehicles'
+              },
+              {
+                label: 'Add Vehicle',
+                icon: 'pi pi-fw pi-plus',
+                url: '/dashboard/add-vehicles'
+              }
+            ]
+          },
+          {
+            label: 'Bookings',
+            icon: 'pi pi-fw pi-book',
+            items: [
+              {
+                label: 'Booking List',
+                icon: 'pi pi-fw pi-list',
+                url: '/dashboard/bookings'
+              },
+              {
+                label: 'Add Booking',
+                icon: 'pi pi-fw pi-plus',
+                url: '/dashboard/add-booking'
+              }
+            ]
+          },
+          {
+            label: 'Reports',
+            icon: 'pi pi-fw pi-chart-line',
+            url: '/dashboard/reports'
+          },
+        ],
         menuItems: [
           {
             label: 'Dashboard',
