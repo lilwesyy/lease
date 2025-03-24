@@ -9,6 +9,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DamageImageController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\TicketController;
 
 Route::get('/{any}', function () {
     return view('welcome');
@@ -19,6 +20,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/user', [AuthController::class, 'getUser']);
 Route::delete('/user/delete/{id}', [AuthController::class, 'deleteUser']);
+Route::post('/user/create', [AuthController::class, 'createUser']);
 
 // Users Roles
 Route::post('/roles', [RoleController::class, 'getUsersWithRoles']);
@@ -35,7 +37,6 @@ Route::post('/booking/create', [BookingController::class, 'createBooking']);
 Route::post('/location', [LocationController::class, 'getLocation']);
 Route::post('/location/create', [LocationController::class, 'createLocation']);
 
-
 // Vehicles
 Route::post('/vehicles', [VehicleController::class, 'getVehicles']);
 Route::post('/vehicles/create', [VehicleController::class, 'createVehicle']);
@@ -45,6 +46,11 @@ Route::delete('/vehicles/delete/{id}', [VehicleController::class, 'deleteVehicle
 Route::put('/vehicles/update-status/{id}', [VehicleController::class, 'updateStatus']);
 Route::post('/vehicles/upload-photo', [VehicleController::class, 'uploadPhoto']);
 Route::post('/vehicles/upload-multiple-photos', [VehicleController::class, 'uploadMultiplePhotos']);
+
+// Ticket
+Route::post('/tickets', [TicketController::class, 'getTicket']);
+Route::post('/tickets/create', [TicketController::class, 'createTicket']);
+Route::post('/tickets/{ticketId}/respond', [TicketController::class, 'respondTicket']);
 
 // Customers
 Route::post('/customer', [CustomerController::class, 'getCustomers']);

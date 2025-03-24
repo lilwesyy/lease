@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -70,5 +71,36 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'User deleted successfully'
         ]);
+    }
+
+    public function createUser(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'role' => 'required|string',
+        ]);
+    
+        $defaultPassword = 'password123';
+    
+        // Create the user in the 'users' table
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($defaultPassword),
+        ]);
+    
+        // Insert a new row into the 'roles' table with user_id and role
+        DB::table('roles')->insert([
+            'user_id' => $user->id,
+            'role' => $request->role,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    
+        return response()->json([
+            'status' => 'success',
+            'user' => $user
+        ], 201);
     }
 }

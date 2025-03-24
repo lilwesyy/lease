@@ -261,7 +261,7 @@
       </div>
 
       <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
+      <Button icon="pi pi-paperclip" label="Attach Card" :disabled="isViewMode && !isEditMode" 
       severity="contrast" @click="showCardUploadDialog"/>
 
       <div v-if="cardFiles.length > 0" class="mt-4">
@@ -532,24 +532,18 @@ const deleteCustomer = async () => {
 
 const isImageFile = (document) => {
   if (!document) return false;
-
-  // Controlla il tipo MIME
-  if (document.type && document.type.includes('image')) {
-    return true;
-  }
-
-  // Controlla l'estensione del file
+  if (document.mime_type?.includes('image') || document.type?.includes('image')) return true;
   const url = document.url || '';
   return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
 };
 
 const handleImageError = (event) => {
-  event.target.src = '/images/document-placeholder.png'; // Percorso dell'immagine di fallback
-  event.target.alt = 'Anteprima non disponibile';
+  event.target.src = '/images/document-placeholder.png';
+  event.target.alt = 'Not available';
   toast.add({
     severity: 'warn',
-    summary: 'Errore',
-    detail: 'Impossibile caricare l\'anteprima del documento.',
+    summary: 'Error',
+    detail: 'Cannot load image preview.',
     life: 3000,
   });
 };
@@ -967,6 +961,15 @@ const constructFullUrl = (url, docId) => {
 };
 
 const previewDocument = async (doc) => {
+  if (!doc.url && !doc.id) {
+    toast.add({
+      severity: 'error',
+      summary: 'Missing Document Reference',
+      detail: 'No document URL or ID provided for preview.',
+      life: 3000
+    });
+    return;
+  }
   try {
     // Show loading state
     previewingDocument.value = { 

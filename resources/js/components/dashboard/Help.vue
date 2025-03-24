@@ -1,51 +1,71 @@
 <template>
+  <h1 class="font-bold text-3xl">Tickets</h1>
+  <Breadcrumb :model="items" class="custom-breadcrumb" />
   <div class="help-container">
     <Card>
       <template #title>
         <div class="p-d-flex p-jc-between p-ai-center">
-          <span>Support tickets</span>
-          <Button label="Create a ticket" icon="pi pi-plus" class="p-button-rounded p-button-success create-ticket" @click="showTicketDialog = true" />
+          <Button label="Create a ticket" icon="pi pi-plus" class="create-ticket" @click="showTicketDialog = true" />
         </div>
       </template>
       <template #content>
-        <Accordion>
-          <AccordionTab v-for="ticket in tickets" :key="ticket.id" :header="`Ticket #${ticket.id} - ${ticket.subject} - Date: ${ticket.date} - Status: ${ticket.status}`">
-            <div>
-              <div v-for="response in ticket.responses" :key="response.id" :class="{'response-customer': response.user === 'You', 'response-tech': response.user !== 'You', 'response-mirco': response.user === 'Mirco Carp'}" class="p-mb-2 response-message">
-                <div class="p-d-flex p-ai-center user-ticket">
-                  <Avatar icon="pi pi-user" class="p-mr-2" />
-                  <strong class="user-name">{{ response.user }}</strong>
+        <div v-if="tickets.length === 0" class="no-tickets-message">
+          <p>No tickets available. Create a new ticket to get started.</p>
+        </div>
+        <div v-else>
+          <Accordion>
+            <AccordionTab v-for="ticket in tickets" :key="ticket.id" :header="`Ticket #${ticket.id} - ${ticket.subject} - Date: ${ticket.date} - Status: ${ticket.status}`">
+              <div>
+                <!-- Initial ticket description message -->
+                <div class="p-mb-2 response-message response-customer">
+                  <div class="p-d-flex p-ai-center user-ticket">
+                    <strong class="user-name mr-2">{{ ticket.user?.name || storedUsername || 'Unknown User' }}</strong>
+                    <Avatar icon="pi pi-user" class="p-mr-2" />
+                  </div>
+                  <p>{{ ticket.description }}</p>
                 </div>
-                <p>{{ response.text }}</p>
+                
+                <!-- Subsequent responses -->
+                <div v-for="response in ticket.responses" :key="response.id" 
+                     :class="[
+                       'p-mb-2 response-message', 
+                       response.user_name === ticket.user?.name ? 'response-customer' : 'response-tech'
+                     ]">
+                  <div class="p-d-flex p-ai-center user-ticket">
+                    <Avatar icon="pi pi-user" class="p-mr-2" />
+                    <strong class="user-name">{{ response.user_name }}</strong>
+                  </div>
+                  <p>{{ response.text }}</p>
+                </div>
+                <div class="p-field">
+                  <IftaLabel>
+                    <Textarea :id="`response-${ticket.id}`" v-model="responseInputs[ticket.id]" rows="5" cols="10" style="resize: none; width: 100%;" />
+                    <label :for="`response-${ticket.id}`" style="font-size: 1rem;">Answer a text</label>
+                  </IftaLabel>
+                </div>
+                <div class="p-d-flex p-jc-end">
+                  <Button label="Send" class="p-ml-2" @click="addResponse(ticket)" />
+                  <span><i class="pi pi-paperclip"></i>Select file(s)</span>
+                </div>
               </div>
-              <div class="p-field">
-                <IftaLabel>
-                  <Textarea id="description" v-model="newResponse" rows="5" cols="10" style="resize: none; width: 100%;" />
-                  <label for="description" style="font-size: 1rem;">Answer a text</label>
-                </IftaLabel>
-              </div>
-              <div class="p-d-flex p-jc-end">
-                <Button label="Send" class="p-ml-2" @click="addResponse(ticket)" />
-                <span><i class="pi pi-paperclip"></i>Select file(s)</span>
-              </div>
-            </div>
-          </AccordionTab>
-        </Accordion>
+            </AccordionTab>
+          </Accordion>
+        </div>
 
         <Dialog header="Create an issue ticket" v-model:visible="showTicketDialog" :modal="true" :closable="true" class="custom-dialog" :style="{ width: '30vw' }">
           <form @submit.prevent="createTicket">
             <div class="flex flex-col gap-2">
-              <label for="subject">Request Subject <span class="required">*</span></label>
-              <InputText id="subject" v-model="newTicket.subject" aria-describedby="subject-help" required />
+              <label for="ticket-subject">Request Subject <span class="required">*</span></label>
+              <InputText id="ticket-subject" v-model="newTicket.subject" aria-describedby="subject-help" required />
               <Message size="small" severity="secondary" variant="simple">This subject will be displayed in the list of tickets. Fill in this field with a meaningful name of the problem.</Message>
             </div>
             <div class="flex flex-col gap-2" style="margin-top: 20px;">
-              <label for="description">Description <span class="required">*</span></label>
-              <Textarea id="description" v-model="newTicket.description" rows="5" cols="30" required />
+              <label for="ticket-description">Description <span class="required">*</span></label>
+              <Textarea id="ticket-description" v-model="newTicket.description" rows="5" cols="30" required />
               <span><i class="pi pi-paperclip"></i>Select file(s)</span>
             </div>
             <div class="p-d-flex p-jc-center" style="margin-top: 20px;">
-              <Button label="Send" type="submit" class="p-ml-2" />
+              <Button label="Send" @click="createTicket(ticket)" class="p-ml-2"/>
             </div>
           </form>
         </Dialog>
@@ -55,11 +75,10 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
+import axios from 'axios';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Accordion from 'primevue/accordion';
@@ -68,115 +87,156 @@ import Avatar from 'primevue/avatar';
 import Textarea from 'primevue/textarea';
 import IftaLabel from 'primevue/iftalabel';
 import Message from 'primevue/message';
+import Breadcrumb from 'primevue/breadcrumb';
 
 const showTicketDialog = ref(false);
 const newTicket = reactive({
   subject: '',
   description: ''
 });
-const newResponse = ref('');
+const responseInputs = reactive({});  // Object to store responses for each ticket
+const tickets = ref([]);
+const loading = ref(false);
+const error = ref(null);
+const currentUser = ref(null);
+const storedUsername = localStorage.getItem('name');
 
-const tickets = ref([
-  {
-    id: 'N686298',
-    subject: 'Verification',
-    description: 'Can you please verify my ID?',
-    date: '03/07/2025 5:24 PM',
-    status: 'In process',
-    responses: [
-      {
-        id: 1,
-        user: 'Luca Bianchi',
-        text: 'Can you please verify my ID?'
-      },
-      {
-        id: 2,
-        user: 'Technical support',
-        text: 'Hi Mirco, your ID verification is currently being processed. You will receive an email with the result shortly. Thanks for your patience!'
-      }
-    ]
-  },
-  {
-    id: 'N686769',
-    subject: 'Lease payment issue',
-    description: 'I am unable to make a payment for my current lease. Can you assist?',
-    date: '03/12/2025 9:00 AM',
-    status: 'In process',
-    responses: [
-      {
-        id: 1,
-        user: 'Luca Bianchi',
-        text: 'I am unable to make a payment for my current lease. Can you assist?'
-      },
-      {
-        id: 2,
-        user: 'Technical support',
-        text: 'Hi Giulia, we are currently reviewing the payment system. Please try again in a few minutes, or let us know if the issue persists.'
-      },
-      {
-        id: 3,
-        user: 'Luca Bianchi',
-        text: 'Thank you! The payment went through successfully after trying again.'
-      }
-    ]
-  },
-  {
-    id: 'N686872',
-    subject: 'Car availability inquiry',
-    description: 'I would like to know if the car I am interested in is still available for leasing.',
-    date: '03/11/2025 4:32 PM',
-    status: 'Open',
-    responses: [
-      {
-        id: 1,
-        user: 'Luca Bianchi',
-        text: 'I would like to know if the car I am interested in is still available for leasing.'
-      },
-      {
-        id: 2,
-        user: 'Technical support',
-        text: 'Hi Luca, the car you are interested in is still available for leasing. Would you like to proceed with the application?'
-      },
-      {
-        id: 3,
-        user: 'Luca Bianchi',
-        text: 'Yes, I would like to proceed with the application. Please provide the next steps.'
-      }
-    ]
-  }
+const items = ref([
+  { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+  { label: 'Tickets', url: '/dashboard/help' }
 ]);
 
-const createTicket = () => {
-  tickets.value.push({
-    id: 'N' + Math.floor(Math.random() * 1000000),
-    subject: newTicket.subject,
-    description: newTicket.description,
-    date: new Date().toLocaleString(),
-    status: 'In process',
-    responses: []
-  });
-  newTicket.subject = '';
-  newTicket.description = '';
-  showTicketDialog.value = false;
-};
-
-const addResponse = (ticket) => {
-  if (newResponse.value.trim()) {
-    ticket.responses.push({
-      id: ticket.responses.length + 1,
-      user: 'You',
-      text: newResponse.value
-    });
-    newResponse.value = '';
+// Funzione per recuperare l'utente corrente
+const fetchCurrentUser = async () => {
+  try {
+    // Replace with your actual endpoint to get current user
+    const response = await axios.get('/api/user');
+    currentUser.value = response.data;
+  } catch (err) {
+    console.error('Errore durante il recupero dell\'utente:', err);
+    // Use a default user if we can't get the current one
+    currentUser.value = { id: 4, name: 'Current User' };
   }
 };
+
+// Funzione per recuperare i ticket tramite Axios
+const fetchTickets = async () => {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const response = await axios.post('/tickets');
+    tickets.value = response.data.map(ticket => ({
+      ...ticket,
+      hasResponses: (ticket.responses?.length || 0) > 0,
+      status: ticket.status || 'Open',
+      date: new Date(ticket.created_at).toLocaleString(),
+      responses: ticket.responses || []
+    }));
+    
+    // Initialize response inputs for each ticket
+    tickets.value.forEach(ticket => {
+      responseInputs[ticket.id] = '';
+    });
+    
+    console.log('Tickets loaded:', tickets.value);
+  } catch (err) {
+    console.error('Errore durante il recupero dei ticket:', err);
+    error.value = 'Impossibile caricare i ticket. Riprova più tardi.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Funzione per creare un nuovo ticket
+const createTicket = async () => {
+  try {
+    const userId = localStorage.getItem('id');
+    
+    if (!userId) {
+      // Show a login prompt or notification instead of throwing an error
+      console.warn('User not authenticated. Please log in first.');
+      return;
+    }
+
+    if (!newTicket.subject || !newTicket.description) {
+      throw new Error('Please fill in all required fields');
+    }
+
+    const response = await axios.post('/tickets/create', {
+      subject: newTicket.subject,
+      description: newTicket.description,
+      user_id: userId,
+      status: 'Open'
+    });
+    
+    const createdTicket = {
+      ...response.data,
+      hasResponses: false,
+      date: new Date().toLocaleString(),
+      responses: [],
+      user: currentUser.value,
+      status: 'Open'
+    };
+    
+    tickets.value.unshift(createdTicket); // Add to beginning of array
+    responseInputs[createdTicket.id] = '';
+    
+    // Reset form and close dialog
+    newTicket.subject = '';
+    newTicket.description = '';
+    showTicketDialog.value = false;
+
+  } catch (err) {
+    console.error('Error creating ticket:', err);
+  }
+};
+
+// Funzione per aggiungere una risposta
+// ...existing code...
+const addResponse = async (ticket) => {
+  const responseText = responseInputs[ticket.id];
+  
+  if (responseText && responseText.trim()) {
+    try {
+      const response = await axios.post(`/tickets/${ticket.id}/respond`, {
+        text: responseText,
+        user_name: 'Technical Support'
+      });
+      
+      // Add the response to the UI with the correct format
+      if (response.data) {
+        const newResponse = {
+          id: response.data.id,
+          user_name: currentUser.value.name,
+          text: responseText,
+          created_at: new Date().toISOString()
+        };
+        
+        // Update the ticket's responses array
+        ticket.responses = [...(ticket.responses || []), newResponse];
+        
+        // Clear the input field for this specific ticket
+        responseInputs[ticket.id] = '';
+      }
+    } catch (err) {
+      console.error('Error adding response:', err);
+      // You might want to add error handling here, such as showing a toast message
+    }
+  }
+};
+// ...existing code...
+
+// Recupera l'utente corrente e i ticket quando il componente viene montato
+onMounted(async () => {
+  await fetchCurrentUser();
+  await fetchTickets();
+});
 </script>
 
 <style scoped>
 .help-container {
-  max-width: 800px;
   margin: auto;
-  padding: 20px;
 }
 .create-ticket {
   margin-left: 2%;
@@ -216,5 +276,12 @@ const addResponse = (ticket) => {
 .pi-paperclip{
   margin-right: 1%;
   margin-left: 1%;
+}
+
+.no-tickets-message {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  margin: 20px 0;
 }
 </style>
