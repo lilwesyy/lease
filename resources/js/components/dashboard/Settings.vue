@@ -55,80 +55,80 @@
         </Card>
 
         <Dialog
-    header="User"
-    v-model:visible="isUserDialogVisible"
-    :modal="true"
-    :closable="false"
->
-    <div class="dialog-content">
-        <div class="field">
-            <label>First Name</label>
-            <InputGroup>
-                <InputGroupAddon>
-                    <i class="pi pi-user"></i>
-                </InputGroupAddon>
-                <InputText v-model="dialogUser.firstName" placeholder="First Name" />
-            </InputGroup>
-        </div>
+                :header="isEditing ? 'Edit User' : 'Add New User'"
+                v-model:visible="isUserDialogVisible"
+                :modal="true"
+                :closable="false"
+            >
+                <div class="dialog-content">
+                    <div class="field">
+                        <label>First Name</label>
+                        <InputGroup>
+                            <InputGroupAddon>
+                                <i class="pi pi-user"></i>
+                            </InputGroupAddon>
+                            <InputText v-model="dialogUser.firstName" placeholder="First Name" />
+                        </InputGroup>
+                    </div>
 
-        <div class="field">
-            <label>Last Name</label>
-            <InputGroup>
-                <InputGroupAddon>
-                    <i class="pi pi-user"></i>
-                </InputGroupAddon>
-                <InputText v-model="dialogUser.lastName" placeholder="Last Name" />
-            </InputGroup>
-        </div>
+                    <div class="field">
+                        <label>Last Name</label>
+                        <InputGroup>
+                            <InputGroupAddon>
+                                <i class="pi pi-user"></i>
+                            </InputGroupAddon>
+                            <InputText v-model="dialogUser.lastName" placeholder="Last Name" />
+                        </InputGroup>
+                    </div>
 
-        <div class="field">
-            <label>Email</label>
-            <InputGroup>
-                <InputGroupAddon>
-                    <i class="pi pi-envelope"></i>
-                </InputGroupAddon>
-                <InputText v-model="dialogUser.email" placeholder="Email" />
-            </InputGroup>
-        </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <InputGroup>
+                            <InputGroupAddon>
+                                <i class="pi pi-envelope"></i>
+                            </InputGroupAddon>
+                            <InputText v-model="dialogUser.email" placeholder="Email" />
+                        </InputGroup>
+                    </div>
 
-        <div class="field">
-            <label>Role</label>
-            <InputGroup>
-                <InputGroupAddon>
-                    <i class="pi pi-briefcase"></i>
-                </InputGroupAddon>
-                <Select
-                    v-model="dialogUser.role"
-                    :options="roles"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Role"
-                />
-            </InputGroup>
-        </div>
+                    <div class="field">
+                        <label>Role</label>
+                        <InputGroup>
+                            <InputGroupAddon>
+                                <i class="pi pi-briefcase"></i>
+                            </InputGroupAddon>
+                            <Select
+                                v-model="dialogUser.role"
+                                :options="roles"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Select Role"
+                            />
+                        </InputGroup>
+                    </div>
 
-        <div class="dialog-buttons">
-            <Button
-                :label="isEditing ? 'Save' : 'Add'"
-                icon="pi pi-check"
-                @click="isEditing ? saveExistingUser() : addNewUser()"
-            />
-            <Button
-                label="Cancel"
-                icon="pi pi-times"
-                @click="isUserDialogVisible = false"
-                class="p-button-secondary"
-            />
-            <Button
-                v-if="isEditing"
-                label="Delete"
-                icon="pi pi-trash"
-                class="p-button-danger"
-                @click="confirmDeleteUser"
-            />
-        </div>
-    </div>
-</Dialog>
+                    <div class="dialog-buttons">
+                        <Button
+                            :label="isEditing ? 'Save' : 'Add'"
+                            icon="pi pi-check"
+                            @click="isEditing ? saveExistingUser() : addNewUser()"
+                        />
+                        <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            @click="isUserDialogVisible = false"
+                            class="p-button-secondary"
+                        />
+                        <Button
+                            v-if="isEditing"
+                            label="Delete"
+                            icon="pi pi-trash"
+                            class="p-button-danger"
+                            @click="confirmDeleteUser"
+                        />
+                    </div>
+                </div>
+            </Dialog>
     </div>
 </template>
 
