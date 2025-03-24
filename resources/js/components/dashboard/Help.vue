@@ -20,7 +20,7 @@
               </div>
               <div class="p-field">
                 <IftaLabel>
-                  <Textarea id="description" v-model="value" rows="5" cols="10" style="resize: none; width: 100%;" />
+                  <Textarea id="description" v-model="newResponse" rows="5" cols="10" style="resize: none; width: 100%;" />
                   <label for="description" style="font-size: 1rem;">Answer a text</label>
                 </IftaLabel>
               </div>
@@ -54,7 +54,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
@@ -66,125 +67,107 @@ import AccordionTab from 'primevue/accordiontab';
 import Avatar from 'primevue/avatar';
 import Textarea from 'primevue/textarea';
 import IftaLabel from 'primevue/iftalabel';
+import Message from 'primevue/message';
 
-export default {
-  name: 'HelpPage',
-  components: {
-    Card,
-    Button,
-    DataTable,
-    Column,
-    Dialog,
-    InputText,
-    Accordion,
-    AccordionTab,
-    Avatar,
-    Textarea,
-    IftaLabel
-  },
-  data() {
-    return {
-      showTicketDialog: false,
-      newTicket: {
-        subject: '',
-        description: ''
+const showTicketDialog = ref(false);
+const newTicket = reactive({
+  subject: '',
+  description: ''
+});
+const newResponse = ref('');
+
+const tickets = ref([
+  {
+    id: 'N686298',
+    subject: 'Verification',
+    description: 'Can you please verify my ID?',
+    date: '03/07/2025 5:24 PM',
+    status: 'In process',
+    responses: [
+      {
+        id: 1,
+        user: 'Luca Bianchi',
+        text: 'Can you please verify my ID?'
       },
-      newResponse: '',
-      tickets: [
-        {
-          id: 'N686298',
-          subject: 'Verification',
-          description: 'Can you please verify my ID?',
-          date: '03/07/2025 5:24 PM',
-          status: 'In process',
-          responses: [
-            {
-              id: 1,
-              user: 'Luca Bianchi',
-              text: 'Can you please verify my ID?'
-            },
-            {
-              id: 2,
-              user: 'Technical support',
-              text: 'Hi Mirco, your ID verification is currently being processed. You will receive an email with the result shortly. Thanks for your patience!'
-            }
-          ]
-        },
-        {
-          id: 'N686769',
-          subject: 'Lease payment issue',
-          description: 'I am unable to make a payment for my current lease. Can you assist?',
-          date: '03/12/2025 9:00 AM',
-          status: 'In process',
-          responses: [
-            {
-              id: 1,
-              user: 'Luca Bianchi',
-              text: 'I am unable to make a payment for my current lease. Can you assist?'
-            },
-            {
-              id: 2,
-              user: 'Technical support',
-              text: 'Hi Giulia, we are currently reviewing the payment system. Please try again in a few minutes, or let us know if the issue persists.'
-            },
-            {
-              id: 3,
-              user: 'Luca Bianchi',
-              text: 'Thank you! The payment went through successfully after trying again.'
-            }
-          ]
-        },
-        {
-          id: 'N686872',
-          subject: 'Car availability inquiry',
-          description: 'I would like to know if the car I am interested in is still available for leasing.',
-          date: '03/11/2025 4:32 PM',
-          status: 'Open',
-          responses: [
-            {
-              id: 1,
-              user: 'Luca Bianchi',
-              text: 'I would like to know if the car I am interested in is still available for leasing.'
-            },
-            {
-              id: 2,
-              user: 'Technical support',
-              text: 'Hi Luca, the car you are interested in is still available for leasing. Would you like to proceed with the application?'
-            },
-            {
-              id: 3,
-              user: 'Luca Bianchi',
-              text: 'Yes, I would like to proceed with the application. Please provide the next steps.'
-            }
-          ]
-        }
-      ]
-    };
-  },
-  methods: {
-    createTicket() {
-      this.tickets.push({
-        id: 'N' + Math.floor(Math.random() * 1000000),
-        subject: this.newTicket.subject,
-        description: this.newTicket.description,
-        date: new Date().toLocaleString(),
-        status: 'In process',
-        responses: []
-      });
-      this.newTicket.subject = '';
-      this.newTicket.description = '';
-      this.showTicketDialog = false;
-    },
-    addResponse(ticket) {
-      if (this.newResponse.trim()) {
-        ticket.responses.push({
-          id: ticket.responses.length + 1,
-          user: 'You',
-          text: this.newResponse
-        });
-        this.newResponse = '';
+      {
+        id: 2,
+        user: 'Technical support',
+        text: 'Hi Mirco, your ID verification is currently being processed. You will receive an email with the result shortly. Thanks for your patience!'
       }
-    }
+    ]
+  },
+  {
+    id: 'N686769',
+    subject: 'Lease payment issue',
+    description: 'I am unable to make a payment for my current lease. Can you assist?',
+    date: '03/12/2025 9:00 AM',
+    status: 'In process',
+    responses: [
+      {
+        id: 1,
+        user: 'Luca Bianchi',
+        text: 'I am unable to make a payment for my current lease. Can you assist?'
+      },
+      {
+        id: 2,
+        user: 'Technical support',
+        text: 'Hi Giulia, we are currently reviewing the payment system. Please try again in a few minutes, or let us know if the issue persists.'
+      },
+      {
+        id: 3,
+        user: 'Luca Bianchi',
+        text: 'Thank you! The payment went through successfully after trying again.'
+      }
+    ]
+  },
+  {
+    id: 'N686872',
+    subject: 'Car availability inquiry',
+    description: 'I would like to know if the car I am interested in is still available for leasing.',
+    date: '03/11/2025 4:32 PM',
+    status: 'Open',
+    responses: [
+      {
+        id: 1,
+        user: 'Luca Bianchi',
+        text: 'I would like to know if the car I am interested in is still available for leasing.'
+      },
+      {
+        id: 2,
+        user: 'Technical support',
+        text: 'Hi Luca, the car you are interested in is still available for leasing. Would you like to proceed with the application?'
+      },
+      {
+        id: 3,
+        user: 'Luca Bianchi',
+        text: 'Yes, I would like to proceed with the application. Please provide the next steps.'
+      }
+    ]
+  }
+]);
+
+const createTicket = () => {
+  tickets.value.push({
+    id: 'N' + Math.floor(Math.random() * 1000000),
+    subject: newTicket.subject,
+    description: newTicket.description,
+    date: new Date().toLocaleString(),
+    status: 'In process',
+    responses: []
+  });
+  newTicket.subject = '';
+  newTicket.description = '';
+  showTicketDialog.value = false;
+};
+
+const addResponse = (ticket) => {
+  if (newResponse.value.trim()) {
+    ticket.responses.push({
+      id: ticket.responses.length + 1,
+      user: 'You',
+      text: newResponse.value
+    });
+    newResponse.value = '';
   }
 };
 </script>
