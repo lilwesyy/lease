@@ -91,8 +91,8 @@
     </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
+<script setup>
+import { ref, onMounted, computed } from 'vue';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
@@ -113,226 +113,203 @@ import { useToast } from 'primevue/usetoast';
 import Breadcrumb from 'primevue/breadcrumb';
 import ConfirmDialog from 'primevue/confirmdialog';
 
-export default {
-    components: {
-        InputText,
-        Password,
-        Button,
-        TabView,
-        TabPanel,
-        Avatar,
-        Tag,
-        Dialog,
-        Dropdown,
-        InputGroup,
-        InputGroupAddon,
-        Select,
-        ProgressSpinner,
-        Breadcrumb,
-        Card,
-        ConfirmDialog
-    },
-    data() {
-        return {
-            items: [
-                { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-                { label: 'Settings', url: '/dashboard/settings' }
-            ],
-        };
-    },
-    setup() {
-        const toast = useToast();
-        const user = ref({
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: ''
-        });
+// Defining props if needed
+const isViewMode = ref(false);
 
-        const passwords = ref({
+// Breadcrumb items
+const items = ref([
+    { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+    { label: 'Settings', url: '/dashboard/settings' }
+]);
+
+// Setup toast and confirm hooks
+const toast = useToast();
+const confirm = useConfirm();
+
+// User data
+const user = ref({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: ''
+});
+
+// Password management
+const passwords = ref({
+    current: '',
+    new: '',
+    confirm: ''
+});
+
+// Users management
+const users = ref([]);
+const loading = ref(true);
+const selectedUser = ref({});
+const isDialogVisible = ref(false);
+
+// Roles dropdown options
+const roles = ref([
+    { label: 'Administrator', value: 'Administrator' },
+    { label: 'User', value: 'User' },
+    { label: 'Manager', value: 'Manager' },
+    { label: 'Support', value: 'Support' },
+    { label: 'Sales', value: 'Sales' },
+]);
+
+// Fetch users from API
+const fetchUsers = async () => {
+    try {
+        loading.value = true;
+        const response = await axios.post('/roles');
+
+        if (response.data.status === 'success') {
+            users.value = response.data.data.map(user => {
+                const rawRole = user.roles.length > 0 ? user.roles[0] : 'User';
+                const formattedRole = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
+
+                return {
+                    avatar: 'pi pi-user',
+                    name: user.name.split(' ')[0] || user.name,
+                    surname: user.name.split(' ').slice(1).join(' ') || '',
+                    email: user.email,
+                    id: user.id,
+                    role: formattedRole
+                };
+            });
+        } else {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load users', life: 3000 });
+        }
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load users', life: 3000 });
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Save profile changes
+const saveProfile = () => {
+    console.log('Profilo salvato', user.value);
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Profile saved successfully', life: 3000 });
+};
+
+// Change password
+const changePassword = () => {
+    if (passwords.value.new === passwords.value.confirm) {
+        console.log('Password cambiata', passwords.value);
+        toast.add({ severity: 'success', summary: 'Success', detail: 'Password changed successfully', life: 3000 });
+        passwords.value = {
             current: '',
             new: '',
             confirm: ''
-        });
-
-        const users = ref([]);
-        const loading = ref(true);
-        const selectedUser = ref({});
-        const isDialogVisible = ref(false);
-
-        const roles = ref([
-            { label: 'Administrator', value: 'Administrator' },
-            { label: 'User', value: 'User' },
-            { label: 'Manager', value: 'Manager' },
-            { label: 'Support', value: 'Support' },
-            { label: 'Sales', value: 'Sales' },
-        ]);
-        const confirm = useConfirm();
-
-        const fetchUsers = async () => {
-            try {
-                loading.value = true;
-                const response = await axios.post('/roles');
-
-                if (response.data.status === 'success') {
-                    users.value = response.data.data.map(user => {
-                        const rawRole = user.roles.length > 0 ? user.roles[0] : 'User';
-                        const formattedRole = rawRole.charAt(0).toUpperCase() + rawRole.slice(1).toLowerCase();
-
-                        return {
-                            avatar: 'pi pi-user',
-                            name: user.name.split(' ')[0] || user.name,
-                            surname: user.name.split(' ').slice(1).join(' ') || '',
-                            email: user.email,
-                            id: user.id,
-                            role: formattedRole
-                        };
-                    });
-                } else {
-                    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load users', life: 3000 });
-                }
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load users', life: 3000 });
-            } finally {
-                loading.value = false;
-            }
         };
-
-        onMounted(() => {
-            fetchUsers();
-        });
-
-        const saveProfile = () => {
-            console.log('Profilo salvato', user.value);
-            toast.add({ severity: 'success', summary: 'Success', detail: 'Profile saved successfully', life: 3000 });
-        };
-
-        const changePassword = () => {
-            if (passwords.value.new === passwords.value.confirm) {
-                console.log('Password cambiata', passwords.value);
-                toast.add({ severity: 'success', summary: 'Success', detail: 'Password changed successfully', life: 3000 });
-                passwords.value = {
-                    current: '',
-                    new: '',
-                    confirm: ''
-                };
-            } else {
-                console.error('Le password non coincidono');
-                toast.add({ severity: 'error', summary: 'Error', detail: 'Passwords do not match', life: 3000 });
-            }
-        };
-
-        const getRoleSeverity = (role) => {
-            switch (role) {
-                case 'Administrator':
-                    return 'contrast';
-                case 'User':
-                    return 'info';
-                case 'Manager':
-                    return 'danger';
-                case 'Sales':
-                    return 'warn';
-                case 'Support':
-                    return 'success';
-                default:
-                    return 'secondary';
-            }
-        };
-
-        const editUser = (user) => {
-            selectedUser.value = { ...user };
-            isDialogVisible.value = true;
-        };
-
-        const saveUser = async () => {
-            try {
-                const response = await axios.post('/roles/update', {
-                    user_id: selectedUser.value.id,
-                    role: selectedUser.value.role
-                });
-
-                if (response.data.status === 'success') {
-                    const index = users.value.findIndex(u => u.id === selectedUser.value.id);
-                    if (index !== -1) {
-                        users.value[index] = { ...selectedUser.value };
-                    }
-
-                    toast.add({ severity: 'success', summary: 'Success', detail: 'User role updated successfully', life: 3000 });
-                    isDialogVisible.value = false;
-
-                    // Refresh the users list to ensure we have the latest data
-                    await fetchUsers();
-                } else {
-                    throw new Error(response.data.message || 'Failed to update user role');
-                }
-            } catch (error) {
-                console.error('Error saving user:', error);
-                toast.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: error.response?.data?.message || 'Failed to update user role',
-                    life: 3000
-                });
-            }
-        };
-
-        const confirmDeleteUser = (event) => {
-            confirm.require({
-                target: event.currentTarget,
-                header: 'Confirm Deletion',
-                message: 'Are you sure you want to delete this user?',
-                icon: 'pi pi-exclamation-triangle',
-                acceptLabel: 'Delete',
-                rejectLabel: 'Cancel',
-                acceptClass: 'p-button-danger',
-                rejectClass: 'p-button-secondary',
-                accept: () => {
-                    deleteUser();
-                },
-                reject: () => {
-                    console.log('Eliminazione annullata');
-                }
-            });
-        };
-
-        const deleteUser = async () => {
-            try {
-                const response = await axios.delete(`/user/delete/${selectedUser.value.id}`);
-
-                if (response.data.status === 'success') {
-                    // Rimuovi l'utente dalla lista locale
-                    users.value = users.value.filter(u => u.id !== selectedUser.value.id);
-
-                    toast.add({ severity: 'success', summary: 'Success', detail: 'User deleted successfully', life: 3000 });
-                    isDialogVisible.value = false;
-                } else {
-                    throw new Error(response.data.message || 'Failed to delete user');
-                }
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete user', life: 3000 });
-            }
-        };
-
-        return {
-            user,
-            passwords,
-            users,
-            loading,
-            selectedUser,
-            isDialogVisible,
-            roles,
-            saveProfile,
-            changePassword,
-            getRoleSeverity,
-            editUser,
-            saveUser,
-            confirmDeleteUser,
-            fetchUsers
-        };
+    } else {
+        console.error('Le password non coincidono');
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Passwords do not match', life: 3000 });
     }
 };
+
+// Get severity for role tag
+const getRoleSeverity = (role) => {
+    switch (role) {
+        case 'Administrator':
+            return 'contrast';
+        case 'User':
+            return 'info';
+        case 'Manager':
+            return 'danger';
+        case 'Sales':
+            return 'warn';
+        case 'Support':
+            return 'success';
+        default:
+            return 'secondary';
+    }
+};
+
+// Edit user
+const editUser = (user) => {
+    selectedUser.value = { ...user };
+    isDialogVisible.value = true;
+};
+
+// Save user changes
+const saveUser = async () => {
+    try {
+        const response = await axios.post('/roles/update', {
+            user_id: selectedUser.value.id,
+            role: selectedUser.value.role
+        });
+
+        if (response.data.status === 'success') {
+            const index = users.value.findIndex(u => u.id === selectedUser.value.id);
+            if (index !== -1) {
+                users.value[index] = { ...selectedUser.value };
+            }
+
+            toast.add({ severity: 'success', summary: 'Success', detail: 'User role updated successfully', life: 3000 });
+            isDialogVisible.value = false;
+
+            // Refresh the users list to ensure we have the latest data
+            await fetchUsers();
+        } else {
+            throw new Error(response.data.message || 'Failed to update user role');
+        }
+    } catch (error) {
+        console.error('Error saving user:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.response?.data?.message || 'Failed to update user role',
+            life: 3000
+        });
+    }
+};
+
+// Confirm user deletion
+const confirmDeleteUser = (event) => {
+    confirm.require({
+        target: event.currentTarget,
+        header: 'Confirm Deletion',
+        message: 'Are you sure you want to delete this user?',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Delete',
+        rejectLabel: 'Cancel',
+        acceptClass: 'p-button-danger',
+        rejectClass: 'p-button-secondary',
+        accept: () => {
+            deleteUser();
+        },
+        reject: () => {
+            console.log('Eliminazione annullata');
+        }
+    });
+};
+
+// Delete user
+const deleteUser = async () => {
+    try {
+        const response = await axios.delete(`/user/delete/${selectedUser.value.id}`);
+
+        if (response.data.status === 'success') {
+            // Remove user from local list
+            users.value = users.value.filter(u => u.id !== selectedUser.value.id);
+
+            toast.add({ severity: 'success', summary: 'Success', detail: 'User deleted successfully', life: 3000 });
+            isDialogVisible.value = false;
+        } else {
+            throw new Error(response.data.message || 'Failed to delete user');
+        }
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete user', life: 3000 });
+    }
+};
+
+// Load data on component mount
+onMounted(() => {
+    fetchUsers();
+});
 </script>
 
 <style scoped>
