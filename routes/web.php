@@ -20,6 +20,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/user', [AuthController::class, 'getUser']);
 Route::delete('/user/delete/{id}', [AuthController::class, 'deleteUser']);
+Route::post('/user/create', [AuthController::class, 'createUser']);
 
 // Users Roles
 Route::post('/roles', [RoleController::class, 'getUsersWithRoles']);
@@ -35,7 +36,6 @@ Route::post('/booking/create', [BookingController::class, 'createBooking']);
 // Location
 Route::post('/location', [LocationController::class, 'getLocation']);
 Route::post('/location/create', [LocationController::class, 'createLocation']);
-
 
 // Vehicles
 Route::post('/vehicles', [VehicleController::class, 'getVehicles']);

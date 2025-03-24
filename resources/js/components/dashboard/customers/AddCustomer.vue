@@ -261,7 +261,7 @@
       </div>
 
       <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
+      <Button icon="pi pi-paperclip" label="Attach Card" :disabled="isViewMode && !isEditMode" 
       severity="contrast" @click="showCardUploadDialog"/>
 
       <div v-if="cardFiles.length > 0" class="mt-4">

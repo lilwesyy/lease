@@ -36,6 +36,8 @@
                     </TabPanel>
                     <TabPanel header="Users">
                         <div class="users-settings">
+                            <Button label="Add User" @click="openAddUserDialog" style="margin-bottom: 1rem;" />
+
                             <ProgressSpinner v-if="loading" />
                             <div v-else class="user-cards">
                                 <div v-for="user in users" :key="user.id" class="user-card" @click="editUser(user)">
@@ -52,42 +54,81 @@
             </template>
         </Card>
 
-        <Dialog header="Edit User" v-model:visible="isDialogVisible" :modal="true" :closable="false">
-            <div class="dialog-content">
-                <div class="field">
-                    <label for="name">First Name</label>
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-user"></i>
-                        </InputGroupAddon>
-                        <InputText v-model="selectedUser.name" placeholder="Username" />
-                    </InputGroup>
-                </div>
-                <div class="field">
-                    <label for="surname">Last Name</label>
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-user"></i>
-                        </InputGroupAddon>
-                        <InputText v-model="selectedUser.surname" placeholder="Username" />
-                    </InputGroup>
-                </div>
-                <div class="field">
-                    <label for="role">Role</label>
-                    <InputGroup>
-                        <InputGroupAddon>
-                            <i class="pi pi-briefcase"></i>
-                        </InputGroupAddon>
-                        <Select v-model="selectedUser.role" :options="roles" optionLabel="label" optionValue="value" placeholder="Select Role" />
-                    </InputGroup>
-                </div>
-                <div class="dialog-buttons">
-                    <Button label="Save" icon="pi pi-check" @click="saveUser" />
-                    <Button label="Cancel" icon="pi pi-times" @click="isDialogVisible = false" class="p-button-secondary" />
-                    <Button label="Delete" icon="pi pi-trash" @click="confirmDeleteUser" class="p-button-danger" />
-                </div>
-            </div>
-        </Dialog>
+        <Dialog
+    header="User"
+    v-model:visible="isUserDialogVisible"
+    :modal="true"
+    :closable="false"
+>
+    <div class="dialog-content">
+        <div class="field">
+            <label>First Name</label>
+            <InputGroup>
+                <InputGroupAddon>
+                    <i class="pi pi-user"></i>
+                </InputGroupAddon>
+                <InputText v-model="dialogUser.firstName" placeholder="First Name" />
+            </InputGroup>
+        </div>
+
+        <div class="field">
+            <label>Last Name</label>
+            <InputGroup>
+                <InputGroupAddon>
+                    <i class="pi pi-user"></i>
+                </InputGroupAddon>
+                <InputText v-model="dialogUser.lastName" placeholder="Last Name" />
+            </InputGroup>
+        </div>
+
+        <div class="field">
+            <label>Email</label>
+            <InputGroup>
+                <InputGroupAddon>
+                    <i class="pi pi-envelope"></i>
+                </InputGroupAddon>
+                <InputText v-model="dialogUser.email" placeholder="Email" />
+            </InputGroup>
+        </div>
+
+        <div class="field">
+            <label>Role</label>
+            <InputGroup>
+                <InputGroupAddon>
+                    <i class="pi pi-briefcase"></i>
+                </InputGroupAddon>
+                <Select
+                    v-model="dialogUser.role"
+                    :options="roles"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Role"
+                />
+            </InputGroup>
+        </div>
+
+        <div class="dialog-buttons">
+            <Button
+                :label="isEditing ? 'Save' : 'Add'"
+                icon="pi pi-check"
+                @click="isEditing ? saveExistingUser() : addNewUser()"
+            />
+            <Button
+                label="Cancel"
+                icon="pi pi-times"
+                @click="isUserDialogVisible = false"
+                class="p-button-secondary"
+            />
+            <Button
+                v-if="isEditing"
+                label="Delete"
+                icon="pi pi-trash"
+                class="p-button-danger"
+                @click="confirmDeleteUser"
+            />
+        </div>
+    </div>
+</Dialog>
     </div>
 </template>
 
@@ -126,6 +167,16 @@ const items = ref([
 const toast = useToast();
 const confirm = useConfirm();
 
+const isUserDialogVisible = ref(false)
+const isEditing = ref(false)
+const dialogUser = ref({ firstName: '', lastName: '', email: '', role: '' })
+
+const openAddUserDialog = () => {
+    isEditing.value = false
+    dialogUser.value = { firstName: '', lastName: '', email: '', role: '' }
+    isUserDialogVisible.value = true
+}
+
 // User data
 const user = ref({
     firstName: '',
@@ -141,6 +192,9 @@ const passwords = ref({
     confirm: ''
 });
 
+const isAddUserDialogVisible = ref(false)
+const newUser = ref({ firstName: '', lastName: '', email: '', role: '' })
+
 // Users management
 const users = ref([]);
 const loading = ref(true);
@@ -155,6 +209,71 @@ const roles = ref([
     { label: 'Support', value: 'Support' },
     { label: 'Sales', value: 'Sales' },
 ]);
+
+const addUser = async () => {
+    try {
+        const response = await axios.post('/user/create', {
+            name: newUser.value.firstName + ' ' + newUser.value.lastName,
+            email: newUser.value.email,
+            role: newUser.value.role
+        })
+        if (response.data.status === 'success') {
+            toast.add({ severity: 'success', summary: 'Success', detail: 'User added successfully', life: 3000 })
+            await fetchUsers()
+            isAddUserDialogVisible.value = false
+        } else {
+            throw new Error(response.data.message || 'Failed to create user')
+        }
+    } catch (error) {
+        console.error('Error creating user:', error)
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to create user', life: 3000 })
+    }
+}
+
+const addNewUser = async () => {
+    try {
+        // POST to create user
+        const response = await axios.post('/user/create', {
+            name: dialogUser.value.firstName + ' ' + dialogUser.value.lastName,
+            email: dialogUser.value.email,
+            role: dialogUser.value.role
+        });
+        if (response.data.status === 'success') {
+            toast.add({ severity: 'success', summary: 'Success', detail: 'User added successfully', life: 3000 });
+            
+            // Refresh users and close the dialog
+            await fetchUsers();
+            isUserDialogVisible.value = false;
+        } else {
+            throw new Error(response.data.message || 'Failed to create user');
+        }
+    } catch (error) {
+        console.error('Error creating user:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to create user', life: 3000 });
+    }
+};
+
+const saveExistingUser = async () => {
+    try {
+        const response = await axios.post('/roles/update', {
+            user_id: selectedUser.value.id,
+            role: dialogUser.value.role
+        });
+        if (response.data.status === 'success') {
+            // Optionally show success message
+            toast.add({ severity: 'success', summary: 'Success', detail: 'User updated successfully', life: 3000 });
+
+            // Refresh users and close dialog
+            await fetchUsers();
+            isUserDialogVisible.value = false;
+        } else {
+            throw new Error(response.data.message || 'Failed to update user');
+        }
+    } catch (error) {
+        console.error('Error updating user:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update user', life: 3000 });
+    }
+}
 
 // Fetch users from API
 const fetchUsers = async () => {
@@ -229,9 +348,16 @@ const getRoleSeverity = (role) => {
 
 // Edit user
 const editUser = (user) => {
-    selectedUser.value = { ...user };
-    isDialogVisible.value = true;
-};
+    isEditing.value = true
+    dialogUser.value = {
+        firstName: user.name,
+        lastName: user.surname,
+        email: user.email,
+        role: user.role
+    }
+    selectedUser.value = { ...user } // store full info if needed
+    isUserDialogVisible.value = true
+}
 
 // Save user changes
 const saveUser = async () => {
@@ -292,11 +418,14 @@ const deleteUser = async () => {
         const response = await axios.delete(`/user/delete/${selectedUser.value.id}`);
 
         if (response.data.status === 'success') {
-            // Remove user from local list
-            users.value = users.value.filter(u => u.id !== selectedUser.value.id);
+            // Refresh the user list
+            await fetchUsers();
 
+            // Close the dialog
+            isUserDialogVisible.value = false;
+
+            // Show success message
             toast.add({ severity: 'success', summary: 'Success', detail: 'User deleted successfully', life: 3000 });
-            isDialogVisible.value = false;
         } else {
             throw new Error(response.data.message || 'Failed to delete user');
         }
