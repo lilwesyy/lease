@@ -237,11 +237,7 @@ import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
 import FloatLabel from 'primevue/floatlabel';
 import VehicleDamage from './VehicleDamage.vue';
-<<<<<<< HEAD
-// import { fotoSlots } from '@/utils.js';
-=======
 import { fotoSlots } from './utils.js';
->>>>>>> origin/samuele
 import { ref } from "vue";
 
 export default {
