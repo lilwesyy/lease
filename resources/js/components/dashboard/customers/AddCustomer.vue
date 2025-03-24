@@ -265,7 +265,7 @@
     <!-- Image viewer with improved JPEG/JPG handling -->
     <div v-else-if="isImageFile(previewingDocument)" class="flex justify-content-center w-full">
       <img :src="previewingDocument.url" class="max-w-full max-h-[500px] object-contain" 
-           @error="handleImageError" />
+      @error="handleImageError" />
     </div>
     
     <!-- Fallback for unsupported types -->
@@ -404,29 +404,26 @@ const deleteCustomer = async () => {
 };
 
 const isImageFile = (document) => {
-  // Check by mime type
-  if (document.mime_type && document.mime_type.includes('image')) {
+  if (!document) return false;
+
+  // Controlla il tipo MIME
+  if (document.type && document.type.includes('image')) {
     return true;
   }
-  
-  // Check by file extension
+
+  // Controlla l'estensione del file
   const url = document.url || '';
-  return !!url.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i);
+  return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(url);
 };
 
 const handleImageError = (event) => {
-  // Replace the broken image with a placeholder
-  event.target.src = '/images/document-placeholder.png'; // Update with your placeholder image path
-  
-  // Or use an icon via CSS background instead of showing a broken image
-  event.target.classList.add('document-image-error');
-  event.target.alt = 'Document preview not available';
-  
+  event.target.src = '/images/document-placeholder.png'; // Percorso dell'immagine di fallback
+  event.target.alt = 'Anteprima non disponibile';
   toast.add({
     severity: 'warn',
-    summary: 'Warning',
-    detail: 'Unable to load document preview',
-    life: 3000
+    summary: 'Errore',
+    detail: 'Impossibile caricare l\'anteprima del documento.',
+    life: 3000,
   });
 };
 
@@ -510,49 +507,53 @@ const uploadCardDocumentsWithAxios = async (event) => {
 
 const uploadDocumentsWithAxios = async (event) => {
   const formData = new FormData();
-  
-  // Append each file to the FormData
+
+  // Aggiungi i file al FormData
   for (let file of event.files) {
     formData.append('documents[]', file);
   }
-  
-  // Add the customer ID if in edit mode
+
+  // Aggiungi l'ID del cliente se in modalità modifica
   if (props.isViewMode && props.client?.id) {
     formData.append('customer_id', props.client.id);
   }
-  
+
   try {
     const response = await axios.post('/documents/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
-    
+
     if (response.data.success) {
-      documentFiles.value = [...documentFiles.value, ...response.data.files];
-      toast.add({ 
-        severity: 'success', 
-        summary: 'Success', 
-        detail: 'Documents uploaded successfully', 
-        life: 3000 
+      // Verifica che i file restituiti abbiano un tipo MIME valido
+      documentFiles.value = [...documentFiles.value, ...response.data.files.map(file => ({
+        ...file,
+        mime_type: file.mime_type || 'application/octet-stream' // Tipo MIME di fallback
+      }))];
+
+      toast.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Documents uploaded successfully',
+        life: 3000
       });
       documentUploadDialogVisible.value = false;
-      // Clear the uploader
       documentUploader.value.clear();
     } else {
-      toast.add({ 
-        severity: 'error', 
-        summary: 'Error', 
-        detail: response.data.message || 'Failed to upload documents', 
-        life: 3000 
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: response.data.message || 'Failed to upload documents',
+        life: 3000
       });
     }
   } catch (error) {
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'Failed to upload documents: ' + (error.response?.data?.message || error.message), 
-      life: 3000 
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to upload documents: ' + (error.response?.data?.message || error.message),
+      life: 3000
     });
   }
 };
@@ -600,15 +601,17 @@ const loadCustomerDocuments = async (customerId) => {
         // Process identity documents
         documentFiles.value = (response.data.identity_documents || []).map(doc => ({
           ...doc,
-          filename: doc.filename || doc.name || 'Document',
-          url: doc.url || `/documents/view/${doc.id}`
+          filename: doc.name,
+          url: `/storage/${doc.path}`, // Costruisci l'URL corretto
+          type: doc.type // Assicurati che il tipo MIME sia incluso
         }));
         
         // Process card documents
         cardFiles.value = (response.data.card_documents || []).map(doc => ({
           ...doc,
-          filename: doc.filename || doc.name || 'Card Document',
-          url: doc.url || `/documents/view/${doc.id}`
+          filename: doc.name,
+          url: `/storage/${doc.path}`, // Costruisci l'URL corretto
+          type: doc.type // Assicurati che il tipo MIME sia incluso
         }));
       }
     } catch (error) {
@@ -622,7 +625,6 @@ const loadCustomerDocuments = async (customerId) => {
     }
   }
 };
-
 
 const createCustomer = async () => {
   try {
@@ -764,46 +766,106 @@ const cancelEditMode = () => {
   isEditMode.value = false;
 };
 
+const getFileTypeFromName = (filename) => {
+  if (!filename) return 'Unknown';
+  
+  const extension = filename.split('.').pop().toLowerCase();
+  
+  switch(extension) {
+    case 'jpg':
+    case 'jpeg':
+      return 'JPEG Image';
+    case 'png':
+      return 'PNG Image';
+    case 'gif':
+      return 'GIF Image';
+    case 'pdf':
+      return 'PDF Document';
+    default:
+      return extension.toUpperCase() + ' File';
+  }
+};
+
+const constructFullUrl = (url, docId) => {
+  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    return url;
+  }
+
+  const baseUrl = window.location.origin;
+
+  if (url && url.startsWith('/')) {
+    return `${baseUrl}${url}`;
+  }
+
+  if (url) {
+    return `${baseUrl}/storage/${url}`; // Aggiungi il prefisso /storage/
+  }
+
+  if (docId) {
+    return `${baseUrl}/documents/view/${docId}`;
+  }
+
+  return null; // Fallback se l'URL non può essere determinato
+};
+
 const previewDocument = async (doc) => {
-  // Create a temporary object with the document properties
-  const documentToPreview = { ...doc };
-  
-  // Reset current preview document to show loading indicator
-  previewingDocument.value = { loading: true };
-  documentPreviewVisible.value = true;
-  
   try {
-    // Ensure we have a valid URL for the document
-    if (!documentToPreview.url) {
-      // Generate URL based on document ID
-      documentToPreview.url = `/documents/view/${doc.id}`;
+    // Show loading state
+    previewingDocument.value = { 
+      loading: true,
+      filename: doc.filename || doc.name || 'Document'
+    };
+    documentPreviewVisible.value = true;
+    
+    // Create a copy of the document object to avoid modifying the original
+    const documentToPreview = { ...doc };
+    
+    // Construct full URL
+    const fullUrl = constructFullUrl(doc.url, doc.id);
+    if (!fullUrl) {
+      throw new Error('Could not determine document URL');
     }
     
-    // Log the document information for debugging
-    console.log('Previewing document:', documentToPreview);
-    
-    // For image files, add a cache-busting parameter to prevent browser caching issues
+    // Add cache busting for images to prevent caching issues
+    let previewUrl = fullUrl;
     if (isImageFile(documentToPreview)) {
-      const separator = documentToPreview.url.includes('?') ? '&' : '?';
-      documentToPreview.url = `${documentToPreview.url}${separator}t=${Date.now()}`;
-      
-      // Try to fetch the image with axios to check for any backend errors
-      try {
-        const response = await axios.head(documentToPreview.url);
-        console.log('Image response headers:', response.headers);
-      } catch (error) {
-        console.error('Failed to check image URL:', error);
-      }
+      const separator = previewUrl.includes('?') ? '&' : '?';
+      previewUrl = `${previewUrl}${separator}t=${Date.now()}`;
     }
     
-    // Set the document for preview
-    previewingDocument.value = documentToPreview;
+    console.log('Previewing document with URL:', previewUrl);
+    
+    // For images, preload to verify they can be displayed
+    if (isImageFile(documentToPreview)) {
+      // Use a Promise to handle image loading
+      await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = previewUrl;
+      });
+    }
+    
+    // Set the document with the constructed URL for preview
+    previewingDocument.value = {
+      ...documentToPreview,
+      url: previewUrl,
+      fullUrl: fullUrl // Store the clean URL without cache busting for download
+    };
   } catch (error) {
     console.error('Error preparing document preview:', error);
+    
+    // Set error state but keep filename for display
+    previewingDocument.value = {
+      filename: doc.filename || doc.name || 'Document',
+      id: doc.id,
+      loadError: true
+    };
+    
     toast.add({
       severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to load document preview',
+      summary: 'Preview Error',
+      detail: 'Failed to load document preview. Try downloading instead.',
       life: 3000
     });
   }
@@ -863,11 +925,56 @@ const deleteDocument = async (documentId, type, event) => {
   });
 };
 
-const downloadDocument = (doc) => {
-  const link = document.createElement('a');
-  link.href = doc.url;
-  link.download = doc.filename || doc.name;
-  link.click();
+const downloadDocument = async (doc) => {
+  try {
+    // Determine download URL (use stored fullUrl or construct it)
+    let downloadUrl = doc.fullUrl || constructFullUrl(doc.url, doc.id);
+    
+    if (!downloadUrl) {
+      throw new Error('Could not determine document URL for download');
+    }
+    
+    console.log('Downloading document from URL:', downloadUrl);
+    
+    // For direct download, use fetch with blob response
+    const response = await fetch(downloadUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // Get the blob from response
+    const blob = await response.blob();
+    
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = doc.filename || doc.name || 'document';
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }, 100);
+    
+    toast.add({
+      severity: 'success',
+      summary: 'Download Started',
+      detail: `Downloading "${doc.filename || doc.name}"`,
+      life: 3000
+    });
+  } catch (error) {
+    console.error('Download error:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Download Failed',
+      detail: 'Unable to download the document. Please try again later.',
+      life: 3000
+    });
+  }
 };
 
 watch(() => props.client, (newClient) => {
