@@ -89,217 +89,218 @@
   </Dialog>
 
   <Card class="isviewed">
-    <template #content>
-      <h1 class="font-bold text-2xl">Personal Data</h1>
-      <p class="mb-2 text-gray-500">Fill the customer personal data</p>
-      <div class="input-group-grid">
-        <div class="input-group-row">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-user"></i>
-            </InputGroupAddon>
-            <InputText v-model="firstName" placeholder="First Name" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-user"></i>
-            </InputGroupAddon>
-            <InputText v-model="lastName" placeholder="Last Name" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-calendar"></i>
-            </InputGroupAddon>
-            <DatePicker v-model="birthDate" placeholder="Birth Date" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-globe"></i>
-            </InputGroupAddon>
-            <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
-          </InputGroup>
-        </div>
-        <div class="input-group-row">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-phone"></i>
-            </InputGroupAddon>
-            <InputText v-model="phone" placeholder="Phone Number" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-envelope"></i>
-            </InputGroupAddon>
-            <InputText v-model="email" placeholder="Email" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-home"></i>
-            </InputGroupAddon>
-            <AutoComplete
-              id="address"
-              v-model="selectedPlace"
-              :suggestions="suggestions"
-              optionLabel="label"
-              @select="onSelect"
-              class="w-full md:w-56"
-              placeholder="Address"
-              :readonly="isViewMode && !isEditMode"
-              required
-            >
-              <template #option="slotProps">
-                <div class="flex items-center">
-                  <div>{{ slotProps.option.label }}</div>
-                </div>
-              </template>
-            </AutoComplete>
-          </InputGroup>
-        </div>
+  <template #content>
+    <h1 class="font-bold text-2xl">Personal Data</h1>
+    <p class="mb-2 text-gray-500">Fill the customer personal data</p>
+    <div class="input-group-grid">
+      <div class="input-group-row grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-user"></i>
+          </InputGroupAddon>
+          <InputText v-model="firstName" placeholder="First Name" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-user"></i>
+          </InputGroupAddon>
+          <InputText v-model="lastName" placeholder="Last Name" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-calendar"></i>
+          </InputGroupAddon>
+          <DatePicker v-model="birthDate" placeholder="Birth Date" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-globe"></i>
+          </InputGroupAddon>
+          <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" class="w-full" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
+        </InputGroup>
       </div>
-
-      <h1 class="font-bold text-2xl mt-10">Documents</h1>
-      <p class="mb-2 text-gray-500">Fill the customer documents</p>
-
-      <div class="documents-grid">
-        <div>
-          <p>Driver License</p>
-        </div>
-        <div></div>
-
-        <div>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-id-card"></i>
-            </InputGroupAddon>
-            <InputText v-model="driverLicenseNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-        </div>
-        <div>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-calendar"></i>
-            </InputGroupAddon>
-            <DatePicker v-model="driverLicenseValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-        </div>
-
-        <div>
-          <p>Identity Card / Passport</p>
-        </div>
-        <div></div>
-
-        <div>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-id-card"></i>
-            </InputGroupAddon>
-            <InputText v-model="identityCardNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-        </div>
-        <div>
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-calendar"></i>
-            </InputGroupAddon>
-            <DatePicker v-model="identityCardValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-        </div>
+      <div class="input-group-row grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-phone"></i>
+          </InputGroupAddon>
+          <InputText v-model="phone" placeholder="Phone Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-envelope"></i>
+          </InputGroupAddon>
+          <InputText v-model="email" placeholder="Email" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+        <InputGroup class="w-full">
+          <InputGroupAddon>
+            <i class="pi pi-home"></i>
+          </InputGroupAddon>
+          <AutoComplete
+            id="address"
+            v-model="selectedPlace"
+            :suggestions="suggestions"
+            optionLabel="label"
+            @select="onSelect"
+            class="w-full"
+            placeholder="Address"
+            :readonly="isViewMode && !isEditMode"
+            required
+          >
+            <template #option="slotProps">
+              <div class="flex items-center">
+                <div>{{ slotProps.option.label }}</div>
+              </div>
+            </template>
+          </AutoComplete>
+        </InputGroup>
       </div>
-      <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
-      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
-      severity="contrast" @click="showDocumentUploadDialog"/>
+    </div>
 
-      <div v-if="documentFiles.length > 0" class="mt-4">
-        <h2 class="font-bold text-lg">Attached Documents</h2>
-        <div class="document-list">
-          <div v-for="doc in documentFiles" :key="doc.id" class="document-item">
-            <div class="document-info">
-              <i class="pi pi-file mr-2"></i>
-              <span>{{ doc.filename || doc.name }}</span>
-            </div>
-            <div class="document-actions">
-              <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
-              <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'identity')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
-            </div>
-          </div>
-        </div>
+    <h1 class="font-bold text-2xl mt-10">Documents</h1>
+    <p class="mb-2 text-gray-500">Fill the customer documents</p>
+
+    <div class="documents-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <p>Driver License</p>
       </div>
+      <div></div>
 
-      <h1 class="font-bold text-2xl mt-10">Card</h1>
-      <p class="mb-2 text-gray-500">Fill the customer card info</p>
-
-      <div class="card-input-row">
-        <div class="card-number">
-          <InputGroup>
-            <InputGroupAddon>
-              <i class="pi pi-credit-card"></i>
-            </InputGroupAddon>
-            <InputText v-model="cardNumber" type="number" placeholder="Card Number" :readonly="isViewMode && !isEditMode" required/>
-          </InputGroup>
-        </div>
-
+      <div>
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-id-card"></i>
+          </InputGroupAddon>
+          <InputText v-model="driverLicenseNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+      </div>
+      <div>
         <InputGroup>
           <InputGroupAddon>
             <i class="pi pi-calendar"></i>
           </InputGroupAddon>
-          <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" :readonly="isViewMode && !isEditMode" required/>
-        </InputGroup>
-
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-lock"></i>
-          </InputGroupAddon>
-          <InputText v-model="cvv" type="number" placeholder="CVV2" :readonly="isViewMode && !isEditMode" required/>
-        </InputGroup>
-
-        <InputGroup>
-          <InputGroupAddon>
-            <i class="pi pi-user"></i>
-          </InputGroupAddon>
-          <InputText v-model="cardHolder" type="text" placeholder="Card Holder" :readonly="isViewMode && !isEditMode" required/>
+          <DatePicker v-model="driverLicenseValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
       </div>
 
-      <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-      <Button icon="pi pi-paperclip" label="Attach Card" :disabled="isViewMode && !isEditMode" 
-      severity="contrast" @click="showCardUploadDialog"/>
+      <div>
+        <p>Identity Card / Passport</p>
+      </div>
+      <div></div>
 
-      <div v-if="cardFiles.length > 0" class="mt-4">
-        <h2 class="font-bold text-lg">Attached Card Documents</h2>
-        <div class="document-list">
-          <div v-for="doc in cardFiles" :key="doc.id" class="document-item">
-            <div class="document-info">
-              <i class="pi pi-file mr-2"></i>
-              <span>{{ doc.filename || doc.name }}</span>
-            </div>
-            <div class="document-actions">
-              <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
-              <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'card')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
-            </div>
+      <div>
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-id-card"></i>
+          </InputGroupAddon>
+          <InputText v-model="identityCardNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+      </div>
+      <div>
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-calendar"></i>
+          </InputGroupAddon>
+          <DatePicker v-model="identityCardValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
+      </div>
+    </div>
+    <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
+    <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
+      severity="contrast" @click="showDocumentUploadDialog"/>
+
+    <div v-if="documentFiles.length > 0" class="mt-4">
+      <h2 class="font-bold text-lg">Attached Documents</h2>
+      <div class="document-list grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-for="doc in documentFiles" :key="doc.id" class="document-item">
+          <div class="document-info">
+            <i class="pi pi-file mr-2"></i>
+            <span>{{ doc.filename || doc.name }}</span>
+          </div>
+          <div class="document-actions">
+            <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
+            <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'identity')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
           </div>
         </div>
       </div>
+    </div>
 
-      <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" class="ml-2 mt-4" icon="pi pi-user" />
+    <h1 class="font-bold text-2xl mt-10">Card</h1>
+    <p class="mb-2 text-gray-500">Fill the customer card info</p>
 
-      <div v-if="isViewMode && !isEditMode">
-        <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
-        <Button 
-          @click="handlePrivacyClick" 
-          label="Privacy" 
-          icon="pi pi-lock" 
-          :class="props.client.privacy ? 'p-button-primary' : 'p-button-secondary'" 
-          class="ml-2" 
-          v-tooltip="props.client.privacy ? 'Privacy already signed' : ''"
-        />
+    <div class="card-input-row grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card-number">
+        <InputGroup>
+          <InputGroupAddon>
+            <i class="pi pi-credit-card"></i>
+          </InputGroupAddon>
+          <InputText v-model="cardNumber" type="number" placeholder="Card Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        </InputGroup>
       </div>
-      <div v-else-if="isEditMode">
-        <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
-        <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
-        <Button @click="deleteCustomer" label="Delete" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
+
+      <InputGroup class="w-full">
+        <InputGroupAddon>
+          <i class="pi pi-calendar"></i>
+        </InputGroupAddon>
+        <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+      </InputGroup>
+
+      <InputGroup class="w-full">
+        <InputGroupAddon>
+          <i class="pi pi-lock"></i>
+        </InputGroupAddon>
+        <InputText v-model="cvv" type="number" placeholder="CVV2" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+      </InputGroup>
+
+      <InputGroup class="w-full">
+        <InputGroupAddon>
+          <i class="pi pi-user"></i>
+        </InputGroupAddon>
+        <InputText v-model="cardHolder" type="text" placeholder="Card Holder" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+      </InputGroup>
+    </div>
+
+    <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
+    <Button icon="pi pi-paperclip" label="Attach Card" :disabled="isViewMode && !isEditMode" 
+      severity="contrast" @click="showCardUploadDialog"/>
+
+    <div v-if="cardFiles.length > 0" class="mt-4">
+      <h2 class="font-bold text-lg">Attached Card Documents</h2>
+      <div class="document-list grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-for="doc in cardFiles" :key="doc.id" class="document-item">
+          <div class="document-info">
+            <i class="pi pi-file mr-2"></i>
+            <span>{{ doc.filename || doc.name }}</span>
+          </div>
+          <div class="document-actions">
+            <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
+            <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'card')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
+          </div>
+        </div>
       </div>
-    </template>
-  </Card>
+    </div>
+
+    <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" class="ml-2 mt-4" icon="pi pi-user" />
+
+    <div v-if="isViewMode && !isEditMode">
+      <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+      <Button 
+        @click="handlePrivacyClick" 
+        label="Privacy" 
+        icon="pi pi-lock" 
+        :class="props.client.privacy ? 'p-button-primary' : 'p-button-secondary'" 
+        class="ml-2" 
+        v-tooltip="props.client.privacy ? 'Privacy already signed' : ''"
+      />
+    </div>
+    <div v-else-if="isEditMode">
+      <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
+      <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
+      <Button @click="deleteCustomer" label="Delete" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
+    </div>
+  </template>
+</Card>
+
 
   <Dialog v-model:visible="documentPreviewVisible" :header="previewingDocument.filename || 'Document Preview'" :style="{width: '50vw'}" 
         :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
@@ -1146,44 +1147,7 @@ watch(() => props.client, (newClient) => {
 </script>
 
 <style scoped>
-.input-group-grid {
-  display: grid;
-  gap: 1rem;
-}
 
-.input-group-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-.input-group-row:nth-child(2) {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.documents-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr; /* Colonna sinistra più larga */
-  gap: 1rem;
-  align-items: center;
-}
-
-.documents-grid > div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.card-input-row {
-  display: flex;
-  gap: 1rem; /* Aggiungi spazio tra gli input */
-  flex-wrap: wrap; /* Consente di andare a capo se necessario */
-}
-
-.card-input-row > div {
-  flex: 1;
-  min-width: 150px; /* Imposta una larghezza minima per evitare che diventino troppo piccoli */
-}
 
 .card-number {
   flex: 3; /* Rende il campo Card Number più largo rispetto agli altri */
