@@ -143,7 +143,7 @@
           <TabPanel value="1">
             <div v-if="isViewMode" class="images-container">
               <div v-if="isViewMode" v-for="(slot, index) in fotoSlots" :key="index">
-                <div v-if="!hasVehicleImages" class="no-images">
+                <div  class="no-images">
                   <div class="upload-container">
                     <FileUpload v-if="!src[index]" ref="fileupload" mode="basic" @select="onFileSelect($event, index)"
                       chooseLabel="Scegli" showUploadButton="false" customUpload auto name="fileupload"
@@ -159,47 +159,7 @@
                   </div>
                 </div>
               </div>
-              <!-- In modalità visualizzazione: mostra le foto esistenti e permette di aggiungerne altre (solo se ci sono immagini) -->
-              <div v-else class="photo-upload-grid">
-                <!-- Prima mostriamo le foto esistenti -->
-                <div class="photo-upload-item" v-for="image in vehicle.images" :key="image.id">
-                  <img :src="image.url" alt="Vehicle Image" class="uploaded-photo" />
-                </div>
-
-                <!-- Mostra un pulsante per aggiungere un'altra foto se ci sono meno di 3 foto -->
-                <div v-if="vehicle.images && vehicle.images.length < 3" class="photo-upload-item add-photo-button"
-                  @click="enableEditMode">
-                  <div class="add-photo-content">
-                    <i class="pi pi-plus-circle" style="font-size: 2rem; color: #6c757d;"></i>
-                    <p>Aggiungi foto</p>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            <div v-else>
-              <!-- In modalità modifica o creazione: mostra i 3 slot -->
-              <div class="photo-upload-grid">
-                <div class="photo-upload-item" v-for="index in 3" :key="index - 1">
-                  <div v-if="!photos[index - 1]" class="upload-container">
-                    <!-- Usa label invece di div per migliore accessibilità e compatibilità -->
-                    <label :for="'file-upload-' + (index - 1)" class="custom-file-upload">
-                      <i class="pi pi-cloud-upload" style="font-size: 2.5rem; color: #3498db;"></i>
-                      <span style="margin-top: 10px; font-weight: bold;">Click to Upload Image</span>
-                      <span style="font-size: 0.8rem; margin-top: 5px; color: #6c757d;">Max size: 5MB</span>
-                    </label>
-                    <input :id="'file-upload-' + (index - 1)" type="file" accept="image/*" class="hidden-file-input"
-                      @change="handleFileUpload($event, index - 1)" />
-                  </div>
-                  <div v-else class="photo-container">
-                    <img :src="photos[index - 1]" alt="Uploaded Photo" class="uploaded-photo" />
-                    <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm delete-photo-btn"
-                      @click="removePhoto(index - 1)" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div v-if="isEditMode" class="mt-4">
               <Button @click="savePhotos" label="Save Photos" icon="pi pi-check" />
               <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary ml-2" />
@@ -296,6 +256,7 @@ export default {
   },
   data() {
     return {
+      existingPhotos: [],
       src: [null, null, null, null, null, null],
       fotoSlots: fotoSlots,
       fileInputs: [],
@@ -385,13 +346,16 @@ export default {
   },
   mounted() {
     console.log(fotoSlots);
-
+    console.log(this.src, 'this.src');
+    
     this.fetchLocations();
     this.fetchBrandsAndModels();
   },
   watch: {
     vehicle: {
       handler(newVal) {
+        console.log(newVal, 'newVal');
+        
         // Only update values that are actually present in the new vehicle object
         if (newVal.make?.id) this.selectedBrand = newVal.make.id;
         if (newVal.model?.id) this.model = newVal.model.id;
@@ -412,7 +376,7 @@ export default {
         this.basicDailyPrice = newVal.basic_daily_price ?? this.basicDailyPrice;
         this.franchise = newVal.franchise ?? this.franchise;
         this.deposit = newVal.deposit ?? this.deposit;
-        this.imageUrl = newVal.imageUrl ?? this.imageUrl;
+        this.src = newVal.images?.map(image => image.url) ?? this.images;
         this.status = newVal.status ?? this.status;
       },
       immediate: true,
@@ -431,9 +395,12 @@ export default {
       reader.onload = async (e) => {
         this.src[index] = e.target.result; // Imposta l'immagine nell'array basato sull'indice
       };
+      console.log(this.src);
+      
       reader.readAsDataURL(file);
     },
     removeImage(index) {
+      this.isEditMode = true;
       this.src[index] = null; // Rimuove l'immagine selezionata
     },
     fetchLocations() {
@@ -744,62 +711,65 @@ export default {
     },
 
     savePhotos() {
-      // Collect all files that need to be uploaded
-      const uploads = [];
+  // Collect all files that need to be uploaded
+  const uploads = [];
 
-      this.photos.forEach((photo, index) => {
-        if (photo && photo.startsWith('data:')) {
-          // This is a new photo that needs to be uploaded
-          const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
-          uploads.push({ file, index });
-        }
-      });
+  this.src.forEach((photo, index) => {
+    // Aggiungi solo le foto che iniziano con 'data:', indicando che sono nuove immagini da caricare
+    if (photo && photo.startsWith('data:') && !this.existingPhotos.includes(photo)) {
+      const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
+      uploads.push({ file, index });
+      this.existingPhotos.push(photo); // Salva l'immagine nell'elenco per evitare duplicati
+    }
+  });
 
-      if (uploads.length === 0) {
-        this.$showToast('info', 'Info', 'No new photos to upload');
-        return;
+  // if (uploads.length === 0) {
+  //   this.$showToast('info', 'Info', 'No new photos to upload');
+  //   return;
+  // }
+
+  // Create a form data object to send all photos
+  const formData = new FormData();
+  formData.append('vehicle_id', this.vehicle.id);
+
+  uploads.forEach(({ file, index }) => {
+    formData.append(`photos[${index}]`, file);
+    formData.append(`indices[${index}]`, index);
+  });
+
+  axios.post('/vehicles/upload-multiple-photos', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+    .then(response => {
+      this.$showToast('success', 'Success', 'Photos saved successfully');
+
+      // Aggiorna il veicolo con le nuove immagini
+      if (response.data && response.data.vehicle && response.data.vehicle.images) {
+        const updatedVehicle = {
+          ...this.vehicle,
+          images: response.data.vehicle.images
+        };
+
+        // Aggiorna il veicolo locale
+        this.vehicle = updatedVehicle;
+
+        // Resetta le foto selezionate dopo il salvataggio
+        // this.src = [null, null, null, null, null, null];
+
+        // Emetti evento per aggiornare i componenti genitori
+        this.$emit('vehicle-updated', updatedVehicle);
+
+        console.log();
       }
+    })
+    .catch(error => {
+      console.error('Error saving photos:', error);
+      this.$showToast('error', 'Error', 'Failed to save photos');
+    });
+},
 
-      // Create a form data object to send all photos
-      const formData = new FormData();
-      formData.append('vehicle_id', this.vehicle.id);
-
-      uploads.forEach(({ file, index }) => {
-        formData.append(`photos[${index}]`, file);
-        formData.append(`indices[${index}]`, index);
-      });
-
-      axios.post('/vehicles/upload-multiple-photos', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-        .then(response => {
-          this.$showToast('success', 'Success', 'Photos saved successfully');
-
-          // Aggiorna il veicolo con le nuove immagini
-          if (response.data && response.data.vehicle && response.data.vehicle.images) {
-            // Aggiorna l'oggetto vehicle con le nuove immagini
-            const updatedVehicle = {
-              ...this.vehicle,
-              images: response.data.vehicle.images
-            };
-
-            // Aggiorna il veicolo locale
-            this.vehicle = updatedVehicle;
-
-            // Resetta le foto selezionate dopo il salvataggio
-            this.photos = [null, null, null];
-
-            // Emetti evento per aggiornare i componenti genitori
-            this.$emit('vehicle-updated', updatedVehicle);
-          }
-        })
-        .catch(error => {
-          console.error('Error saving photos:', error);
-          this.$showToast('error', 'Error', 'Failed to save photos');
-        });
-    },
 
     onDamagePhotoSelect(index) {
       // Handle damage photo selection event
@@ -815,7 +785,7 @@ export default {
     },
     enableEditMode(tabValue) {
       // Inizializza l'array delle foto per la modifica
-      this.photos = [null, null, null];
+      this.src = [null, null, null,null,null,null];
 
       // Se ci sono foto esistenti, le prepariamo per la modifica
       if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
@@ -823,7 +793,7 @@ export default {
         this.vehicle.images.forEach((image, idx) => {
           if (idx < 3) {
             // Assicurati che l'array photos esista e sia inizializzato
-            this.photos[idx] = image.url;
+            this.src[idx] = image.url;
           }
         });
       }
@@ -837,7 +807,7 @@ export default {
       }
 
       // Log per debug
-      console.log('Photos array after enableEditMode:', this.photos);
+      console.log('Photos array after enableEditMode:', this.src);
 
       // Salva i dati originali per poterli ripristinare in caso di annullamento
       this.originalData = JSON.parse(JSON.stringify(this.$data));
