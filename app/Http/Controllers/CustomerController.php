@@ -9,7 +9,7 @@ class CustomerController extends Controller
 {
     public function getCustomers()
     {
-        $clients = Customer::all();
+        $clients = Customer::with(['identityDocuments', 'cardDocuments'])->get();
         return response()->json($clients);
     }
 
@@ -59,6 +59,19 @@ class CustomerController extends Controller
             return response()->json(['message' => 'Customer updated successfully', 'customer' => $customer], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to update customer', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updatePrivacy($id)
+    {
+        try {
+            $customer = Customer::findOrFail($id);
+            $customer->privacy = true;
+            $customer->save();
+
+            return response()->json(['message' => 'Privacy updated successfully', 'customer' => $customer], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to update privacy', 'error' => $e->getMessage()], 500);
         }
     }
 }

@@ -41,8 +41,17 @@
             <Column field="phone" header="Phone" />
             <Column field="address" header="Address" />
             <Column header="Documents">
-              <template #body="">
-                <i class="pi pi-file"></i>
+              <template #body="slotProps">
+                <Checkbox :model-value="slotProps.data.hasDocuments" :binary="true" disabled />
+              </template>
+            </Column>
+            <Column header="Privacy">
+              <template #body="slotProps">
+                <Badge 
+                  :value="slotProps.data.privacy ? 'Signed' : 'Not Signed'" 
+                  :severity="slotProps.data.privacy ? 'success' : 'danger'" 
+                  class="p-mr-2" 
+                />
               </template>
             </Column>
           </DataTable>
@@ -76,6 +85,8 @@ import InputIcon from 'primevue/inputicon';
 import IconField from 'primevue/iconfield';
 import ProgressSpinner from 'primevue/progressspinner';
 import AddCustomer from './AddCustomer.vue';
+import Checkbox from 'primevue/checkbox';
+import Badge from 'primevue/badge';
 
 const clients = ref([]);
 const selectedClient = ref({});
@@ -108,7 +119,11 @@ const fetchClients = async () => {
 
   try {
     const response = await axios.post('/customer');
-    clients.value = response.data;
+    clients.value = response.data.map(client => ({
+      ...client,
+      hasDocuments: (client.identity_documents?.length || 0) > 0 || (client.card_documents?.length || 0) > 0,
+      privacy: client.privacy // Booleano true o false
+    }));
   } catch (err) {
     console.error('Error fetching clients:', err);
     error.value = 'Failed to load customers. Please try again later.';
@@ -200,5 +215,12 @@ label {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+.text-green-500 {
+  color: #22c55e; /* Verde per "signed" */
+}
+
+.text-red-500 {
+  color: #ef4444; /* Rosso per "notsigned" */
 }
 </style>

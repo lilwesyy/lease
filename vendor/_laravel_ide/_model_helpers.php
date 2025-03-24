@@ -580,7 +580,25 @@ namespace App\Models {
     /**
      * App\Models\Document
      *
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property int|null $customer_id
+     * @property string $document_type
+     * @property int $size
+     * @property string $type
+     * @property string $path
+     * @property string $name
+     * @property int $id
      * @property-read \App\Models\Customer $customer
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document wherePath($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereSize($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereDocumentType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereCustomerId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Document>|Document query()

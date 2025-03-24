@@ -52,6 +52,9 @@ Route::post('/customer/create', [CustomerController::class, 'createCustomer']);
 Route::delete('/customer/delete/{id}', [CustomerController::class, 'deleteCustomer']);
 Route::put('/customer/edit/{id}', [CustomerController::class, 'editCustomer']);
 
+// Privacy
+Route::post('/customer/privacy/{id}', [CustomerController::class, 'updatePrivacy']);
+
 // Documents
 Route::post('/documents/upload', [DocumentController::class, 'uploadDocuments']);
 Route::post('/documents/upload-card', [DocumentController::class, 'uploadCardDocuments']);

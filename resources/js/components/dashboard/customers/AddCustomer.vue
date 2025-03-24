@@ -5,6 +5,41 @@
 
   <Breadcrumb :model="breadcrumbItems" class="custom-breadcrumb" />
 
+  <Dialog v-model:visible="privacyDialogVisible" header="Privacy Agreement" :style="{ width: '50vw' }" :modal="true" :closable="true">
+  <template #default>
+    <div>
+      <h2 class="font-bold text-xl mb-4">Privacy Policy</h2>
+      <p>
+        **Customer Details:**  
+        First Name: <strong>{{ firstName }}</strong> Last Name: <strong>{{ lastName }}</strong><br />
+        Date of Birth: <strong>{{ birthDate }}</strong><br />
+        Address: <strong>{{ selectedAddress }}</strong><br />
+        Phone: <strong>{{ phone }}</strong><br />
+        Email: <strong>{{ email }}</strong>
+      </p>
+      <p class="mt-4">
+        In accordance with the General Data Protection Regulation (GDPR - EU Regulation 2016/679), the customer consents to the processing of their personal data for the following purposes:
+      </p>
+      <ul class="list-disc ml-6 mt-2">
+        <li>Management of the vehicle rental contract.</li>
+        <li>Communications related to the car rental service.</li>
+        <li>Compliance with legal and tax obligations.</li>
+        <li>Sending promotional communications (with explicit consent).</li>
+      </ul>
+      <p class="mt-4">
+        The customer has the right to access, rectify, or delete their personal data, as well as to object to processing for marketing purposes. To exercise these rights, please contact: <strong>privacy@carrental.com</strong>.
+      </p>
+      <p class="mt-4">
+        Do you confirm that you have read and understood the privacy policy and agree to the processing of your personal data?
+      </p>
+    </div>
+  </template>
+  <template #footer>
+    <Button label="I Agree" icon="pi pi-check" class="p-button-success" @click="acceptPrivacy" />
+    <Button label="Close" icon="pi pi-times" class="p-button-secondary" @click="privacyDialogVisible = false" />
+  </template>
+</Dialog>
+
   <Dialog v-model:visible="documentUploadDialogVisible" header="Upload Documents" :style="{width: '50vw'}" 
           :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
     <FileUpload 
@@ -240,6 +275,14 @@
 
       <div v-if="isViewMode && !isEditMode">
         <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+        <Button 
+          @click="handlePrivacyClick" 
+          label="Privacy" 
+          icon="pi pi-lock" 
+          :class="props.client.privacy ? 'p-button-primary' : 'p-button-secondary'" 
+          class="ml-2" 
+          v-tooltip="props.client.privacy ? 'Privacy already signed' : ''"
+        />
       </div>
       <div v-else-if="isEditMode">
         <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
@@ -320,6 +363,7 @@ const documentUploader = ref(null);
 const cardUploader = ref(null);
 const documentFiles = ref([]);
 const cardFiles = ref([]);
+const privacyDialogVisible = ref(false);
 
 // Reactive state
 const isEditMode = ref(false);
@@ -343,7 +387,9 @@ const originalData = ref({});
 const documentPreviewVisible = ref(false);
 const previewingDocument = ref({});
 
-
+const openPrivacyDialog = () => {
+  privacyDialogVisible.value = true;
+};
 
 // Non-reactive data
 const languages = [
@@ -383,6 +429,21 @@ watch(() => props.client, (newClient) => {
 }, { immediate: true });
 
 // Methods
+const handlePrivacyClick = () => {
+  if (props.client.privacy) {
+    // Mostra un messaggio di tooltip (già gestito dal v-tooltip)
+    toast.add({
+      severity: 'info',
+      summary: 'Privacy Signed',
+      detail: 'The privacy agreement has already been signed.',
+      life: 3000,
+    });
+  } else {
+    // Apri il dialog per accettare la privacy
+    openPrivacyDialog();
+  }
+};
+
 const deleteCustomer = async () => {
   confirm.require({
     message: 'Are you sure you want to delete this customer?',
@@ -579,6 +640,37 @@ const triggerDocumentUpload = () => {
       detail: 'Please select files to upload', 
       life: 3000 
     });
+  }
+};
+
+const acceptPrivacy = async () => {
+  if (props.client && props.client.id) {
+    try {
+      // Invia una richiesta POST al backend per aggiornare la privacy
+      const response = await axios.post(`/customer/privacy/${props.client.id}`);
+
+      // Aggiorna lo stato locale del cliente
+      props.client.privacy = true;
+
+      // Mostra un messaggio di successo
+      toast.add({
+        severity: 'success',
+        summary: 'Privacy Accepted',
+        detail: 'The customer has accepted the privacy policy.',
+        life: 3000,
+      });
+
+      // Chiudi il dialog
+      privacyDialogVisible.value = false;
+    } catch (error) {
+      // Mostra un messaggio di errore in caso di fallimento
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to update privacy. Please try again.',
+        life: 3000,
+      });
+    }
   }
 };
 
