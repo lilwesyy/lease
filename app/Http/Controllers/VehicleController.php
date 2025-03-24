@@ -349,7 +349,7 @@ class VehicleController extends Controller
             $request->validate([
                 'vehicle_id' => 'required|exists:vehicles,id',
                 'photos.*' => 'required|image|max:5048', // 5MB max
-                'indices.*' => 'required|integer|min:0|max:2',
+                'indices.*' => 'required|integer|min:0|max:5',
             ]);
 
             $vehicleId = $request->vehicle_id;
