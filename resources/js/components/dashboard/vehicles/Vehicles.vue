@@ -94,6 +94,7 @@
           :vehicle="selectedVehicle"
           :isViewMode="true"
           @vehicle-updated="onVehicleUpdated"
+          @vehicle-updated-photo="onVehicleUpdatedPhoto"
         />
       </Dialog>
     </div>
@@ -208,7 +209,9 @@
           loading.value = false;
         }
       };
-
+      const onVehicleUpdatedPhoto = () =>{
+        fetchVehicles();
+      }
       // Nuovo metodo per gestire l'aggiornamento di un veicolo
       const onVehicleUpdated = (updatedVehicle) => {
         const index = vehicles.value.findIndex(v => v.id === updatedVehicle.id);
@@ -223,6 +226,8 @@
         }
       };
 
+    
+
       // Nuovo metodo per gestire l'eliminazione di un veicolo
       const onVehicleDeleted = (vehicleId) => {
         // Rimuovi il veicolo dalla tabella
@@ -232,6 +237,7 @@
         if (selectedVehicle.value && selectedVehicle.value.id === vehicleId) {
           showDetailsModal.value = false;
         }
+        fetchVehicles();
       };
 
       onMounted(() => {
@@ -243,10 +249,12 @@
 
         // Add event listeners
         window.addEventListener('vehicle-updated', vehicleUpdatedHandler);
+        window.addEventListener('vehicle-updated-photo', vehicleUpdatedHandler);
         window.addEventListener('vehicle-deleted', vehicleDeletedHandler);
 
         // Store references for cleanup
         onBeforeUnmount(() => {
+          window.addEventListener('vehicle-updated-photo', vehicleUpdatedHandler);
           window.removeEventListener('vehicle-updated', vehicleUpdatedHandler);
           window.removeEventListener('vehicle-deleted', vehicleDeletedHandler);
         });
@@ -269,6 +277,7 @@
         items,
         fetchVehicles,
         onVehicleUpdated,
+        onVehicleUpdatedPhoto,
         onVehicleDeleted
       };
     }

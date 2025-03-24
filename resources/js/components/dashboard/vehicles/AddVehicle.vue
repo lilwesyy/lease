@@ -714,12 +714,12 @@ export default {
   // Collect all files that need to be uploaded
   const uploads = [];
 
+  
   this.src.forEach((photo, index) => {
     // Aggiungi solo le foto che iniziano con 'data:', indicando che sono nuove immagini da caricare
-    if (photo && photo.startsWith('data:') && !this.existingPhotos.includes(photo)) {
+    if (photo && photo.startsWith('data:') ) {
       const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
       uploads.push({ file, index });
-      this.existingPhotos.push(photo); // Salva l'immagine nell'elenco per evitare duplicati
     }
   });
 
@@ -738,36 +738,38 @@ export default {
   });
 
   axios.post('/vehicles/upload-multiple-photos', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-    .then(response => {
-      this.$showToast('success', 'Success', 'Photos saved successfully');
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+})
+.then(response => {
+  this.$showToast('success', 'Success', 'Photos saved successfully');
+  let tmpPh = JSON.parse(JSON.stringify(this.src));
+  // let vehicleTmp = JSON.parse(JSON.stringify(this.vehicle));
+  // vehicleTmp.images = tmpPh;
+  // vehicleTmp = tmpPh;
+  // console.log(this.vehicle);
+      this.$emit('vehicle-updated-photo');
 
-      // Aggiorna il veicolo con le nuove immagini
-      if (response.data && response.data.vehicle && response.data.vehicle.images) {
-        const updatedVehicle = {
-          ...this.vehicle,
-          images: response.data.vehicle.images
-        };
+  // Aggiorna il veicolo con le nuove immagini
+  // if (response.data && response.data.vehicle && response.data.vehicle.images) {
 
-        // Aggiorna il veicolo locale
-        this.vehicle = updatedVehicle;
 
-        // Resetta le foto selezionate dopo il salvataggio
-        // this.src = [null, null, null, null, null, null];
+  //   // Resetta le foto selezionate dopo il salvataggio
+  //   // this.src = [null, null, null, null, null, null];
 
-        // Emetti evento per aggiornare i componenti genitori
-        this.$emit('vehicle-updated', updatedVehicle);
+  //   // Emetti evento per aggiornare i componenti genitori
+  //   console.log(updatedVehicle, 'updatedVehicle');
+    
+  //   this.$emit('vehicle-updated', updatedVehicle);
 
-        console.log();
-      }
-    })
-    .catch(error => {
-      console.error('Error saving photos:', error);
-      this.$showToast('error', 'Error', 'Failed to save photos');
-    });
+  //   console.log();
+  // }
+})
+.catch(error => {
+  console.error('Error saving photos:', error);
+  this.$showToast('error', 'Error', 'Failed to save photos');
+});
 },
 
 
@@ -785,7 +787,7 @@ export default {
     },
     enableEditMode(tabValue) {
       // Inizializza l'array delle foto per la modifica
-      this.src = [null, null, null,null,null,null];
+      // this.src = [null, null, null,null,null,null];
 
       // Se ci sono foto esistenti, le prepariamo per la modifica
       if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
