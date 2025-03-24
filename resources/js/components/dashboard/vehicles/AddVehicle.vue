@@ -148,10 +148,7 @@
                     <FileUpload v-if="!src[index]" ref="fileupload" mode="basic" @select="onFileSelect($event, index)"
                       chooseLabel="Scegli" showUploadButton="false" customUpload auto name="fileupload"
                       url="/api/upload" accept="image/*" :maxFileSize="1000000" @upload="onUpload" class="file-upload-button" />
-                      
-                   
                     <img v-if="!src[index]" :src="slot.imageSrc" alt="Image" class="uploaded-image" />
-                  
                     <div v-if="src[index]" class="uploaded-image-container">
                       <img :src="src[index]" alt="Image" class="uploaded-image" />
                       <button @click="removeImage(index)" class="remove-image-button">
@@ -240,7 +237,7 @@ import ColumnGroup from 'primevue/columngroup';
 import Row from 'primevue/row';
 import FloatLabel from 'primevue/floatlabel';
 import VehicleDamage from './VehicleDamage.vue';
-import { fotoSlots } from '@/utils.js';
+import { fotoSlots } from './utils.js';
 import { ref } from "vue";
 
 export default {
@@ -427,6 +424,7 @@ export default {
   },
   methods: {
     onFileSelect(event, index) {
+      this.isEditMode = true;
       const file = event.files[0];
       const reader = new FileReader();
 
@@ -464,6 +462,7 @@ export default {
       }, 10);
     },
     handleFileUpload(event, index) {
+      this.isEditMode = true;
       const file = event.target.files[0];
       if (!file) {
         console.log("Nessun file selezionato");
