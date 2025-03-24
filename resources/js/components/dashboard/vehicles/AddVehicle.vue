@@ -20,10 +20,37 @@
             <div class="vehicle-info">
               <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'" />
               <div class="input-group">
-                <FloatLabel variant="on">
+                <!-- <FloatLabel variant="on">
                   <Select id="brand" class="full-width" v-model="selectedBrand" :options="brands" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
                   <label for="brand">Brand</label>
+                </FloatLabel> -->
+
+                <FloatLabel variant="on">
+                    <Select 
+                        id="brand" 
+                        class="full-width full-height" 
+                        v-model="selectedBrand" 
+                        :options="brands" 
+                        filter 
+                        optionValue="value"
+                        optionLabel="label" 
+                        placeholder="‎ "
+                        :class="{ 'select-readonly': isViewMode && !isEditMode }"
+                    >
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <img 
+                                    :alt="slotProps.option.label" 
+                                    :src="slotProps.option.icon || '/brand-logo.svg'" 
+                                    class="mr-2" 
+                                    style="width: 35px" 
+                                />
+                                <div>{{ slotProps.option.label }}</div>
+                            </div>
+                        </template>
+                    </Select>
+                    <label for="brand">Brand</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
