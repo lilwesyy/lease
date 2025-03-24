@@ -2,11 +2,56 @@
   <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Customer</h1>
   <h1 v-else-if="isEditMode" class="font-bold text-3xl">Edit Customer</h1>
   <h1 v-else class="font-bold text-3xl">View Customer</h1>
-  <Toast />
 
   <Breadcrumb :model="breadcrumbItems" class="custom-breadcrumb" />
 
-  <ConfirmDialog />
+  <Dialog v-model:visible="documentUploadDialogVisible" header="Upload Documents" :style="{width: '50vw'}" 
+          :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
+    <FileUpload 
+      ref="documentUploader"
+      name="documents"
+      :customUpload="true"
+      @uploader="uploadDocumentsWithAxios" 
+      :multiple="true"
+      accept="image/*,application/pdf"
+      :maxFileSize="10000000"
+      chooseLabel="Select Files"
+      uploadLabel="Upload"
+      cancelLabel="Cancel"
+      :auto="false">
+      <template #empty>
+        <p>Drag and drop files here to upload.</p>
+      </template>
+    </FileUpload>
+    <template #footer>
+      <Button label="Close" icon="pi pi-times" @click="documentUploadDialogVisible = false" class="p-button-secondary" />
+      <Button label="Upload" icon="pi pi-upload" @click="triggerDocumentUpload" class="p-button-primary" />
+    </template>
+  </Dialog>
+
+  <Dialog v-model:visible="cardUploadDialogVisible" header="Upload Card Documents" :style="{width: '50vw'}" 
+          :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
+          <FileUpload 
+  ref="cardUploader"
+  name="cardDocuments"
+  :customUpload="true"
+  @uploader="uploadCardDocumentsWithAxios" 
+  :multiple="true"
+  accept="image/*,application/pdf"
+  :maxFileSize="10000000"
+  chooseLabel="Select Files"
+  uploadLabel="Upload"
+  cancelLabel="Cancel"
+  :auto="false">
+  <template #empty>
+    <p>Drag and drop card scans here to upload.</p>
+  </template>
+</FileUpload>
+    <template #footer>
+      <Button label="Close" icon="pi pi-times" @click="cardUploadDialogVisible = false" class="p-button-secondary" />
+      <Button label="Upload" icon="pi pi-upload" @click="uploadCardDocuments" class="p-button-primary" />
+    </template>
+  </Dialog>
 
   <Card class="isviewed">
     <template #content>
@@ -117,7 +162,24 @@
         </div>
       </div>
       <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
-      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" severity="contrast"/>
+      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
+      severity="contrast" @click="showDocumentUploadDialog"/>
+
+      <div v-if="documentFiles.length > 0" class="mt-4">
+        <h2 class="font-bold text-lg">Attached Documents</h2>
+        <div class="document-list">
+          <div v-for="doc in documentFiles" :key="doc.id" class="document-item">
+            <div class="document-info">
+              <i class="pi pi-file mr-2"></i>
+              <span>{{ doc.filename || doc.name }}</span>
+            </div>
+            <div class="document-actions">
+              <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
+              <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'identity')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <h1 class="font-bold text-2xl mt-10">Card</h1>
       <p class="mb-2 text-gray-500">Fill the customer card info</p>
@@ -155,7 +217,24 @@
       </div>
 
       <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" severity="contrast"/>
+      <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
+      severity="contrast" @click="showCardUploadDialog"/>
+
+      <div v-if="cardFiles.length > 0" class="mt-4">
+        <h2 class="font-bold text-lg">Attached Card Documents</h2>
+        <div class="document-list">
+          <div v-for="doc in cardFiles" :key="doc.id" class="document-item">
+            <div class="document-info">
+              <i class="pi pi-file mr-2"></i>
+              <span>{{ doc.filename || doc.name }}</span>
+            </div>
+            <div class="document-actions">
+              <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
+              <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'card')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" class="ml-2 mt-4" icon="pi pi-user" />
 
@@ -169,6 +248,34 @@
       </div>
     </template>
   </Card>
+
+  <Dialog v-model:visible="documentPreviewVisible" :header="previewingDocument.filename || 'Document Preview'" :style="{width: '50vw'}" 
+        :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
+  <div class="document-preview-container">
+    <!-- Loading indicator -->
+    <div v-if="!previewingDocument.url" class="flex flex-column align-items-center py-4">
+      <i class="pi pi-spin pi-spinner text-3xl mb-2"></i>
+      <p>Loading document...</p>
+    </div>
+    
+    <!-- PDF viewer -->
+    <iframe v-else-if="previewingDocument.mime_type && previewingDocument.mime_type.includes('pdf')" 
+            :src="previewingDocument.url" width="100%" height="500px" frameborder="0"></iframe>
+    
+    <!-- Image viewer with improved JPEG/JPG handling -->
+    <div v-else-if="isImageFile(previewingDocument)" class="flex justify-content-center w-full">
+      <img :src="previewingDocument.url" class="max-w-full max-h-[500px] object-contain" 
+           @error="handleImageError" />
+    </div>
+    
+    <!-- Fallback for unsupported types -->
+    <div v-else class="text-center py-8">
+      <i class="pi pi-file text-5xl mb-3 text-primary"></i>
+      <p>This document type cannot be previewed directly.</p>
+      <Button icon="pi pi-download" label="Download" @click="downloadDocument(previewingDocument)" class="mt-4" />
+    </div>
+  </div>
+</Dialog>
 </template>
 
 <script setup>
@@ -187,6 +294,8 @@ import InputGroupAddon from 'primevue/inputgroupaddon';
 import DatePicker from 'primevue/datepicker';
 import ConfirmDialog from 'primevue/confirmdialog';
 import Toast from 'primevue/toast';
+import Dialog from 'primevue/dialog';
+import FileUpload from 'primevue/fileupload';
 import axios from 'axios';
 
 const props = defineProps({
@@ -205,6 +314,12 @@ const emit = defineEmits(['close']);
 const router = useRouter();
 const confirm = useConfirm();
 const toast = useToast();
+const documentUploadDialogVisible = ref(false);
+const cardUploadDialogVisible = ref(false);
+const documentUploader = ref(null);
+const cardUploader = ref(null);
+const documentFiles = ref([]);
+const cardFiles = ref([]);
 
 // Reactive state
 const isEditMode = ref(false);
@@ -225,6 +340,10 @@ const expirationDate = ref('');
 const cvv = ref('');
 const cardHolder = ref('');
 const originalData = ref({});
+const documentPreviewVisible = ref(false);
+const previewingDocument = ref({});
+
+
 
 // Non-reactive data
 const languages = [
@@ -284,10 +403,230 @@ const deleteCustomer = async () => {
   });
 };
 
+const isImageFile = (document) => {
+  // Check by mime type
+  if (document.mime_type && document.mime_type.includes('image')) {
+    return true;
+  }
+  
+  // Check by file extension
+  const url = document.url || '';
+  return !!url.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i);
+};
+
+const handleImageError = (event) => {
+  // Replace the broken image with a placeholder
+  event.target.src = '/images/document-placeholder.png'; // Update with your placeholder image path
+  
+  // Or use an icon via CSS background instead of showing a broken image
+  event.target.classList.add('document-image-error');
+  event.target.alt = 'Document preview not available';
+  
+  toast.add({
+    severity: 'warn',
+    summary: 'Warning',
+    detail: 'Unable to load document preview',
+    life: 3000
+  });
+};
+
+
+// New methods for document upload
+const showDocumentUploadDialog = () => {
+  documentUploadDialogVisible.value = true;
+};
+
+const showCardUploadDialog = () => {
+  cardUploadDialogVisible.value = true;
+};
+
+const uploadDocuments = () => {
+  if (documentUploader.value) {
+    documentUploader.value.upload();
+  }
+};
+
+const uploadCardDocuments = () => {
+  if (cardUploader.value && cardUploader.value.files && cardUploader.value.files.length > 0) {
+    cardUploader.value.upload();
+  } else {
+    toast.add({ 
+      severity: 'info', 
+      summary: 'Info', 
+      detail: 'Please select files to upload', 
+      life: 3000 
+    });
+  }
+};
+
+const uploadCardDocumentsWithAxios = async (event) => {
+  const formData = new FormData();
+  
+  // Append each file to the FormData
+  for (let file of event.files) {
+    formData.append('cardDocuments[]', file);
+  }
+  
+  // Add the customer ID if in edit mode
+  if (props.isViewMode && props.client?.id) {
+    formData.append('customer_id', props.client.id);
+  }
+  
+  try {
+    const response = await axios.post('/documents/upload-card', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    if (response.data.success) {
+      cardFiles.value = [...cardFiles.value, ...response.data.files];
+      toast.add({ 
+        severity: 'success', 
+        summary: 'Success', 
+        detail: 'Card documents uploaded successfully', 
+        life: 3000 
+      });
+      cardUploadDialogVisible.value = false;
+      // Clear the uploader
+      cardUploader.value.clear();
+    } else {
+      toast.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: response.data.message || 'Failed to upload card documents', 
+        life: 3000 
+      });
+    }
+  } catch (error) {
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: 'Failed to upload card documents: ' + (error.response?.data?.message || error.message), 
+      life: 3000 
+    });
+  }
+};
+
+const uploadDocumentsWithAxios = async (event) => {
+  const formData = new FormData();
+  
+  // Append each file to the FormData
+  for (let file of event.files) {
+    formData.append('documents[]', file);
+  }
+  
+  // Add the customer ID if in edit mode
+  if (props.isViewMode && props.client?.id) {
+    formData.append('customer_id', props.client.id);
+  }
+  
+  try {
+    const response = await axios.post('/documents/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    if (response.data.success) {
+      documentFiles.value = [...documentFiles.value, ...response.data.files];
+      toast.add({ 
+        severity: 'success', 
+        summary: 'Success', 
+        detail: 'Documents uploaded successfully', 
+        life: 3000 
+      });
+      documentUploadDialogVisible.value = false;
+      // Clear the uploader
+      documentUploader.value.clear();
+    } else {
+      toast.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: response.data.message || 'Failed to upload documents', 
+        life: 3000 
+      });
+    }
+  } catch (error) {
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: 'Failed to upload documents: ' + (error.response?.data?.message || error.message), 
+      life: 3000 
+    });
+  }
+};
+
+const onDocumentUpload = (event) => {
+  const response = JSON.parse(event.xhr.response);
+  if (response.success) {
+    documentFiles.value = [...documentFiles.value, ...response.files];
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Documents uploaded successfully', life: 3000 });
+    documentUploadDialogVisible.value = false;
+  } else {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to upload documents', life: 3000 });
+  }
+};
+
+const triggerDocumentUpload = () => {
+  if (documentUploader.value && documentUploader.value.files && documentUploader.value.files.length > 0) {
+    documentUploader.value.upload();
+  } else {
+    toast.add({ 
+      severity: 'info', 
+      summary: 'Info', 
+      detail: 'Please select files to upload', 
+      life: 3000 
+    });
+  }
+};
+
+const onCardUpload = (event) => {
+  const response = JSON.parse(event.xhr.response);
+  if (response.success) {
+    cardFiles.value = [...cardFiles.value, ...response.files];
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Card documents uploaded successfully', life: 3000 });
+    cardUploadDialogVisible.value = false;
+  } else {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to upload card documents', life: 3000 });
+  }
+};
+
+const loadCustomerDocuments = async (customerId) => {
+  if (customerId) {
+    try {
+      const response = await axios.post(`/documents/customer/${customerId}`);
+      if (response.data.success) {
+        // Process identity documents
+        documentFiles.value = (response.data.identity_documents || []).map(doc => ({
+          ...doc,
+          filename: doc.filename || doc.name || 'Document',
+          url: doc.url || `/documents/view/${doc.id}`
+        }));
+        
+        // Process card documents
+        cardFiles.value = (response.data.card_documents || []).map(doc => ({
+          ...doc,
+          filename: doc.filename || doc.name || 'Card Document',
+          url: doc.url || `/documents/view/${doc.id}`
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load customer documents:', error);
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Failed to load customer documents',
+        life: 3000
+      });
+    }
+  }
+};
+
 
 const createCustomer = async () => {
   try {
-    await axios.post('/customer/create', {
+    const response = await axios.post('/customer/create', {
       firstName: firstName.value,
       lastName: lastName.value,
       birthDate: birthDate.value,
@@ -304,6 +643,30 @@ const createCustomer = async () => {
       cvv: cvv.value,
       cardHolder: cardHolder.value
     });
+    
+    // Get the new customer ID
+    const customerId = response.data.customer.id;
+    
+    // If there are documents, attach them to the customer
+    if (documentFiles.value.length > 0) {
+      const documentIds = documentFiles.value.map(doc => doc.id).filter(id => id);
+      if (documentIds.length > 0) {
+        await axios.post(`/api/documents/attach/${customerId}`, {
+          document_ids: documentIds
+        });
+      }
+    }
+    
+    // If there are card documents, attach them to the customer
+    if (cardFiles.value.length > 0) {
+      const cardDocumentIds = cardFiles.value.map(doc => doc.id).filter(id => id);
+      if (cardDocumentIds.length > 0) {
+        await axios.post(`/api/documents/attach/${customerId}`, {
+          document_ids: cardDocumentIds
+        });
+      }
+    }
+    
     router.push('/dashboard/customers');
     toast.add({ severity: 'success', summary: 'Success', detail: 'Customer created successfully', life: 3000 });
   } catch (error) {
@@ -329,7 +692,9 @@ const editCustomer = async () => {
       cardNumber: cardNumber.value,
       expirationDate: expirationDate.value,
       cvv: cvv.value,
-      cardHolder: cardHolder.value
+      cardHolder: cardHolder.value,
+      documents: documentFiles.value,
+      cardDocuments: cardFiles.value
     });
     router.push('/dashboard/customers');
     toast.add({ severity: 'success', summary: 'Success', detail: 'Customer updated successfully', life: 3000 });
@@ -398,6 +763,118 @@ const cancelEditMode = () => {
   cardHolder.value = originalData.value.cardHolder;
   isEditMode.value = false;
 };
+
+const previewDocument = async (doc) => {
+  // Create a temporary object with the document properties
+  const documentToPreview = { ...doc };
+  
+  // Reset current preview document to show loading indicator
+  previewingDocument.value = { loading: true };
+  documentPreviewVisible.value = true;
+  
+  try {
+    // Ensure we have a valid URL for the document
+    if (!documentToPreview.url) {
+      // Generate URL based on document ID
+      documentToPreview.url = `/documents/view/${doc.id}`;
+    }
+    
+    // Log the document information for debugging
+    console.log('Previewing document:', documentToPreview);
+    
+    // For image files, add a cache-busting parameter to prevent browser caching issues
+    if (isImageFile(documentToPreview)) {
+      const separator = documentToPreview.url.includes('?') ? '&' : '?';
+      documentToPreview.url = `${documentToPreview.url}${separator}t=${Date.now()}`;
+      
+      // Try to fetch the image with axios to check for any backend errors
+      try {
+        const response = await axios.head(documentToPreview.url);
+        console.log('Image response headers:', response.headers);
+      } catch (error) {
+        console.error('Failed to check image URL:', error);
+      }
+    }
+    
+    // Set the document for preview
+    previewingDocument.value = documentToPreview;
+  } catch (error) {
+    console.error('Error preparing document preview:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to load document preview',
+      life: 3000
+    });
+  }
+};
+
+const deleteDocument = async (documentId, type, event) => {
+  // If an event was passed, prevent its propagation
+  if (event) {
+    event.stopPropagation();
+  }
+  
+  if (!documentId) return;
+  
+  confirm.require({
+    message: 'Are you sure you want to delete this document?',
+    header: 'Delete Document',
+    icon: 'pi pi-exclamation-triangle',
+    acceptClass: 'p-button-danger',
+    accept: async () => {
+      try {
+        // Use POST method with _method parameter to simulate DELETE
+        const response = await axios.post(`/documents/delete/${documentId}`, {
+          _method: 'DELETE'
+        });
+        
+        if (response.data.success) {
+          // Remove from local state
+          if (type === 'identity') {
+            documentFiles.value = documentFiles.value.filter(doc => doc.id !== documentId);
+          } else {
+            cardFiles.value = cardFiles.value.filter(doc => doc.id !== documentId);
+          }
+          
+          toast.add({ 
+            severity: 'success', 
+            summary: 'Success', 
+            detail: 'Document deleted successfully', 
+            life: 3000 
+          });
+        } else {
+          toast.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: response.data.message || 'Failed to delete document', 
+            life: 3000 
+          });
+        }
+      } catch (error) {
+        toast.add({ 
+          severity: 'error', 
+          summary: 'Error', 
+          detail: 'Failed to delete document: ' + (error.response?.data?.message || error.message), 
+          life: 3000 
+        });
+      }
+    }
+  });
+};
+
+const downloadDocument = (doc) => {
+  const link = document.createElement('a');
+  link.href = doc.url;
+  link.download = doc.filename || doc.name;
+  link.click();
+};
+
+watch(() => props.client, (newClient) => {
+  if (newClient && newClient.id) {
+    loadCustomerDocuments(newClient.id);
+  }
+}, { immediate: true });
 </script>
 
 <style scoped>
@@ -442,5 +919,45 @@ const cancelEditMode = () => {
 
 .card-number {
   flex: 3; /* Rende il campo Card Number più largo rispetto agli altri */
+}
+
+.document-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.document-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.document-info {
+  display: flex;
+  align-items: center;
+}
+
+.document-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.document-preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 0.25rem;
+  overflow: hidden;
 }
 </style>

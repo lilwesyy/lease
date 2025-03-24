@@ -8,6 +8,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DamageImageController;
+use App\Http\Controllers\DocumentController;
 
 Route::get('/{any}', function () {
     return view('welcome');
@@ -51,3 +52,9 @@ Route::post('/customer/create', [CustomerController::class, 'createCustomer']);
 Route::delete('/customer/delete/{id}', [CustomerController::class, 'deleteCustomer']);
 Route::put('/customer/edit/{id}', [CustomerController::class, 'editCustomer']);
 
+// Documents
+Route::post('/documents/upload', [DocumentController::class, 'uploadDocuments']);
+Route::post('/documents/upload-card', [DocumentController::class, 'uploadCardDocuments']);
+Route::post('/documents/attach/{customerId}', [DocumentController::class, 'attachToCustomer']);
+Route::post('/documents/customer/{customerId}', [DocumentController::class, 'getCustomerDocuments']);
+Route::delete('/documents/delete/{id}', [DocumentController::class, 'deleteDocument']);
