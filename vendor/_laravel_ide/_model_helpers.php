@@ -1377,12 +1377,12 @@ namespace App\Models {
     /**
      * App\Models\Vehicle
      *
+     * @property int|null $location_id
      * @property float|null $deposit
      * @property int|null $model_id
      * @property int|null $make_id
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property string $imageUrl
      * @property float $franchise
      * @property float $basic_daily_price
      * @property float $extra_km_price
@@ -1391,7 +1391,6 @@ namespace App\Models {
      * @property int $odometer
      * @property string $status
      * @property float $dailyPrice
-     * @property string $location
      * @property string $bodyType
      * @property string $plateNumber
      * @property string $color
@@ -1413,7 +1412,6 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereColor($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle wherePlatenumber($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereBodytype($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereLocation($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereDailyprice($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereOdometer($value)
@@ -1422,12 +1420,12 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereExtraKmPrice($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereBasicDailyPrice($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereFranchise($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereImageurl($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereMakeId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereModelId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereDeposit($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle whereLocationId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Vehicle>|Vehicle query()
