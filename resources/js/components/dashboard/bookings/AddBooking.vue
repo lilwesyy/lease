@@ -157,7 +157,7 @@
 
             <div v-if="clients.length > 0">
               <DataTable
-                  :value="clients"
+                  :value="filteredClients"
                   selectionMode="single"
                   dataKey="id"
                   @row-click="onClientRowClick"
@@ -427,17 +427,18 @@ export default {
     };
 
     const filteredClients = computed(() => {
-    if (!clientSearch.value.trim()) return clients.value;
+  if (!clientSearch.value.trim()) return clients.value;
 
-    const searchTerm = clientSearch.value.toLowerCase();
-    return clients.value.filter(client =>
-        (client.firstName?.toLowerCase() || '').includes(searchTerm) ||
-        (client.lastName?.toLowerCase() || '').includes(searchTerm) ||
-        (client.email?.toLowerCase() || '').includes(searchTerm) ||
-        (client.phone?.toLowerCase() || '').includes(searchTerm) ||
-        (client.address?.toLowerCase() || '').includes(searchTerm)
-    );
-    });
+  const searchTerm = clientSearch.value.toLowerCase();
+  return clients.value.filter(client =>
+    (client.firstName?.toLowerCase() || '').includes(searchTerm) ||
+    (client.lastName?.toLowerCase() || '').includes(searchTerm) ||
+    (client.email?.toLowerCase() || '').includes(searchTerm) ||
+    (client.phone?.toLowerCase() || '').includes(searchTerm) ||
+    (client.address?.toLowerCase() || '').includes(searchTerm)
+  );
+});
+
 
     const filteredVehicles = computed(() => {
       if (!vehicleSearch.value.trim()) return vehicles.value;
@@ -473,18 +474,18 @@ export default {
 
     // Fetch clients data
     const fetchClients = async () => {
-    loading.value = true;
-    error.value = null;
+      loading.value = true;
+      error.value = null;
 
-    try {
+      try {
         const response = await axios.post('/customer');
         clients.value = response.data;
-    } catch (err) {
+      } catch (err) {
         console.error('Error fetching clients:', err);
         error.value = 'Failed to load customers. Please try again later.';
-    } finally {
+      } finally {
         loading.value = false;
-    }
+      }
     };
 
     // Show client details when a row is selected
@@ -698,6 +699,7 @@ export default {
       isDateVehicleTabComplete,
       isCustomerTabComplete,
       goToDateVehicleTab,
+      filteredClients,
       goToCustomerTab,
       goToSummaryTab,
       onDateSelect
