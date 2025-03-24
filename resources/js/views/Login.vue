@@ -130,6 +130,7 @@
             // Salva il token o gestisci lo stato di autenticazione
             localStorage.setItem('authToken', response.data.token); // Salva il token di autenticazione
             localStorage.setItem('name', response.data.user.name); // Salva il nome dell'utente
+            localStorage.setItem('id', response.data.user.id); // Salva l'ID dell'utente
             this.router.push('/dashboard'); // Reindirizza l'utente alla dashboard
           } catch (error) {
             console.error('Login failed:', error.response ? error.response.data : error);

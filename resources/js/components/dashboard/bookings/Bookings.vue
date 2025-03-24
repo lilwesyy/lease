@@ -20,7 +20,7 @@
                   class="p-datatable-no-gridlines"
                   @row-click="onRowClick"
                   :paginator="true"
-                  :rows="10">
+                  :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]">
                     <Column field="id" header="Booking ID"></Column>
                     <Column field="customerName" header="Customer"></Column>
                     <Column field="vehicleName" header="Vehicle"></Column>
