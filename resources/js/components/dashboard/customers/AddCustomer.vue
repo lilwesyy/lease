@@ -137,13 +137,22 @@
               <i class="pi pi-home"></i>
             </InputGroupAddon>
             <AutoComplete
-              v-model="selectedAddress"
-              :suggestions="filteredAddresses"
-              completeMethod="searchAddress"
+              id="address"
+              v-model="selectedPlace"
+              :suggestions="suggestions"
+              optionLabel="label"
+              @select="onSelect"
+              class="w-full md:w-56"
               placeholder="Address"
               :readonly="isViewMode && !isEditMode"
               required
-            />
+            >
+              <template #option="slotProps">
+                <div class="flex items-center">
+                  <div>{{ slotProps.option.label }}</div>
+                </div>
+              </template>
+            </AutoComplete>
           </InputGroup>
         </div>
       </div>
@@ -340,6 +349,7 @@ import Toast from 'primevue/toast';
 import Dialog from 'primevue/dialog';
 import FileUpload from 'primevue/fileupload';
 import axios from 'axios';
+import { Loader } from '@googlemaps/js-api-loader';
 
 const props = defineProps({
   isViewMode: {
@@ -364,6 +374,8 @@ const cardUploader = ref(null);
 const documentFiles = ref([]);
 const cardFiles = ref([]);
 const privacyDialogVisible = ref(false);
+const suggestions = ref([]);
+const selectedPlace = ref(null);
 
 // Reactive state
 const isEditMode = ref(false);
@@ -407,6 +419,60 @@ const breadcrumbItems = computed(() => [
   }
 ]);
 
+const onSelect = (event) => {
+  selectedPlace.value = {
+    label: event.label,
+    place_id: event.place_id,
+  };
+};
+
+watch(selectedPlace, (newValue) => {
+  if (typeof newValue !== 'string') {
+    selectedPlace.value = newValue?.label || ''; // Ripristina il valore come stringa
+  }
+});
+
+const fetchPlacePredictions = async (event) => {
+  const input = event.query.trim(); // Usa trim per evitare spazi indesiderati
+
+  if (!input) {
+    suggestions.value = [];
+    return;
+  }
+
+  try {
+    const loader = new Loader({
+      apiKey: 'AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao',
+      libraries: ['places'],
+      language: 'it',
+      region: 'IT',
+    });
+
+    const Places = await loader.importLibrary('places');
+    const service = new Places.AutocompleteService();
+
+    service.getPlacePredictions(
+      {
+        input,
+        componentRestrictions: { country: 'it' },
+        types: ['address'],
+      },
+      (predictions, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+          suggestions.value = predictions.map((prediction) => ({
+            label: prediction.description,
+            value: prediction.place_id,
+          }));
+        } else {
+          console.error('Autocomplete error:', status);
+          suggestions.value = [];
+        }
+      }
+    );
+  } catch (error) {
+    console.error('Error fetching place predictions:', error);
+  }
+};
 // Watchers
 watch(() => props.client, (newClient) => {
   if (newClient && Object.keys(newClient).length > 0) {
