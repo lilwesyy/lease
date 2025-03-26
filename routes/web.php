@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DamageImageController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\AppController;
 
 Route::get('/{any}', function () {
     return view('welcome');
@@ -67,3 +68,7 @@ Route::post('/documents/upload-card', [DocumentController::class, 'uploadCardDoc
 Route::post('/documents/attach/{customerId}', [DocumentController::class, 'attachToCustomer']);
 Route::post('/documents/customer/{customerId}', [DocumentController::class, 'getCustomerDocuments']);
 Route::delete('/documents/delete/{id}', [DocumentController::class, 'deleteDocument']);
+
+// App Settings
+Route::post('/settings', [AppController::class, 'getSettings']);
+Route::post('/settings/save', [AppController::class, 'saveSettings']);

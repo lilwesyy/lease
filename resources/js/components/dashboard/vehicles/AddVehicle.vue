@@ -1,21 +1,21 @@
 <template>
-  <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Vehicle</h1>
+  <h1 v-if="!isViewMode" class="font-bold text-3xl">{{ $t('vehicle.addVehicle') }}</h1>
   <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
 
   <Card class="isviewed">
     <template #content>
       <Tabs value="0">
         <TabList>
-          <Tab value="0"><i class="pi pi-car mr-2"></i>Vehicle Information</Tab>
-          <Tab value="1"><i class="pi pi-image mr-2"></i>{{ isViewMode ? 'Photos' : 'Upload Photos' }}</Tab>
-          <Tab value="2"><i class="pi pi-cog mr-2"></i>Damages</Tab>
+          <Tab value="0"><i class="pi pi-car mr-2"></i>{{ $t('vehicle.vehicleInformation') }}</Tab>
+          <Tab value="1"><i class="pi pi-image mr-2"></i>{{ isViewMode ? t('vehicle.photos') : t('vehicle.addPhotos') }}</Tab>
+          <Tab value="2"><i class="pi pi-cog mr-2"></i>{{ $t('vehicle.damages') }}</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="0">
             <FloatLabel v-if="isViewMode || isEditMode" variant="on">
               <Select v-model="status" :options="statusOptions" optionLabel="label" optionValue="value"
                 @change="handleStatusChange" />
-              <label for="status">Status</label>
+              <label for="status">{{ $t('vehicle.status') }}</label>
             </FloatLabel>
             <div class="vehicle-info">
               <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'" />
@@ -38,40 +38,40 @@
                 <FloatLabel variant="on">
                   <Select v-model="model" class="full-width" :options="filteredModels" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="model">Model</label>
+                  <label for="model">{{ $t('vehicle.fields.model') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="bodyType" class="full-width" :options="bodyTypes" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="bodyType">Body Type</label>
+                  <label for="bodyType">{{ $t('vehicle.fields.bodyType') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText type="number" class="full-width" v-model="year" :readonly="isViewMode && !isEditMode" />
-                  <label for="year">Year</label>
+                  <label for="year">{{ $t('vehicle.fields.year') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="location" class="full-width" :options="locations" optionLabel="name" optionValue="id"
                     :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="location">Location</label>
+                  <label for="location">{{ $t('vehicle.fields.location') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText type="text" class="full-width" v-model="plate" :readonly="isViewMode && !isEditMode" />
-                  <label for="plate">Plate</label>
+                  <label for="plate">{{ $t('vehicle.fields.plate') }}</label>
                 </FloatLabel>
               </div>
             </div>
             <div class="vehicle-specs">
-              <Divider><strong>Vehicle Specs</strong></Divider>
+              <Divider><strong>{{ $t('vehicle.specs') }}</strong></Divider>
 
               <div class="input-group">
                 <FloatLabel variant="on">
                   <InputText v-model="odometer" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="odometer">Odometer</label>
+                  <label for="odometer">{{ $t('vehicle.fields.odometer') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
@@ -84,67 +84,67 @@
                       </div>
                     </template>
                   </Select>
-                  <label for="externalColour">External Colour</label>
+                  <label for="externalColour">{{ $t('vehicle.fields.color') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="passengers" class="full-width" :options="passengerOptions" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="passengers">Passengers</label>
+                  <label for="passengers">{{ $t('vehicle.fields.passengers') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="fuelType" class="full-width" :options="fuelTypes" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="fuelType">Fuel Type</label>
+                  <label for="fuelType">{{ $t('vehicle.fields.fuelType') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="transmission" class="full-width" :options="transmissions" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="transmission">Transmission</label>
+                  <label for="transmission">{{ $t('vehicle.fields.transmission') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="baseKmDay" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="baseKmDay">Base Km per Day</label>
+                  <label for="baseKmDay">{{ $t('vehicle.fields.kmPerDay') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="kmExtraPrice" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="kmExtraPrice">Extra Km Price</label>
+                  <label for="kmExtraPrice">{{ $t('vehicle.fields.extraKmPrice') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="basicDailyPrice" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="basicDailyPrice">Basic Daily Price</label>
+                  <label for="basicDailyPrice">{{ $t('vehicle.fields.basicDailyPrice') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="franchise" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="franchise">Franchise</label>
+                  <label for="franchise">{{ $t('vehicle.fields.franchise') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="deposit" class="full-width" type="number" :readonly="isViewMode && !isEditMode" />
-                  <label for="deposit">Deposit</label>
+                  <label for="deposit">{{ $t('vehicle.fields.deposit') }}</label>
                 </FloatLabel>
               </div>
               <div v-if="isViewMode && !isEditMode">
-                <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+                <Button @click="enableEditMode" :label="$t('common.edit')" icon="pi pi-pencil" class="p-button-primary mt-4" />
               </div>
               <div v-else-if="isEditMode">
-                <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
-                <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times"
+                <Button @click="saveChanges" :label="$t('common.save')" icon="pi pi-check" />
+                <Button @click="cancelEditMode" :label="$t('common.cancel')" icon="pi pi-times"
                   class="p-button-secondary mt-4 ml-2" />
-                <Button @click="deleteVehicle" label="Delete" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
+                <Button @click="deleteVehicle" :label="$t('common.delete')" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
               </div>
               <div v-if="!isViewMode && !isEditMode" class="mt-4">
-                <Button @click="createVehicle" label="Create Vehicle" icon="pi pi-check" />
+                <Button @click="createVehicle" :label="$t('vehicle.createVehicle')" icon="pi pi-check" />
               </div>
             </div>
           </TabPanel>
@@ -190,8 +190,8 @@
               </div>
             </div>
             <div v-if="isEditMode" class="mt-4">
-              <Button @click="savePhotos" label="Save Photos" icon="pi pi-check" />
-              <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary ml-2" />
+              <Button @click="savePhotos" :label="$t('common.save')" icon="pi pi-check" />
+              <Button @click="cancelEditMode" :label="$t('common.cancel')" icon="pi pi-times" class="p-button-secondary ml-2" />
             </div>
           </TabPanel>
           <TabPanel value="2">
@@ -205,7 +205,10 @@
   </Card>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch, onMounted, inject } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import Breadcrumb from 'primevue/breadcrumb';
 import Card from 'primevue/card';
@@ -465,11 +468,11 @@ export default {
         return;
       }
 
-      // Size validation
-      if (file.size > 5000000) {
-        this.$showToast('error', 'Error', 'File size must be less than 5MB');
-        return;
-      }
+  // Size validation
+  if (file.size > 5000000) {
+    showToast('error', 'Error', 'File size must be less than 5MB');
+    return;
+  }
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -488,56 +491,43 @@ export default {
         // Cerca un'immagine con la posizione corrispondente all'indice
         const image = this.vehicle.images.find(img => img.position === index);
 
-        // Se trova un'immagine con la posizione specificata, usa il suo URL
-        if (image && image.url) {
-          return image.url;
-        }
+    if (image && image.url) {
+      return image.url;
+    }
 
-        // Alternativa: cerca un'immagine all'indice specificato nell'array
-        // (utile se le immagini non hanno la proprietà position)
-        if (this.vehicle.images[index] && this.vehicle.images[index].url) {
-          return this.vehicle.images[index].url;
-        }
-      }
+    if (props.vehicle.images[index] && props.vehicle.images[index].url) {
+      return props.vehicle.images[index].url;
+    }
+  }
 
-      // Se non ci sono immagini o l'immagine non esiste, mostra l'immagine predefinita
-      return '/images/no-image.png';
-    },
-    handleStatusChange() {
-      // No need to access event parameter, directly use this.status
+  return '/images/no-image.png';
+};
 
-      // Store current make and model values to restore them later if needed
-      const currentMake = this.selectedBrand;
-      const currentModel = this.model;
+const handleStatusChange = () => {
+  const currentMake = selectedBrand.value;
+  const currentModel = model.value;
 
-      // Only make the API call if in view or edit mode and we have a vehicle ID
-      if ((this.isViewMode || this.isEditMode) && this.vehicle && this.vehicle.id) {
-        // Create status update object
-        const statusUpdate = {
-          id: this.vehicle.id,
-          status: this.status
-        };
+  if ((props.isViewMode || isEditMode.value) && props.vehicle && props.vehicle.id) {
+    const statusUpdate = {
+      id: props.vehicle.id,
+      status: status.value
+    };
 
-        // Send the request to the backend
-        axios.put(`/vehicles/update-status/${this.vehicle.id}`, statusUpdate)
-          .then(response => {
-            this.$showToast('success', 'Success', 'Vehicle status updated successfully');
+    axios.put(`/vehicles/update-status/${props.vehicle.id}`, statusUpdate)
+      .then(response => {
+        showToast('success', 'Success', 'Vehicle status updated successfully');
 
-            // Update local vehicle with data from server
-            if (response.data && response.data.vehicle) {
-              const updatedVehicle = response.data.vehicle;
+        if (response.data && response.data.vehicle) {
+          const updatedVehicle = response.data.vehicle;
 
-              // Create a merged vehicle object that preserves current data
-              // but updates with new data from the server
-              const mergedVehicle = {
-                ...this.vehicle,
-                ...updatedVehicle,
-                make: this.vehicle.make,  // Preserve make object
-                model: this.vehicle.model  // Preserve model object
-              };
+          const mergedVehicle = {
+            ...props.vehicle,
+            ...updatedVehicle,
+            make: props.vehicle.make,
+            model: props.vehicle.model
+          };
 
-              // Update status (should be the same as this.status)
-              this.status = updatedVehicle.status || this.status;
+          status.value = updatedVehicle.status || status.value;
 
               // Emit the merged vehicle data
               this.$root.$emit('vehicle-status-updated', mergedVehicle);
@@ -598,13 +588,11 @@ export default {
       // Create a form data object to send all photos
 
 
-      // Handle any images that were uploaded
-      const formData = new FormData();
+  const formData = new FormData();
 
-      // Add all vehicle data to formData
-      Object.keys(newVehicle).forEach(key => {
-        formData.append(key, newVehicle[key]);
-      });
+  Object.keys(newVehicle).forEach(key => {
+    formData.append(key, newVehicle[key]);
+  });
 
       this.src.forEach((photo, index) => {
         // Aggiungi solo le nuove immagini (quelle che iniziano con 'data:')
@@ -651,49 +639,48 @@ export default {
         });
     },
 
-    // Helper method to convert base64 to File object
-    dataURLtoFile(dataURL, filename) {
-      const arr = dataURL.split(',');
-      const mime = arr[0].match(/:(.*?);/)[1];
-      const bstr = atob(arr[1]);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
+const dataURLtoFile = (dataURL, filename) => {
+  const arr = dataURL.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
 
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
 
-      return new File([u8arr], filename, { type: mime });
-    },
+  return new File([u8arr], filename, { type: mime });
+};
 
-    resetForm() {
-      // Reset all form fields
-      this.selectedBrand = '';
-      this.model = '';
-      this.bodyType = '';
-      this.year = '';
-      this.location = '';
-      this.plate = '';
-      this.odometer = '';
-      this.externalColour = '';
-      this.passengers = '';
-      this.fuelType = '';
-      this.transmission = '';
-      this.baseKmDay = '';
-      this.kmExtraPrice = '';
-      this.basicDailyPrice = '';
-      this.franchise = '';
-      this.deposit = '';
-      this.photos = [null, null, null];
-    },
-    fetchBrandsAndModels() {
-      axios.post('/vehicle-makes')
-        .then(response => {
-          this.brands = response.data.map(make => ({ label: make.name, value: make.id, icon: make.icon }));
-          this.models = response.data.reduce((acc, make) => {
-            acc[make.id] = make.models.map(model => ({ label: model.name, value: model.id }));
-            return acc;
-          }, {});
+const resetForm = () => {
+  selectedBrand.value = '';
+  model.value = '';
+  bodyType.value = '';
+  year.value = '';
+  location.value = '';
+  plate.value = '';
+  odometer.value = '';
+  externalColour.value = '';
+  passengers.value = '';
+  fuelType.value = '';
+  transmission.value = '';
+  baseKmDay.value = '';
+  kmExtraPrice.value = '';
+  basicDailyPrice.value = '';
+  franchise.value = '';
+  deposit.value = '';
+  photos.value = [null, null, null];
+};
+
+const fetchBrandsAndModels = async () => {
+  try {
+    const response = await axios.post('/vehicle-makes');
+    brands.value = response.data.map(make => ({ label: make.name, value: make.id, icon: make.icon }));
+    models.value = response.data.reduce((acc, make) => {
+      acc[make.id] = make.models.map(model => ({ label: model.name, value: model.id }));
+      return acc;
+    }, {});
 
           // Se siamo in modalità visualizzazione e abbiamo un veicolo
           if (this.vehicle && this.isViewMode) {
@@ -769,78 +756,45 @@ export default {
     savePhotos() {
       // Collect all files that need to be uploaded
 
-      // if (uploads.length === 0) {
-      //   this.$showToast('info', 'Info', 'No new photos to upload');
-      //   return;
-      // }
-
-      // Create a form data object to send all photos
-      const formData = new FormData();
-      formData.append('vehicle_id', this.vehicle.id);
+  const formData = new FormData();
+  formData.append('vehicle_id', props.vehicle.id);
 
 
-      axios.post('/vehicles/upload-multiple-photos', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-        .then(response => {
-          this.$showToast('success', 'Success', 'Photos saved successfully');
-          let tmpPh = JSON.parse(JSON.stringify(this.src));
-          // let vehicleTmp = JSON.parse(JSON.stringify(this.vehicle));
-          // vehicleTmp.images = tmpPh;
-          // vehicleTmp = tmpPh;
-          // console.log(this.vehicle);
-          this.$emit('vehicle-updated-photo');
+  axios.post('/vehicles/upload-multiple-photos', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+    .then(response => {
+      showToast('success', 'Success', 'Photos saved successfully');
+      let tmpPh = JSON.parse(JSON.stringify(src.value));
+      emit('vehicle-updated-photo');
+    })
+    .catch(error => {
+      console.error('Error saving photos:', error);
+      showToast('error', 'Error', 'Failed to save photos');
+    });
+};
 
-          // Aggiorna il veicolo con le nuove immagini
-          // if (response.data && response.data.vehicle && response.data.vehicle.images) {
+const onDamagePhotoSelect = (index) => {
+  return (event) => {
+    const file = event.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      damagePhotos.value[index] = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+};
 
-
-          //   // Resetta le foto selezionate dopo il salvataggio
-          //   // this.src = [null, null, null, null, null, null];
-
-          //   // Emetti evento per aggiornare i componenti genitori
-          //   console.log(updatedVehicle, 'updatedVehicle');
-
-          //   this.$emit('vehicle-updated', updatedVehicle);
-
-          //   console.log();
-          // }
-        })
-        .catch(error => {
-          console.error('Error saving photos:', error);
-          this.$showToast('error', 'Error', 'Failed to save photos');
-        });
-    },
-
-
-    onDamagePhotoSelect(index) {
-      // Handle damage photo selection event
-      return (event) => {
-        const file = event.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          // Replace this.$set with direct assignment
-          this.damagePhotos[index] = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      };
-    },
-    enableEditMode(tabValue) {
-      // Inizializza l'array delle foto per la modifica
-      // this.src = [null, null, null,null,null,null];
-
-      // Se ci sono foto esistenti, le prepariamo per la modifica
-      if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
-        // Per ogni immagine esistente, prepara il riferimento
-        this.vehicle.images.forEach((image, idx) => {
-          if (idx < 3) {
-            // Assicurati che l'array photos esista e sia inizializzato
-            this.src[idx] = image.url;
-          }
-        });
+const enableEditMode = (tabValue) => {
+  if (props.vehicle && props.vehicle.images && props.vehicle.images.length > 0) {
+    props.vehicle.images.forEach((image, idx) => {
+      if (idx < src.value.length) {
+        src.value[idx] = image.url;
       }
+    });
+  }
 
       // Imposta la modalità di modifica
       this.isEditMode = true;
@@ -891,79 +845,93 @@ export default {
           if (response.data && response.data.vehicle) {
             const updatedVehicle = response.data.vehicle;
 
-            // Emetti un evento globale per aggiornare la tabella dei veicoli
-            this.$root.$emit('vehicle-updated', updatedVehicle);
+        window.dispatchEvent(new CustomEvent('vehicle-updated', { 
+          detail: updatedVehicle
+        }));
 
-            // Emetti anche un evento locale per il componente padre diretto
-            this.$emit('vehicle-updated', updatedVehicle);
+        emit('vehicle-updated', updatedVehicle);
 
-            // Aggiorna i dati locali con quelli ricevuti dal server
-            this.selectedBrand = updatedVehicle.make_id;
-            this.model = updatedVehicle.model_id;
-            this.bodyType = updatedVehicle.bodyType;
-            this.year = updatedVehicle.year;
-            this.location = updatedVehicle.location;
-            this.plate = updatedVehicle.plateNumber;
-            this.odometer = updatedVehicle.odometer;
-            this.externalColour = updatedVehicle.color;
-            this.passengers = updatedVehicle.seats;
-            this.fuelType = updatedVehicle.fuel_type;
-            this.transmission = updatedVehicle.transmission;
-            this.baseKmDay = updatedVehicle.km_per_day;
-            this.kmExtraPrice = updatedVehicle.extra_km_price;
-            this.basicDailyPrice = updatedVehicle.basic_daily_price;
-            this.franchise = updatedVehicle.franchise;
-            this.deposit = updatedVehicle.deposit;
-            this.status = updatedVehicle.status;
-          }
-
-          this.$showToast('success', 'Success', 'Vehicle details updated successfully');
-        })
-        .catch(error => {
-          console.error('Error updating vehicle:', error);
-          this.$showToast('error', 'Error', 'Failed to update vehicle details');
-        });
-    },
-    cancelEditMode() {
-      // Restore the original data
-      for (const key in this.originalData) {
-        if (key !== 'originalData' && Object.prototype.hasOwnProperty.call(this, key)) {
-          this[key] = JSON.parse(JSON.stringify(this.originalData[key]));
-        }
+        selectedBrand.value = updatedVehicle.make_id;
+        model.value = updatedVehicle.model_id;
+        bodyType.value = updatedVehicle.bodyType;
+        year.value = updatedVehicle.year;
+        location.value = updatedVehicle.location;
+        plate.value = updatedVehicle.plateNumber;
+        odometer.value = updatedVehicle.odometer;
+        externalColour.value = updatedVehicle.color;
+        passengers.value = updatedVehicle.seats;
+        fuelType.value = updatedVehicle.fuel_type;
+        transmission.value = updatedVehicle.transmission;
+        baseKmDay.value = updatedVehicle.km_per_day;
+        kmExtraPrice.value = updatedVehicle.extra_km_price;
+        basicDailyPrice.value = updatedVehicle.basic_daily_price;
+        franchise.value = updatedVehicle.franchise;
+        deposit.value = updatedVehicle.deposit;
+        status.value = updatedVehicle.status;
       }
-      this.isEditMode = false;
-    },
-    deleteVehicle() {
-      if (confirm('Are you sure you want to delete this vehicle?')) {
-        axios.delete(`/vehicles/delete/${this.vehicle.id}`)
-          .then(response => {
-            this.$root.$emit('vehicle-deleted', this.vehicle.id);
-            this.$showToast('success', 'Success', 'Vehicle deleted successfully');
-            this.$router.push('/dashboard/vehicles');
-          })
-          .catch(error => {
-            console.error('Error deleting vehicle:', error);
-            this.$showToast('error', 'Error', 'Failed to delete vehicle');
-          });
-      }
-    }
-  },
-  computed: {
-    brandLogo() {
-      const selectedBrand = this.brands.find(brand => brand.value === this.selectedBrand);
-      return selectedBrand ? selectedBrand.icon : '/brand-logo.svg';
-    },
-    filteredModels() {
-      return this.selectedBrand ? this.models[this.selectedBrand] || [] : [];
-    },
-    hasVehicleImages() {
-      return this.vehicle && this.vehicle.images && this.vehicle.images.length > 0;
-    }
+
+      showToast('success', 'Success', 'Vehicle details updated successfully');
+    })
+    .catch(error => {
+      console.error('Error updating vehicle:', error);
+      showToast('error', 'Error', 'Failed to update vehicle details');
+    });
+};
+
+const cancelEditMode = () => {
+  // Restore original data
+  selectedBrand.value = originalData.value.selectedBrand;
+  model.value = originalData.value.model;
+  bodyType.value = originalData.value.bodyType;
+  year.value = originalData.value.year;
+  location.value = originalData.value.location;
+  plate.value = originalData.value.plate;
+  odometer.value = originalData.value.odometer;
+  externalColour.value = originalData.value.externalColour;
+  passengers.value = originalData.value.passengers;
+  fuelType.value = originalData.value.fuelType;
+  transmission.value = originalData.value.transmission;
+  baseKmDay.value = originalData.value.baseKmDay;
+  kmExtraPrice.value = originalData.value.kmExtraPrice;
+  basicDailyPrice.value = originalData.value.basicDailyPrice;
+  franchise.value = originalData.value.franchise;
+  deposit.value = originalData.value.deposit;
+  status.value = originalData.value.status;
+  src.value = originalData.value.src ? JSON.parse(JSON.stringify(originalData.value.src)) : [null, null, null, null, null, null];
+  
+  isEditMode.value = false;
+};
+
+const deleteVehicle = () => {
+  if (confirm('Are you sure you want to delete this vehicle?')) {
+    axios.delete(`/vehicles/delete/${props.vehicle.id}`)
+      .then(response => {
+        window.dispatchEvent(new CustomEvent('vehicle-deleted', { 
+          detail: props.vehicle.id 
+        }));
+        
+        showToast('success', 'Success', 'Vehicle deleted successfully');
+        router.push('/dashboard/vehicles');
+      })
+      .catch(error => {
+        console.error('Error deleting vehicle:', error);
+        showToast('error', 'Error', 'Failed to delete vehicle');
+      });
   }
 };
+
+// Lifecycle hooks
+onMounted(() => {
+  console.log(fotoSlots);
+  console.log(src.value, 'src.value');
+  
+  fetchLocations();
+  fetchBrandsAndModels();
+});
 </script>
 
 <style scoped>
+/* Keeping the same styles from the original component */
 .vehicle-info {
   display: flex;
   align-items: center;
@@ -974,12 +942,10 @@ export default {
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: space-between;
-  /* Aggiungi per distribuire meglio gli spazi */
 }
 
 .input-group>* {
   flex: 1 1 calc(50% - 1rem);
-  /* Ogni elemento occupa il 50% dello spazio, adattato per schermi più piccoli */
 }
 
 .vehicle-specs {
@@ -988,21 +954,16 @@ export default {
 
 .vehicle-specs .input-group>* {
   flex: 1 1 calc(33.333% - 1rem);
-  /* Riduce il numero di colonne a 3 su schermi grandi */
 }
 
-/* Contenitore della griglia per le immagini */
 .images-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  /* 3 colonne di larghezza uguale */
   gap: 20px;
-  /* Spaziatura tra le immagini */
   width: 100%;
   padding: 10px;
 }
 
-/* Ogni immagine occupa una cella della griglia */
 .no-images {
   height: 350px;
   background-color: #f8f9fa;
@@ -1015,22 +976,17 @@ export default {
   padding: 20px;
 }
 
-/* Media query per schermi medi (tablet o schermi più piccoli) */
 @media (max-width: 768px) {
   .images-container {
     grid-template-columns: repeat(2, 1fr);
-    /* 2 colonne su schermi più piccoli */
   }
 }
 
-/* Media query per schermi piccoli (mobile) */
 @media (max-width: 480px) {
   .images-container {
     grid-template-columns: 1fr;
-    /* Una colonna su schermi molto piccoli */
   }
 }
-
 
 .color-option {
   display: flex;
@@ -1102,12 +1058,9 @@ export default {
   max-width: 100%;
   max-height: 100%;
   object-fit: cover;
-  /* Mantiene le proporzioni riempiendo il contenitore */
   object-position: center;
-  /* Centra l'immagine */
 }
 
-/* Stile per le immagini in modalità visualizzazione */
 .isViewMode .photo-upload-grid {
   display: flex;
   flex-wrap: wrap;
@@ -1192,7 +1145,6 @@ export default {
   height: 100%;
 }
 
-/* Stile specifico per il pulsante di upload */
 :deep(.upload-button) {
   width: 90%;
   height: auto;
@@ -1291,7 +1243,6 @@ export default {
 
 .no-images {
   position: relative;
-  /* Posiziona il contenitore in modo relativo */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1300,12 +1251,10 @@ export default {
 
 .upload-container {
   position: relative;
-  /* Imposta il contenitore in modo relativo */
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  /* Necessario per posizionare il pulsante sopra l'immagine */
 }
 
 .upload-container .p-button {
@@ -1350,16 +1299,14 @@ export default {
   background-color: darkred;
 }
 
-/* Rendi il bottone sbiadito */
-::v-deep .file-upload-button {
+:deep(.file-upload-button) {
   opacity: 0.8 !important;
   transition: opacity 0.3s ease;
   position: absolute !important;
   left: 80px !important;
 }
 
-/* Modifica al passaggio del mouse */
-::v-deep .file-upload-button:hover {
+:deep(.file-upload-button:hover) {
   opacity: 1 !important;
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
 }

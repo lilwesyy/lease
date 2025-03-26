@@ -1,12 +1,46 @@
 <template>
     <div class="settings">
-        <h1 v-if="!isViewMode" class="font-bold text-3xl">Settings</h1>
+        <h1 v-if="!isViewMode" class="font-bold text-3xl">{{ $t('settings.settings') }}</h1>
         <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
 
         <Card>
             <template #content>
                 <TabView>
-                    <TabPanel header="Profile">
+                    <TabPanel :header="$t('settings.app')">
+                        <div class="app-settings">
+                            <h3>{{ $t('settings.applicationSettings') }}</h3>
+                            
+                            <div class="field">
+                                <label>{{ $t('settings.language') }}</label>
+                                <Dropdown 
+                                    v-model="appSettings.lang" 
+                                    :options="languages" 
+                                    optionLabel="name" 
+                                    optionValue="code" 
+                                    placeholder="Select language" 
+                                    class="w-full md:w-14rem"
+                                />
+                            </div>
+                            
+                            <div class="field mt-3">
+                                <label>{{ $t('settings.themeColor') }}</label>
+                                <ColorPicker 
+                                    v-model="appSettings.themeColor" 
+                                    format="hex" 
+                                    class="w-full md:w-14rem"
+                                />
+                                <small class="block mt-1 text-gray-500">{{ $t('settings.selectedColor') }} {{ appSettings.themeColor || '#2196F3' }}</small>
+                            </div>
+                            
+                            <Button 
+                                :label="$t('settings.saveSetting')"
+                                icon="pi pi-save" 
+                                @click="saveAppSettings" 
+                                class="mt-3"
+                            />
+                        </div>
+                    </TabPanel>
+                    <TabPanel :header="$t('settings.profile')">
                         <div class="profile-settings">
                             <h3>Profile</h3>
                             <InputText v-model="user.firstName" placeholder="First Name" class="input-field" />
@@ -16,7 +50,7 @@
                             <Button label="Save" @click="saveProfile" class="save-button" />
                         </div>
                     </TabPanel>
-                    <TabPanel header="Change Password">
+                    <TabPanel :header="$t('settings.changePassword')">
                         <div class="password-settings">
                             <h3>Change Password</h3>
                             <div class="input-group">
@@ -31,12 +65,12 @@
                                 <label for="confirm-password">Confirm New Password</label>
                                 <Password id="confirm-password" v-model="passwords.confirm" placeholder="Confirm New Password" />
                             </div>
-                            <Button label="Change Password" @click="changePassword" class="small-button" />
+                            <Button :label="$t('settings.changePassword')" @click="changePassword" class="small-button" />
                         </div>
                     </TabPanel>
-                    <TabPanel header="Users">
+                    <TabPanel :header="$t('settings.users')">
                         <div class="users-settings">
-                            <Button label="Add User" @click="openAddUserDialog" style="margin-bottom: 1rem;" />
+                            <Button :label="$t('settings.addUser')" @click="openAddUserDialog" style="margin-bottom: 1rem;" />
 
                             <ProgressSpinner v-if="loading" />
                             <div v-else class="user-cards">
@@ -55,44 +89,44 @@
         </Card>
 
         <Dialog
-                :header="isEditing ? 'Edit User' : 'Add New User'"
+                :header="isEditing ? t('settings.editUser') : t('settings.addUser')"
                 v-model:visible="isUserDialogVisible"
                 :modal="true"
                 :closable="false"
             >
                 <div class="dialog-content">
                     <div class="field">
-                        <label>First Name</label>
+                        <label>{{$t('settings.firstName')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-user"></i>
                             </InputGroupAddon>
-                            <InputText v-model="dialogUser.firstName" placeholder="First Name" />
+                            <InputText v-model="dialogUser.firstName" :placeholder="$t('settings.firstName')" />
                         </InputGroup>
                     </div>
 
                     <div class="field">
-                        <label>Last Name</label>
+                        <label>{{$t('settings.lastName')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-user"></i>
                             </InputGroupAddon>
-                            <InputText v-model="dialogUser.lastName" placeholder="Last Name" />
+                            <InputText v-model="dialogUser.lastName" :placeholder="$t('settings.lastName')" />
                         </InputGroup>
                     </div>
 
                     <div class="field">
-                        <label>Email</label>
+                        <label>{{$t('settings.email')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-envelope"></i>
                             </InputGroupAddon>
-                            <InputText v-model="dialogUser.email" placeholder="Email" />
+                            <InputText v-model="dialogUser.email" :placeholder="$t('settings.email')" />
                         </InputGroup>
                     </div>
 
                     <div class="field">
-                        <label>Role</label>
+                        <label>{{$t('settings.role')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-briefcase"></i>
@@ -102,26 +136,26 @@
                                 :options="roles"
                                 optionLabel="label"
                                 optionValue="value"
-                                placeholder="Select Role"
+                                :placeholder="$t('settings.selectRole')"
                             />
                         </InputGroup>
                     </div>
 
                     <div class="dialog-buttons">
                         <Button
-                            :label="isEditing ? 'Save' : 'Add'"
+                            :label="isEditing ? t('common.save') : t('common.add')"
                             icon="pi pi-check"
                             @click="isEditing ? saveExistingUser() : addNewUser()"
                         />
                         <Button
-                            label="Cancel"
+                            :label="$t('common.cancel')"
                             icon="pi pi-times"
                             @click="isUserDialogVisible = false"
                             class="p-button-secondary"
                         />
                         <Button
                             v-if="isEditing"
-                            label="Delete"
+                            :label="$t('common.delete')"
                             icon="pi pi-trash"
                             class="p-button-danger"
                             @click="confirmDeleteUser"
@@ -152,7 +186,9 @@ import { useConfirm } from "primevue/useconfirm";
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 import Breadcrumb from 'primevue/breadcrumb';
-import ConfirmDialog from 'primevue/confirmdialog';
+import ColorPicker from 'primevue/colorpicker';
+import { useI18n } from 'vue-i18n'; 
+const { t } = useI18n();
 
 // Defining props if needed
 const isViewMode = ref(false);
@@ -160,13 +196,16 @@ const isViewMode = ref(false);
 // Breadcrumb items
 const items = ref([
     { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-    { label: 'Settings', url: '/dashboard/settings' }
+    { label: t('settings.settings'), url: '/dashboard/settings' }
 ]);
 
 // Setup toast and confirm hooks
 const toast = useToast();
 const confirm = useConfirm();
-
+const appSettings = ref({
+    lang: 'en',
+    themeColor: '#2196F3' // Add default theme color
+});
 const isUserDialogVisible = ref(false)
 const isEditing = ref(false)
 const dialogUser = ref({ firstName: '', lastName: '', email: '', role: '' })
@@ -184,6 +223,11 @@ const user = ref({
     email: '',
     phone: ''
 });
+
+const languages = ref([
+    { name: t('settings.languages.english'), code: 'en' },
+    { name: t('settings.languages.italian'), code: 'it' }
+]);
 
 // Password management
 const passwords = ref({
@@ -203,11 +247,11 @@ const isDialogVisible = ref(false);
 
 // Roles dropdown options
 const roles = ref([
-    { label: 'Administrator', value: 'Administrator' },
-    { label: 'User', value: 'User' },
-    { label: 'Manager', value: 'Manager' },
-    { label: 'Support', value: 'Support' },
-    { label: 'Sales', value: 'Sales' },
+    { label: t('settings.roles.Administrator'), value: 'Administrator' },
+    { label: t('settings.roles.User'), value: 'User' },
+    { label: t('settings.roles.Manager'), value: 'Manager' },
+    { label: t('settings.roles.Support'), value: 'Support' },
+    { label: t('settings.roles.Sales'), value: 'Sales' },
 ]);
 
 const addUser = async () => {
@@ -229,6 +273,95 @@ const addUser = async () => {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to create user', life: 3000 })
     }
 }
+
+const fetchAppSettings = async () => {
+    try {
+        const response = await axios.post('/settings');
+        if (response.data && response.data.settings) {
+            appSettings.value = response.data.settings;
+        }
+    } catch (error) {
+        console.error('Error fetching app settings:', error);
+        toast.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: 'Failed to load application settings', 
+            life: 3000 
+        });
+    }
+};
+
+const saveAppSettings = async () => {
+    try {
+        const settingsToSave = {
+            lang: appSettings.value.lang || 'en',
+            themeColor: appSettings.value.themeColor || '#2196F3'
+        };
+        
+        const response = await axios.post('/settings/save', { 
+            settings: settingsToSave
+        });
+        
+        console.log('Payload sent:', { settings: settingsToSave });
+        
+        if (response.status === 200) {
+            if (response.data && response.data.settings) {
+                appSettings.value = response.data.settings;
+                console.log('Settings updated:', appSettings.value);
+                
+                if (appSettings.value.lang) {
+                    import('../../i18n').then(module => {
+                        const i18n = module.default;
+                        i18n.global.locale.value = appSettings.value.lang;
+                        localStorage.setItem('locale', appSettings.value.lang);
+                        console.log('Language updated to:', appSettings.value.lang);
+                    });
+                }
+                
+                localStorage.setItem('appSettings', JSON.stringify(appSettings.value));
+            }
+            
+            toast.add({ 
+                severity: 'success', 
+                summary: 'Success', 
+                detail: 'Application settings saved successfully', 
+                life: 3000 
+            });
+            
+            await refreshInterface();
+        } else {
+            throw new Error('Failed to save settings');
+        }
+    } catch (error) {
+        console.error('Error saving app settings:', error);
+        toast.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: 'Failed to save application settings', 
+            life: 3000 
+        });
+    }
+};
+
+const refreshInterface = async () => {
+    try {
+        // Opzione 1: Ricarica i componenti che devono essere aggiornati
+        // Per esempio, puoi emettere un evento globale che altri componenti possono ascoltare
+        // window.dispatchEvent(new CustomEvent('language-changed', {
+        //     detail: { lang: appSettings.value.lang }
+        // }));
+        
+        // Opzione 2: Per un aggiornamento più completo, puoi ricaricare la pagina
+        // Ma in genere è meglio evitarlo se possibile
+        window.location.reload();
+        
+        // Opzione 3: Applicare direttamente le traduzioni aggiornate ai componenti visibili
+        // Questo dipende dalla struttura della tua app
+        await fetchAppSettings();
+    } catch (error) {
+        console.error('Error refreshing interface:', error);
+    }
+};
 
 const addNewUser = async () => {
     try {
@@ -438,6 +571,7 @@ const deleteUser = async () => {
 // Load data on component mount
 onMounted(() => {
     fetchUsers();
+    fetchAppSettings();
 });
 </script>
 

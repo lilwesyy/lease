@@ -1,13 +1,13 @@
 <template>
-    <h3 class="font-semibold text-xl mb-3">Vehicle Damages</h3>
-    <Button label="Add Damage" icon="pi pi-plus" @click="openAddDamageDialog" />
+    <h3 class="font-semibold text-xl mb-3">{{ $t('vehicle.damage.vehicleDamage') }}</h3>
+    <Button :label="$t('vehicle.damage.addDamage')" icon="pi pi-plus" @click="openAddDamageDialog" />
 
     <DataTable :value="damages" selectionMode="single" :metaKeySelection="false" dataKey="id" tableStyle="min-width: 50rem" @row-click="openDamageDetails">
-      <Column field="damagePositionLabel" header="Damage Position" :body="getDamagePositionLabel"></Column>
-      <Column field="damageSeverityLabel" header="Damage Severity" :body="getDamageSeverityLabel"></Column>
-      <Column field="damageTypeLabel" header="Damage Type" :body="getDamageTypeLabel"></Column>
-      <Column field="damageDescription" header="Damage Description"></Column>
-      <Column field="images" header="Images">
+      <Column field="damagePositionLabel" :header="$t('vehicle.damage.vehicleDamagePosition')" :body="getDamagePositionLabel"></Column>
+      <Column field="damageSeverityLabel" :header="$t('vehicle.damage.vehicleDamageSeverity')" :body="getDamageSeverityLabel"></Column>
+      <Column field="damageTypeLabel" :header="$t('vehicle.damage.vehicleDamageType')" :body="getDamageTypeLabel"></Column>
+      <Column field="damageDescription" :header="$t('vehicle.damage.vehicleDamageDescription')"></Column>
+      <Column field="images" :header="$t('vehicle.damage.vehicleDamageImages')">
         <template #body="slotProps">
           <span>{{ slotProps.data.images?.length || 0 }} images</span>
         </template>
@@ -17,23 +17,23 @@
     <Dialog :header="dialogHeader" v-model:visible="showDialog" :modal="true" :closable="true">
       <div class="p-fluid">
         <div class="p-field">
-          <label for="damagePosition">Damage Position</label>
-          <Select id="damagePosition" v-model="currentDamage.damagePosition" :options="damagePositions" optionLabel="label" optionValue="value" placeholder="Select a Position" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
+          <label for="damagePosition">{{$t('vehicle.damage.vehicleDamagePosition')}}</label>
+          <Select id="damagePosition" v-model="currentDamage.damagePosition" :options="damagePositions" optionLabel="label" optionValue="value" :placeholder="$t('vehicle.damage.fields.position')" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
         </div>
         <div class="p-field">
-          <label for="damageSeverity">Damage Severity</label>
-          <Select id="damageSeverity" v-model="currentDamage.damageSeverity" :options="damageSeverities" optionLabel="label" optionValue="value" placeholder="Select Severity" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
+          <label for="damageSeverity">{{$t('vehicle.damage.vehicleDamageSeverity')}}</label>
+          <Select id="damageSeverity" v-model="currentDamage.damageSeverity" :options="damageSeverities" optionLabel="label" optionValue="value" :placeholder="$t('vehicle.damage.fields.severity')" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
         </div>
         <div class="p-field">
-          <label for="damageType">Damage Type</label>
-          <Select id="damageType" v-model="currentDamage.damageType" :options="damageTypes" optionLabel="label" optionValue="value" placeholder="Select Type" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
+          <label for="damageType">{{$t('vehicle.damage.vehicleDamageType')}}</label>
+          <Select id="damageType" v-model="currentDamage.damageType" :options="damageTypes" optionLabel="label" optionValue="value" :placeholder="$t('vehicle.damage.fields.type')" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
         </div>
         <div class="p-field">
-          <label for="damageDescription">Damage Description</label>
+          <label for="damageDescription">{{$t('vehicle.damage.vehicleDamageDescription')}}</label>
           <Textarea v-model="currentDamage.damageDescription" rows="5" cols="30" class="full-width" :class="{ 'select-readonly': isViewMode}"/>
         </div>
         <div class="p-field mt-3">
-          <label for="damageImages">Damage Images</label>
+          <label for="damageImages">{{$t('vehicle.damage.vehicleDamageImages')}}</label>
           <FileUpload
             v-if="!isViewMode"
             ref="fileUpload"
@@ -43,11 +43,11 @@
             @select="onSelect"
             :customUpload="true"
             :auto="true"
-            chooseLabel="Select Images"
+            :chooseLabel="$t('vehicle.damage.selectImages')"
             class="mt-2"
           >
             <template #empty>
-              <p>Drag and drop images here to upload.</p>
+              <p>{{ $t('vehicle.damage.dragDrop') }}</p>
             </template>
           </FileUpload>
         </div>
@@ -78,10 +78,10 @@
         </div>
       </div>
       <div class="p-dialog-footer">
-        <Button v-if="isViewMode" label="Edit" icon="pi pi-pencil" @click="enableEditMode" />
-        <Button v-if="!isViewMode" label="Cancel" icon="pi pi-times" @click="closeDialog" class="p-button-text" />
-        <Button v-if="!isViewMode" label="Save" icon="pi pi-check" @click="saveDamage" />
-        <Button v-if="!isViewMode && currentDamage.id" label="Delete" icon="pi pi-trash" @click="deleteDamage" class="p-button-danger" />
+        <Button v-if="isViewMode" :label="$t('common.edit')" icon="pi pi-pencil" @click="enableEditMode" />
+        <Button v-if="!isViewMode" :label="$t('common.cancel')" icon="pi pi-times" @click="closeDialog" class="p-button-text" />
+        <Button v-if="!isViewMode" :label="$t('common.save')" icon="pi pi-check" @click="saveDamage" />
+        <Button v-if="!isViewMode && currentDamage.id" :label="$t('common.delete')" icon="pi pi-trash" @click="deleteDamage" class="p-button-danger" />
       </div>
     </Dialog>
   </template>

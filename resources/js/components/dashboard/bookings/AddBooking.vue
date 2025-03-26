@@ -145,11 +145,6 @@
               </Column>
               <Column field="phone" header="Phone" />
               <Column field="address" header="Address" />
-              <Column header="Documents">
-                <template #body="">
-                  <i class="pi pi-file"></i>
-                </template>
-              </Column>
             </DataTable>
           </div>
           <div v-else>

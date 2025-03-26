@@ -1,0 +1,178 @@
+{
+    "customers": {
+      "personalData": "Dati Personali",
+      "personalDataDesc": "Informazioni personali del cliente",
+      "documents": "Documenti",
+      "documentsDesc": "Documenti del cliente",
+      "add": "Aggiungi Cliente",
+      "title": "Lista Clienti",
+      "driverLicense": "Patente di Guida",
+      "identityCard": "Carta d'Identità",
+      "addButton": "Aggiungi Cliente",
+      "card": "Carta di Credito",
+      "cardDesc": "Informazioni sulla carta di credito del cliente",
+      "attachCardDesc": "Carica la carta di credito del cliente",
+      "searchPlaceholder": "Cerca Clienti",
+      "attachDocumentsDesc": "Carica i documenti del cliente",
+      "createButton": "Crea Cliente",
+      "addCustomer": "Aggiungi Cliente",
+      "editCustomer": "Modifica Cliente",
+      "deleteCustomer": "Elimina Cliente",
+      "view": "Visualizza cliente",
+      "fields":{
+        "firstName": "Nome",
+        "lastName": "Cognome",
+        "phone": "Telefono",
+        "address": "Indirizzo",
+        "birthDate": "Data di Nascita",
+        "language": "Lingua",
+        "email": "Email",
+        "validUntil": "Valido Fino a",
+        "cardNumber": "Numero Carta",
+        "expirationDate": "Data di Scadenza",
+        "cvv": "CVV",
+        "cardHolder": "Titolare della Carta",
+        "serialNumber": "Numero di Serie"
+      },
+      "columns": {
+        "name": "Nome",
+        "phone": "Telefono",
+        "address": "Indirizzo",
+        "documents": "Documenti",
+        "privacy": "Privacy"
+      },
+      "privacy": {
+        "button": "Privacy",
+        "signed": "Firmato",
+        "agree": "Accetta",
+        "notSigned": "Non Firmato"
+      },
+      "noCustomers": "Nessun cliente trovato. Aggiungi un cliente.",
+      "clientDetails": "Dettagli Cliente"
+    },
+    "documents":{
+      "attach": "Allega Documenti",
+      "attachCard": "Allega Carta di Credito",
+      "attachedDocs": "Documenti Allegati",
+      "select": "Seleziona Documenti",
+      "upload": "Carica Documenti",
+      "dragDropCard": "Trascina e rilascia la carta di credito qui",
+      "uploadCardTitle": "Carica la Carta di Credito",
+      "uploadTitle": "Carica i Documenti",
+      "dragDrop": "Trascina e rilascia i documenti qui"
+    },
+    "common":{
+      "edit": "Modifica",
+      "cancel": "Annulla",
+      "close": "Chiudi",
+      "delete": "Elimina",
+      "add": "Aggiungi",
+      "save": "Salva"
+    },
+    "dash":{
+      "customer": "Clienti",
+      "calendar": "Calendario",
+      "addCustomer":"Aggiungi Cliente",
+      "vehicle":"Veicoli",
+      "addVehicle":"Aggiungi Veicolo",
+      "vehicleList":"Lista Veicoli",
+      "booking":"Prenotazioni",
+      "addBooking":"Aggiungi Prenotazione",
+      "bookingList":"Lista Prenotazioni",
+      "reports":"Report",
+      "help":"Aiuto",
+      "settings":"Impostazioni",
+      "logOut":"Esci",
+      "logOutMessage":"Sei sicuro di voler uscire?",
+      "logOutHeader":"Esci",
+      "listCustomer":"Lista Clienti"
+    },
+    "vehicle":{
+      "vehicleList":"Lista Veicoli",
+      "addButton":"Aggiungi Veicolo",
+      "addVehicle":"Aggiungi Veicolo",
+      "createVehicle":"Crea Veicolo",
+      "vehicleInformation":"Informazioni Veicolo",
+      "addPhotos":"Aggiungi Foto",
+      "photos":"Foto Veicolo",
+      "damages":"Danni",
+      "specs":"Specifiche",
+      "status":"Stato",
+      "available":"Disponibile",
+      "unavailable":"Non Disponibile",
+      "maintenance":"Manutenzione",
+      "searchPlaceholder":"Cerca Veicoli",
+      "columns":{
+        "brandModel":"Marca Modello",
+        "color":"Colore",
+        "plate": "Targa",
+        "location":"Posizione",
+        "status":"Stato"
+      },
+      "fields":{
+        "brand":"Marca",
+        "bodyType":"Tipo di Carrozzeria",
+        "year":"Anno",
+        "model":"Modello",
+        "color":"Colore",
+        "plate": "Targa",
+        "odometer":"Chilometraggio",
+        "fuelType":"Tipo di Carburante",
+        "transmission":"Trasmissione",
+        "passengers":"Passeggeri",
+        "kmPerDay":"Km al Giorno",
+        "extraKmPrice":"Prezzo Extra Km",
+        "basicDailyPrice":"Prezzo Giornaliero Base",
+        "franchise":"Franchigia",
+        "deposit":"Deposito",
+        "location":"Posizione"
+      },
+      "damage":{
+        "vehicleDamage":"Danni Veicolo",
+        "addDamage":"Aggiungi Danno",
+        "vehicleDamageSeverity":"Gravità Danno",
+        "vehicleDamageDescription":"Descrizione Danno",
+        "vehicleDamageType":"Tipo Danno",
+        "vehicleDamageImages":"Immagini Danno",
+        "vehicleDamagePosition":"Posizione Danno",
+        "dragDrop":"Trascina e rilascia i documenti qui",
+        "selectImages":"Seleziona Immagini",
+        "fields":{
+          "position":"Posizione",
+          "severity":"Gravità",
+          "type":"Tipo"
+        }
+      }
+    },
+    "settings":{
+      "saveSettings":"Salva Impostazioni",
+      "settings": "Impostazioni",
+      "app": "Applicazione",
+      "profile": "Profilo",
+      "changePassword": "Cambia Password",
+      "users": "Utenti",
+      "applicationSettings": "Impostazioni Applicazione",
+      "language": "Lingua",
+      "themeColor": "Colore Tema",
+      "selectedColor": "Colore Selezionato",
+      "saveSetting": "Salva Impostazioni",
+      "addUser" : "Aggiungi Utente",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Email",
+      "role": "Ruolo",
+      "selectRole": "Seleziona Ruolo",
+      "languages": {
+        "english": "Inglese",
+        "italian": "Italiano"
+      },
+      "roles": {
+        "Administrator": "Amministratore",
+        "User": "Utente",
+        "Manager": "Gestore",
+        "Support": "Supporto",
+        "Sales": "Vendite"
+      }
+    }
+
+  }
