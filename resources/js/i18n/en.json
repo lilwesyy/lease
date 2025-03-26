@@ -90,6 +90,7 @@
   "vehicle": {
     "vehicleList": "Vehicle List",
     "addButton": "Add Vehicle",
+    "petrol": "Petrol",
     "addVehicle": "Add Vehicle",
     "createVehicle": "Create Vehicle",
     "vehicleInformation": "Vehicle Information",

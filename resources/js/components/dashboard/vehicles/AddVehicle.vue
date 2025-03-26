@@ -230,10 +230,14 @@ import FloatLabel from 'primevue/floatlabel';
 import VehicleDamage from './VehicleDamage.vue';
 import { fotoSlots } from './utils.js';
 import { useI18n } from 'vue-i18n'; 
+import { useToast } from 'primevue/usetoast';
+import { useConfirm } from 'primevue/useconfirm';
 
+const confirm = useConfirm();
 const { t } = useI18n();
 
 const router = useRouter();
+const toast = useToast();
 
 // Props
 const props = defineProps({
@@ -343,7 +347,7 @@ const bodyTypes = [
 const locations = ref([]);
 
 const fuelTypes = [
-  { label: 'Petrol', value: 'petrol' },
+  { label:  t('vehicle.petrol'), value: 'petrol' },
   { label: 'Diesel', value: 'diesel' },
   { label: 'Electric', value: 'electric' },
   { label: 'Hybrid', value: 'hybrid' }
@@ -392,7 +396,12 @@ const fetchLocations = () => {
     })
     .catch(error => {
       console.error('Error fetching locations:', error);
-      window.$showToast('error', 'Error', 'Failed to load locations');
+      toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Failed to load locations',
+        life: 3000
+      });
     });
 };
 
@@ -472,7 +481,13 @@ const handleFileUpload = (event, index) => {
 
   // Size validation
   if (file.size > 5000000) {
-    window.$showToast('error', 'Error', 'File size must be less than 5MB');
+
+    toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'File size must be less than 5MB',
+        life: 3000
+      });
     return;
   }
 
@@ -483,7 +498,13 @@ const handleFileUpload = (event, index) => {
   };
   reader.onerror = (e) => {
     console.error("Error reading file:", e);
-    window.$showToast('error', 'Error', 'Failed to read the image file');
+
+    toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Failed to read the image file',
+        life: 3000
+      });
   };
   reader.readAsDataURL(file);
 };
@@ -523,7 +544,14 @@ const handleStatusChange = () => {
     // Send the request to the backend
     axios.put(`/vehicles/update-status/${props.vehicle.id}`, statusUpdate)
       .then(response => {
-        window.$showToast('success', 'Success', 'Vehicle status updated successfully');
+       
+
+        toast.add({
+        severity: 'success', // or 'error', 'info', 'warn'
+        summary: 'Success',
+        detail: 'Vehicle status updated successfully',
+        life: 3000
+      });
 
         // Update local vehicle with data from server
         if (response.data && response.data.vehicle) {
@@ -548,7 +576,13 @@ const handleStatusChange = () => {
       })
       .catch(error => {
         console.error('Error updating status:', error);
-        window.$showToast('error', 'Error', 'Failed to update vehicle status');
+      
+        toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Failed to update vehicle status',
+        life: 3000
+      });
 
         // Restore previous status in case of error
         status.value = props.vehicle.status;
@@ -574,7 +608,12 @@ const createVehicle = () => {
   const uploads = [];
   // Validate required fields
   if (!selectedBrand.value || !model.value || !year.value || !plate.value) {
-    window.$showToast('error', 'Error', 'Please fill in all required fields');
+    toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Please fill in all required fields',
+        life: 3000
+      });
     return;
   }
 
@@ -631,7 +670,13 @@ const createVehicle = () => {
     }
   })
     .then(response => {
-      window.$showToast('success', 'Success', 'Vehicle created successfully');
+
+      window.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Vehicle created successfully',
+          life: 3000
+        });
 
       // Reset form
       resetForm();
@@ -641,7 +686,12 @@ const createVehicle = () => {
     })
     .catch(error => {
       console.error('Error creating vehicle:', error);
-      window.$showToast('error', 'Error', 'Failed to create vehicle');
+      window.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to create vehicle',
+          life: 3000
+        });
     });
 };
 
@@ -763,11 +813,24 @@ const saveChanges = () => {
         status.value = updatedVehicle.status;
       }
 
-      window.$showToast('success', 'Success', 'Vehicle details updated successfully');
+   
+      toast.add({
+        severity: 'success', // or 'error', 'info', 'warn'
+        summary: 'Success',
+        detail: 'Vehicle details updated successfully',
+        life: 3000
+      });
+
+      
     })
     .catch(error => {
       console.error('Error updating vehicle:', error);
-      window.$showToast('error', 'Error', 'Failed to update vehicle details');
+      toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Failed to update vehicle details',
+        life: 3000
+      });
     });
 };
 
@@ -797,17 +860,38 @@ const cancelEditMode = () => {
 };
 
 const deleteVehicle = () => {
-  if (confirm('Are you sure you want to delete this vehicle?')) {
-    axios.delete(`/vehicles/delete/${props.vehicle.id}`)
+  if (confirm.require({
+    message: 'Are you sure you want to delete this vehicle?',
+    header: 'Delete Vehicle',
+    icon: 'pi pi-exclamation-triangle',
+    acceptClass: 'p-button-danger',
+    accept: async () => {
+      axios.delete(`/vehicles/delete/${props.vehicle.id}`)
       .then(response => {
         window.$root.$emit('vehicle-deleted', props.vehicle.id);
-        window.$showToast('success', 'Success', 'Vehicle deleted successfully');
+       
+
+        toast.add({
+        severity: 'success', // or 'error', 'info', 'warn'
+        summary: 'Success',
+        detail: 'Vehicle deleted successfully',
+        life: 3000
+      });
         router.push('/dashboard/vehicles');
       })
       .catch(error => {
         console.error('Error deleting vehicle:', error);
-        window.$showToast('error', 'Error', 'Failed to delete vehicle');
+      
+        toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Failed to delete vehicle',
+        life: 3000
       });
+      });
+    }
+  })) {
+    
   }
 };
 
@@ -838,12 +922,23 @@ const savePhotos = () => {
     }
   })
     .then(response => {
-      window.$showToast('success', 'Success', 'Photos saved successfully');
+      toast.add({
+        severity: 'success', // or 'error', 'info', 'warn'
+        summary: 'Success',
+        detail: 'Photos saved successfully',
+        life: 3000
+      });
       emit('vehicle-updated-photo');
+      
     })
     .catch(error => {
       console.error('Error saving photos:', error);
-      window.$showToast('error', 'Error', 'Failed to save photos');
+      toast.add({
+        severity: 'error', // or 'error', 'info', 'warn'
+        summary: 'Error',
+        detail: 'Failed to save photos',
+        life: 3000
+      });
     });
 };
 

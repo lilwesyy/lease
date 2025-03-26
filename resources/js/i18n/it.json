@@ -90,6 +90,7 @@
     "vehicle":{
       "vehicleList":"Lista Veicoli",
       "addButton":"Aggiungi Veicolo",
+      "petrol": "Benzina",
       "addVehicle":"Aggiungi Veicolo",
       "createVehicle":"Crea Veicolo",
       "vehicleInformation":"Informazioni Veicolo",
