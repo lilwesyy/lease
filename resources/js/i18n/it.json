@@ -1,0 +1,20 @@
+{
+    "customers": {
+      "title": "Lista Clienti",
+      "addButton": "Aggiungi Cliente",
+      "searchPlaceholder": "Cerca Clienti",
+      "columns": {
+        "name": "Nome",
+        "phone": "Telefono",
+        "address": "Indirizzo",
+        "documents": "Documenti",
+        "privacy": "Privacy"
+      },
+      "privacy": {
+        "signed": "Firmato",
+        "notSigned": "Non Firmato"
+      },
+      "noCustomers": "Nessun cliente trovato. Aggiungi un cliente.",
+      "clientDetails": "Dettagli Cliente"
+    }
+  }

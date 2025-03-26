@@ -9,6 +9,7 @@ import 'primeicons/primeicons.css';
 import '../css/app.css';
 import ToastPlugin from './plugins/toast';
 import Tooltip from 'primevue/tooltip';
+import i18n from './i18n';
 
 const app = createApp(App);
 
@@ -22,6 +23,7 @@ app.use(PrimeVue, {
 });
 
 app.use(router);
+app.use(i18n);
 app.use(ToastService);
 app.use(ToastPlugin);
 app.use(ConfirmationService);

@@ -6,6 +6,30 @@
         <Card>
             <template #content>
                 <TabView>
+                    <TabPanel header="App">
+                        <div class="app-settings">
+                            <h3>Application Settings</h3>
+                            
+                            <div class="field">
+                                <label>Language</label>
+                                <Dropdown 
+                                    v-model="appSettings.lang" 
+                                    :options="languages" 
+                                    optionLabel="name" 
+                                    optionValue="code" 
+                                    placeholder="Select language" 
+                                    class="w-full md:w-14rem"
+                                />
+                            </div>
+                            
+                            <Button 
+                                label="Save Settings" 
+                                icon="pi pi-save" 
+                                @click="saveAppSettings" 
+                                class="mt-3"
+                            />
+                        </div>
+                    </TabPanel>
                     <TabPanel header="Profile">
                         <div class="profile-settings">
                             <h3>Profile</h3>
@@ -152,7 +176,6 @@ import { useConfirm } from "primevue/useconfirm";
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 import Breadcrumb from 'primevue/breadcrumb';
-import ConfirmDialog from 'primevue/confirmdialog';
 
 // Defining props if needed
 const isViewMode = ref(false);
@@ -166,7 +189,9 @@ const items = ref([
 // Setup toast and confirm hooks
 const toast = useToast();
 const confirm = useConfirm();
-
+const appSettings = ref({
+    lang: 'en'
+});
 const isUserDialogVisible = ref(false)
 const isEditing = ref(false)
 const dialogUser = ref({ firstName: '', lastName: '', email: '', role: '' })
@@ -184,6 +209,14 @@ const user = ref({
     email: '',
     phone: ''
 });
+
+const languages = ref([
+    { name: 'English', code: 'en' },
+    { name: 'Italian', code: 'it' },
+    { name: 'French', code: 'fr' },
+    { name: 'German', code: 'de' },
+    { name: 'Spanish', code: 'es' }
+]);
 
 // Password management
 const passwords = ref({
@@ -229,6 +262,102 @@ const addUser = async () => {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to create user', life: 3000 })
     }
 }
+
+const fetchAppSettings = async () => {
+    try {
+        const response = await axios.post('/settings');
+        if (response.data && response.data.settings) {
+            appSettings.value = response.data.settings;
+        }
+    } catch (error) {
+        console.error('Error fetching app settings:', error);
+        toast.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: 'Failed to load application settings', 
+            life: 3000 
+        });
+    }
+};
+
+const saveAppSettings = async () => {
+    try {
+        // Assicuriamoci che appSettings.value contenga lang: "en" (o qualsiasi lingua selezionata)
+        const settingsToSave = {
+            lang: appSettings.value.lang || 'en'
+        };
+        
+        const response = await axios.post('/settings/save', {  // Aggiornato l'URL all'endpoint corretto
+            settings: settingsToSave
+        });
+        
+        console.log('Payload sent:', { settings: settingsToSave });
+        
+        if (response.status === 200) {
+            // Aggiorna le impostazioni locali con quelle restituite dal server
+            if (response.data && response.data.settings) {
+                appSettings.value = response.data.settings;
+                console.log('Settings updated:', appSettings.value);
+                
+                // Aggiorna la lingua nell'i18n
+                if (appSettings.value.lang) {
+                    // Importa i18n se non è già stato importato
+                    import('../../i18n').then(module => {
+                        const i18n = module.default;
+                        // Cambia la lingua
+                        i18n.global.locale.value = appSettings.value.lang;
+                        // Salva la lingua nel localStorage
+                        localStorage.setItem('locale', appSettings.value.lang);
+                        console.log('Language updated to:', appSettings.value.lang);
+                    });
+                }
+                
+                // Salva le impostazioni nel localStorage
+                localStorage.setItem('appSettings', JSON.stringify(appSettings.value));
+            }
+            
+            toast.add({ 
+                severity: 'success', 
+                summary: 'Success', 
+                detail: 'Language settings saved successfully', 
+                life: 3000 
+            });
+            
+            // Aggiorna l'interfaccia
+            await refreshInterface();
+        } else {
+            throw new Error('Failed to save settings');
+        }
+    } catch (error) {
+        console.error('Error saving app settings:', error);
+        toast.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: 'Failed to save language settings', 
+            life: 3000 
+        });
+    }
+};
+
+const refreshInterface = async () => {
+    try {
+        // Opzione 1: Ricarica i componenti che devono essere aggiornati
+        // Per esempio, puoi emettere un evento globale che altri componenti possono ascoltare
+        // window.dispatchEvent(new CustomEvent('language-changed', {
+        //     detail: { lang: appSettings.value.lang }
+        // }));
+        
+        // Opzione 2: Per un aggiornamento più completo, puoi ricaricare la pagina
+        // Ma in genere è meglio evitarlo se possibile
+        window.location.reload();
+        
+        // Opzione 3: Applicare direttamente le traduzioni aggiornate ai componenti visibili
+        // Questo dipende dalla struttura della tua app
+        await fetchAppSettings();
+    } catch (error) {
+        console.error('Error refreshing interface:', error);
+    }
+};
 
 const addNewUser = async () => {
     try {
@@ -438,6 +567,7 @@ const deleteUser = async () => {
 // Load data on component mount
 onMounted(() => {
     fetchUsers();
+    fetchAppSettings();
 });
 </script>
 

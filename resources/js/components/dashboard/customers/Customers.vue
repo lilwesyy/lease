@@ -5,10 +5,10 @@
     <Card>
       <template #content>
         <header class="p-d-flex p-ai-center p-gap-2 inline-header">
-          <Button label="Add Customer" icon="pi pi-plus" @click="$router.push('/dashboard/add-customer')" />
+          <Button :label="$t('customers.addButton')" icon="pi pi-plus" @click="$router.push('/dashboard/add-customer')" />
           <IconField class="p-d-flex p-ai-center">
             <InputIcon class="pi pi-search" />
-            <InputText v-model="value1" placeholder="Search Customers" />
+            <InputText v-model="value1" :placeholder="$t('customers.searchPlaceholder')" />
           </IconField>
         </header>
 
@@ -30,7 +30,7 @@
             :rowsPerPageOptions="[5, 10, 20, 50]"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           >
-            <Column header="Name">
+            <Column :header="$t('customers.columns.name')">
               <template #body="slotProps">
                 <div>
                   {{ slotProps.data.firstName }} {{ slotProps.data.lastName }}
@@ -38,17 +38,17 @@
                 </div>
               </template>
             </Column>
-            <Column field="phone" header="Phone" />
-            <Column field="address" header="Address" />
-            <Column header="Documents">
+            <Column field="phone" :header="$t('customers.columns.phone')" />
+            <Column field="address" :header="$t('customers.columns.address')" />
+            <Column :header="$t('customers.columns.documents')">
               <template #body="slotProps">
                 <Checkbox :model-value="slotProps.data.hasDocuments" :binary="true" disabled />
               </template>
             </Column>
-            <Column header="Privacy">
+            <Column :header="$t('customers.columns.privacy')">
               <template #body="slotProps">
                 <Badge 
-                  :value="slotProps.data.privacy ? 'Signed' : 'Not Signed'" 
+                  :value="slotProps.data.privacy ? $t('customers.privacy.signed') : $t('customers.privacy.notSigned')" 
                   :severity="slotProps.data.privacy ? 'success' : 'danger'" 
                   class="p-mr-2" 
                 />
@@ -62,11 +62,10 @@
       </template>
     </Card>
 
-    <Dialog v-model:visible="dialogVisible" v-if="selectedClient" header="Client Details" :modal="true" :style="{ width: '70vw' }">
+    <Dialog v-model:visible="dialogVisible" v-if="selectedClient" :header="$t('customers.clientDetails')" :modal="true" :style="{ width: '70vw' }">
       <AddCustomer :client="selectedClient" :isViewMode="true" @close="handleClose" />
     </Dialog>
 
-    <!-- <ConfirmPopup /> -->
   </div>
 </template>
 
@@ -87,6 +86,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import AddCustomer from './AddCustomer.vue';
 import Checkbox from 'primevue/checkbox';
 import Badge from 'primevue/badge';
+import { useI18n } from 'vue-i18n'; 
 
 const clients = ref([]);
 const selectedClient = ref({});
@@ -96,7 +96,7 @@ const metaKey = ref(true);
 const value1 = ref('');
 const loading = ref(false);
 const error = ref(null);
-
+const { t } = useI18n();
 const confirm = useConfirm();
 
 // Filtro clienti in base alla ricerca
@@ -177,7 +177,7 @@ watch(dialogVisible, (newVal) => {
 
 const items = [
   { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-  { label: 'Customer List', url: '/dashboard/customers' }
+  { label: t('customers.title'), url: '/dashboard/customers' }
 ];
 
 onMounted(() => {

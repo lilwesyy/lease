@@ -1,0 +1,20 @@
+{
+    "customers": {
+      "title": "Customer List",
+      "addButton": "Add Customer",
+      "searchPlaceholder": "Search Customers",
+      "columns": {
+        "name": "Name",
+        "phone": "Phone",
+        "address": "Address",
+        "documents": "Documents",
+        "privacy": "Privacy"
+      },
+      "privacy": {
+        "signed": "Signed",
+        "notSigned": "Not Signed"
+      },
+      "noCustomers": "No customers found. Please add a customer.",
+      "clientDetails": "Client Details"
+    }
+  }
