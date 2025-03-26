@@ -1,46 +1,46 @@
 <template>
-  <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Customer</h1>
-  <h1 v-else-if="isEditMode" class="font-bold text-3xl">Edit Customer</h1>
-  <h1 v-else class="font-bold text-3xl">View Customer</h1>
+  <h1 v-if="!isViewMode" class="font-bold text-3xl">{{ $t('customers.add') }}</h1>
+  <h1 v-else-if="isEditMode" class="font-bold text-3xl">{{ $t('customers.edit') }}</h1>
+  <h1 v-else class="font-bold text-3xl">{{ $t('customers.view') }}</h1>
 
   <Breadcrumb :model="breadcrumbItems" class="custom-breadcrumb" />
 
-  <Dialog v-model:visible="privacyDialogVisible" header="Privacy Agreement" :style="{ width: '50vw' }" :modal="true" :closable="true">
+  <Dialog v-model:visible="privacyDialogVisible" :header="$t('privacy.title')" :style="{ width: '50vw' }" :modal="true" :closable="true">
   <template #default>
     <div>
-      <h2 class="font-bold text-xl mb-4">Privacy Policy</h2>
+      <h2 class="font-bold text-xl mb-4">{{ $t('privacy.policyTitle') }}</h2>
       <p>
-        **Customer Details:**  
-        First Name: <strong>{{ firstName }}</strong> Last Name: <strong>{{ lastName }}</strong><br />
-        Date of Birth: <strong>{{ birthDate }}</strong><br />
-        Address: <strong>{{ selectedAddress }}</strong><br />
-        Phone: <strong>{{ phone }}</strong><br />
-        Email: <strong>{{ email }}</strong>
+        {{ $t('privacy.customerDetails') }}:<br />
+        {{ $t('customers.fields.firstName') }}: <strong>{{ firstName }}</strong> {{ $t('customers.fields.lastName') }}: <strong>{{ lastName }}</strong><br />
+        {{ $t('customers.fields.birthDate') }}: <strong>{{ birthDate }}</strong><br />
+        {{ $t('customers.fields.address') }}: <strong>{{ selectedAddress }}</strong><br />
+        {{ $t('customers.fields.phone') }}: <strong>{{ phone }}</strong><br />
+        {{ $t('customers.fields.email') }}: <strong>{{ email }}</strong>
       </p>
       <p class="mt-4">
-        In accordance with the General Data Protection Regulation (GDPR - EU Regulation 2016/679), the customer consents to the processing of their personal data for the following purposes:
+        {{ $t('privacy.gdprNotice') }}
       </p>
       <ul class="list-disc ml-6 mt-2">
-        <li>Management of the vehicle rental contract.</li>
-        <li>Communications related to the car rental service.</li>
-        <li>Compliance with legal and tax obligations.</li>
-        <li>Sending promotional communications (with explicit consent).</li>
+        <li>{{ $t('privacy.purposes.rental') }}</li>
+        <li>{{ $t('privacy.purposes.communications') }}</li>
+        <li>{{ $t('privacy.purposes.legal') }}</li>
+        <li>{{ $t('privacy.purposes.marketing') }}</li>
       </ul>
       <p class="mt-4">
-        The customer has the right to access, rectify, or delete their personal data, as well as to object to processing for marketing purposes. To exercise these rights, please contact: <strong>privacy@carrental.com</strong>.
+        {{ $t('privacy.rights') }}
       </p>
       <p class="mt-4">
-        Do you confirm that you have read and understood the privacy policy and agree to the processing of your personal data?
+        {{ $t('privacy.confirmationQuestion') }}
       </p>
     </div>
   </template>
   <template #footer>
-    <Button label="I Agree" icon="pi pi-check" class="p-button-success" @click="acceptPrivacy" />
-    <Button label="Close" icon="pi pi-times" class="p-button-secondary" @click="privacyDialogVisible = false" />
+    <Button :label="$t('privacy.agree')" icon="pi pi-check" class="p-button-success" @click="acceptPrivacy" />
+    <Button :label="$t('common.close')" icon="pi pi-times" class="p-button-secondary" @click="privacyDialogVisible = false" />
   </template>
 </Dialog>
 
-  <Dialog v-model:visible="documentUploadDialogVisible" header="Upload Documents" :style="{width: '50vw'}" 
+  <Dialog v-model:visible="documentUploadDialogVisible" :header="$t('documents.uploadTitle')" :style="{width: '50vw'}" 
           :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
     <FileUpload 
       ref="documentUploader"
@@ -50,21 +50,21 @@
       :multiple="true"
       accept="image/*,application/pdf"
       :maxFileSize="10000000"
-      chooseLabel="Select Files"
-      uploadLabel="Upload"
-      cancelLabel="Cancel"
+      :chooseLabel="$t('documents.select')"
+      :uploadLabel="$t('documents.upload')"
+      :cancelLabel="$t('common.cancel')"
       :auto="false">
       <template #empty>
-        <p>Drag and drop files here to upload.</p>
+        <p>{{ $t('documents.dragDrop') }}</p>
       </template>
     </FileUpload>
     <template #footer>
-      <Button label="Close" icon="pi pi-times" @click="documentUploadDialogVisible = false" class="p-button-secondary" />
-      <Button label="Upload" icon="pi pi-upload" @click="triggerDocumentUpload" class="p-button-primary" />
+      <Button :label="$t('common.close')" icon="pi pi-times" @click="documentUploadDialogVisible = false" class="p-button-secondary" />
+      <Button :label="$t('documents.upload')" icon="pi pi-upload" @click="triggerDocumentUpload" class="p-button-primary" />
     </template>
   </Dialog>
 
-  <Dialog v-model:visible="cardUploadDialogVisible" header="Upload Card Documents" :style="{width: '50vw'}" 
+  <Dialog v-model:visible="cardUploadDialogVisible" :header="$t('documents.uploadCardTitle')" :style="{width: '50vw'}" 
           :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
           <FileUpload 
   ref="cardUploader"
@@ -74,49 +74,49 @@
   :multiple="true"
   accept="image/*,application/pdf"
   :maxFileSize="10000000"
-  chooseLabel="Select Files"
-  uploadLabel="Upload"
-  cancelLabel="Cancel"
+  :chooseLabel="$t('documents.select')"
+  :uploadLabel="$t('documents.upload')"
+  :cancelLabel="$t('common.cancel')"
   :auto="false">
   <template #empty>
-    <p>Drag and drop card scans here to upload.</p>
+    <p>{{ $t('documents.dragDropCard') }}</p>
   </template>
 </FileUpload>
     <template #footer>
-      <Button label="Close" icon="pi pi-times" @click="cardUploadDialogVisible = false" class="p-button-secondary" />
-      <Button label="Upload" icon="pi pi-upload" @click="uploadCardDocuments" class="p-button-primary" />
+      <Button :label="$t('common.close')" icon="pi pi-times" @click="cardUploadDialogVisible = false" class="p-button-secondary" />
+      <Button :label="$t('documents.upload')" icon="pi pi-upload" @click="uploadCardDocuments" class="p-button-primary" />
     </template>
   </Dialog>
 
   <Card class="isviewed">
   <template #content>
-    <h1 class="font-bold text-2xl">Personal Data</h1>
-    <p class="mb-2 text-gray-500">Fill the customer personal data</p>
+    <h1 class="font-bold text-2xl">{{ $t('customers.personalData') }}</h1>
+    <p class="mb-2 text-gray-500">{{ $t('customers.personalDataDesc') }}</p>
     <div class="input-group-grid">
       <div class="input-group-row grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputGroup class="w-full">
           <InputGroupAddon>
             <i class="pi pi-user"></i>
           </InputGroupAddon>
-          <InputText v-model="firstName" placeholder="First Name" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="firstName" :placeholder="$t('customers.fields.firstName')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
         <InputGroup class="w-full">
           <InputGroupAddon>
             <i class="pi pi-user"></i>
           </InputGroupAddon>
-          <InputText v-model="lastName" placeholder="Last Name" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="lastName" :placeholder="$t('customers.fields.lastName')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
         <InputGroup class="w-full">
           <InputGroupAddon>
             <i class="pi pi-calendar"></i>
           </InputGroupAddon>
-          <DatePicker v-model="birthDate" placeholder="Birth Date" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <DatePicker v-model="birthDate" :placeholder="$t('customers.fields.birthDate')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
         <InputGroup class="w-full">
           <InputGroupAddon>
             <i class="pi pi-globe"></i>
           </InputGroupAddon>
-          <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" placeholder="Select a language" class="w-full" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
+          <Select v-model="selectedLanguage" :options="languages" optionLabel="label" optionValue="value" :placeholder="$t('customers.fields.language')" class="w-full" :class="{ 'select-readonly': isViewMode && !isEditMode }"/>
         </InputGroup>
       </div>
       <div class="input-group-row grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -124,13 +124,13 @@
           <InputGroupAddon>
             <i class="pi pi-phone"></i>
           </InputGroupAddon>
-          <InputText v-model="phone" placeholder="Phone Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="phone" :placeholder="$t('customers.fields.phone')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
         <InputGroup class="w-full">
           <InputGroupAddon>
             <i class="pi pi-envelope"></i>
           </InputGroupAddon>
-          <InputText v-model="email" placeholder="Email" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="email" :placeholder="$t('customers.fields.email')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
         <InputGroup class="w-full">
           <InputGroupAddon>
@@ -143,7 +143,7 @@
             optionLabel="label"
             @select="onSelect"
             class="w-full"
-            placeholder="Address"
+            :placeholder="$t('customers.fields.address')"
             :readonly="isViewMode && !isEditMode"
             required
           >
@@ -157,12 +157,12 @@
       </div>
     </div>
 
-    <h1 class="font-bold text-2xl mt-10">Documents</h1>
-    <p class="mb-2 text-gray-500">Fill the customer documents</p>
+    <h1 class="font-bold text-2xl mt-10">{{ $t('customers.documents') }}</h1>
+    <p class="mb-2 text-gray-500">{{ $t('customers.documentsDesc') }}</p>
 
     <div class="documents-grid grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <p>Driver License</p>
+        <p>{{ $t('customers.driverLicense') }}</p>
       </div>
       <div></div>
 
@@ -171,7 +171,7 @@
           <InputGroupAddon>
             <i class="pi pi-id-card"></i>
           </InputGroupAddon>
-          <InputText v-model="driverLicenseNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="driverLicenseNumber" :placeholder="$t('customers.fields.serialNumber')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
       </div>
       <div>
@@ -179,12 +179,12 @@
           <InputGroupAddon>
             <i class="pi pi-calendar"></i>
           </InputGroupAddon>
-          <DatePicker v-model="driverLicenseValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <DatePicker v-model="driverLicenseValidUntil" :placeholder="$t('customers.fields.validUntil')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
       </div>
 
       <div>
-        <p>Identity Card / Passport</p>
+        <p>{{ $t('customers.identityCard') }}</p>
       </div>
       <div></div>
 
@@ -193,7 +193,7 @@
           <InputGroupAddon>
             <i class="pi pi-id-card"></i>
           </InputGroupAddon>
-          <InputText v-model="identityCardNumber" placeholder="Serial Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="identityCardNumber" :placeholder="$t('customers.fields.serialNumber')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
       </div>
       <div>
@@ -201,16 +201,16 @@
           <InputGroupAddon>
             <i class="pi pi-calendar"></i>
           </InputGroupAddon>
-          <DatePicker v-model="identityCardValidUntil" placeholder="Valid Until" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <DatePicker v-model="identityCardValidUntil" :placeholder="$t('customers.fields.validUntil')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
       </div>
     </div>
-    <p class="mt-3 text-gray-500">You can attach customer documents scans</p>
-    <Button icon="pi pi-paperclip" label="Attach Documents" :disabled="isViewMode && !isEditMode" 
+    <p class="mt-3 text-gray-500">{{ $t('customers.attachDocumentsDesc') }}</p>
+    <Button icon="pi pi-paperclip" :label="$t('documents.attach')" :disabled="isViewMode && !isEditMode" 
       severity="contrast" @click="showDocumentUploadDialog"/>
 
     <div v-if="documentFiles.length > 0" class="mt-4">
-      <h2 class="font-bold text-lg">Attached Documents</h2>
+      <h2 class="font-bold text-lg">{{ $t('documents.attachedDocs') }}</h2>
       <div class="document-list grid grid-cols-1 md:grid-cols-2 gap-4">
         <div v-for="doc in documentFiles" :key="doc.id" class="document-item">
           <div class="document-info">
@@ -218,15 +218,15 @@
             <span>{{ doc.filename || doc.name }}</span>
           </div>
           <div class="document-actions">
-            <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
-            <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'identity')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
+            <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" :tooltip="$t('common.view')" />
+            <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'identity')" class="p-button-text p-button-danger p-button-sm" :tooltip="$t('common.delete')" />
           </div>
         </div>
       </div>
     </div>
 
-    <h1 class="font-bold text-2xl mt-10">Card</h1>
-    <p class="mb-2 text-gray-500">Fill the customer card info</p>
+    <h1 class="font-bold text-2xl mt-10">{{ $t('customers.card') }}</h1>
+    <p class="mb-2 text-gray-500">{{ $t('customers.cardDesc') }}</p>
 
     <div class="card-input-row grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="card-number">
@@ -234,7 +234,7 @@
           <InputGroupAddon>
             <i class="pi pi-credit-card"></i>
           </InputGroupAddon>
-          <InputText v-model="cardNumber" type="number" placeholder="Card Number" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+          <InputText v-model="cardNumber" type="number" :placeholder="$t('customers.fields.cardNumber')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
         </InputGroup>
       </div>
 
@@ -242,30 +242,30 @@
         <InputGroupAddon>
           <i class="pi pi-calendar"></i>
         </InputGroupAddon>
-        <InputText v-model="expirationDate" type="text" placeholder="MM/YYYY" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        <InputText v-model="expirationDate" type="text" :placeholder="$t('customers.fields.expirationDate')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
       </InputGroup>
 
       <InputGroup class="w-full">
         <InputGroupAddon>
           <i class="pi pi-lock"></i>
         </InputGroupAddon>
-        <InputText v-model="cvv" type="number" placeholder="CVV2" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        <InputText v-model="cvv" type="number" :placeholder="$t('customers.fields.cvv')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
       </InputGroup>
 
       <InputGroup class="w-full">
         <InputGroupAddon>
           <i class="pi pi-user"></i>
         </InputGroupAddon>
-        <InputText v-model="cardHolder" type="text" placeholder="Card Holder" :readonly="isViewMode && !isEditMode" required class="w-full"/>
+        <InputText v-model="cardHolder" type="text" :placeholder="$t('customers.fields.cardHolder')" :readonly="isViewMode && !isEditMode" required class="w-full"/>
       </InputGroup>
     </div>
 
-    <p class="mt-3 text-gray-500">You can attach customer credit card scans</p>
-    <Button icon="pi pi-paperclip" label="Attach Card" :disabled="isViewMode && !isEditMode" 
+    <p class="mt-3 text-gray-500">{{ $t('customers.attachCardDesc') }}</p>
+    <Button icon="pi pi-paperclip" :label="$t('documents.attachCard')" :disabled="isViewMode && !isEditMode" 
       severity="contrast" @click="showCardUploadDialog"/>
 
     <div v-if="cardFiles.length > 0" class="mt-4">
-      <h2 class="font-bold text-lg">Attached Card Documents</h2>
+      <h2 class="font-bold text-lg">{{ $t('documents.attachedCardDocs') }}</h2>
       <div class="document-list grid grid-cols-1 md:grid-cols-2 gap-4">
         <div v-for="doc in cardFiles" :key="doc.id" class="document-item">
           <div class="document-info">
@@ -273,42 +273,42 @@
             <span>{{ doc.filename || doc.name }}</span>
           </div>
           <div class="document-actions">
-            <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" tooltip="View" />
-            <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'card')" class="p-button-text p-button-danger p-button-sm" tooltip="Delete" />
+            <Button icon="pi pi-eye" @click="previewDocument(doc)" class="p-button-text p-button-sm" :tooltip="$t('common.view')" />
+            <Button v-if="isEditMode" icon="pi pi-trash" @click.stop="deleteDocument(doc.id, 'card')" class="p-button-text p-button-danger p-button-sm" :tooltip="$t('common.delete')" />
           </div>
         </div>
       </div>
     </div>
 
-    <Button v-if="!isViewMode" @click="createCustomer" label="Create Customer" class="ml-2 mt-4" icon="pi pi-user" />
+    <Button v-if="!isViewMode" @click="createCustomer" :label="$t('customers.createButton')" class="ml-2 mt-4" icon="pi pi-user" />
 
     <div v-if="isViewMode && !isEditMode">
-      <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+      <Button @click="enableEditMode" :label="$t('common.edit')" icon="pi pi-pencil" class="p-button-primary mt-4" />
       <Button 
         @click="handlePrivacyClick" 
-        label="Privacy" 
+        :label="$t('privacy.button')" 
         icon="pi pi-lock" 
         :class="props.client.privacy ? 'p-button-primary' : 'p-button-secondary'" 
         class="ml-2" 
-        v-tooltip="props.client.privacy ? 'Privacy already signed' : ''"
+        v-tooltip="props.client.privacy ? $t('privacy.alreadySigned') : ''"
       />
     </div>
     <div v-else-if="isEditMode">
-      <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
-      <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
-      <Button @click="deleteCustomer" label="Delete" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
+      <Button @click="saveChanges" :label="$t('common.save')" icon="pi pi-check" class="p-button-success mt-4" />
+      <Button @click="cancelEditMode" :label="$t('common.cancel')" icon="pi pi-times" class="p-button-secondary mt-4 ml-2" />
+      <Button @click="deleteCustomer" :label="$t('common.delete')" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
     </div>
   </template>
 </Card>
 
 
-  <Dialog v-model:visible="documentPreviewVisible" :header="previewingDocument.filename || 'Document Preview'" :style="{width: '50vw'}" 
+  <Dialog v-model:visible="documentPreviewVisible" :header="previewingDocument.filename || $t('documents.preview')" :style="{width: '50vw'}" 
         :modal="true" :closable="true" :closeOnEscape="true" :dismissableMask="true">
   <div class="document-preview-container">
     <!-- Loading indicator -->
     <div v-if="!previewingDocument.url" class="flex flex-column align-items-center py-4">
       <i class="pi pi-spin pi-spinner text-3xl mb-2"></i>
-      <p>Loading document...</p>
+      <p>{{ $t('documents.loading') }}</p>
     </div>
     
     <!-- PDF viewer -->
@@ -324,8 +324,8 @@
     <!-- Fallback for unsupported types -->
     <div v-else class="text-center py-8">
       <i class="pi pi-file text-5xl mb-3 text-primary"></i>
-      <p>This document type cannot be previewed directly.</p>
-      <Button icon="pi pi-download" label="Download" @click="downloadDocument(previewingDocument)" class="mt-4" />
+      <p>{{ $t('documents.cannotPreview') }}</p>
+      <Button icon="pi pi-download" :label="$t('documents.download')" @click="downloadDocument(previewingDocument)" class="mt-4" />
     </div>
   </div>
 </Dialog>
@@ -350,6 +350,7 @@ import Toast from 'primevue/toast';
 import Dialog from 'primevue/dialog';
 import FileUpload from 'primevue/fileupload';
 import axios from 'axios';
+import { useI18n } from 'vue-i18n'; 
 
 
 const props = defineProps({
@@ -377,6 +378,7 @@ const cardFiles = ref([]);
 const privacyDialogVisible = ref(false);
 const suggestions = ref([]);
 const selectedPlace = ref(null);
+const { t } = useI18n();
 
 // Reactive state
 const isEditMode = ref(false);
@@ -415,9 +417,10 @@ const languages = [
 const breadcrumbItems = computed(() => [
   { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
   {
-    label: props.isViewMode ? (isEditMode.value ? 'Edit Customer' : 'View Customer') : 'Add Customer',
+    label: props.isViewMode ? (isEditMode.value ? t('customers.editCustomer') : t('customers.viewCustomer')) : t('customers.addCustomer'),
     url: props.isViewMode ? `/dashboard/customers/${props.client?.id || ''}` : '/dashboard/add-customer'
   }
+
 ]);
 
 const onSelect = (event) => {

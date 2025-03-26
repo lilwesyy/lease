@@ -1,8 +1,39 @@
 {
     "customers": {
+      "personalData": "Dati Personali",
+      "personalDataDesc": "Informazioni personali del cliente",
+      "documents": "Documenti",
+      "documentsDesc": "Documenti del cliente",
+      "add": "Aggiungi Cliente",
       "title": "Lista Clienti",
+      "driverLicense": "Patente di Guida",
+      "identityCard": "Carta d'Identità",
       "addButton": "Aggiungi Cliente",
+      "card": "Carta di Credito",
+      "cardDesc": "Informazioni sulla carta di credito del cliente",
+      "attachCardDesc": "Carica la carta di credito del cliente",
       "searchPlaceholder": "Cerca Clienti",
+      "attachDocumentsDesc": "Carica i documenti del cliente",
+      "createButton": "Crea Cliente",
+      "addCustomer": "Aggiungi Cliente",
+      "editCustomer": "Modifica Cliente",
+      "deleteCustomer": "Elimina Cliente",
+      "viewCustomer": "Visualizza Cliente",
+      "fields":{
+        "firstName": "Nome",
+        "lastName": "Cognome",
+        "phone": "Telefono",
+        "address": "Indirizzo",
+        "birthDate": "Data di Nascita",
+        "language": "Lingua",
+        "email": "Email",
+        "validUntil": "Valido Fino a",
+        "cardNumber": "Numero Carta",
+        "expirationDate": "Data di Scadenza",
+        "cvv": "CVV",
+        "cardHolder": "Titolare della Carta",
+        "serialNumber": "Numero di Serie"
+      },
       "columns": {
         "name": "Nome",
         "phone": "Telefono",
@@ -11,10 +42,29 @@
         "privacy": "Privacy"
       },
       "privacy": {
+        "button": "Privacy",
         "signed": "Firmato",
         "notSigned": "Non Firmato"
       },
       "noCustomers": "Nessun cliente trovato. Aggiungi un cliente.",
       "clientDetails": "Dettagli Cliente"
+    },
+    "documents":{
+      "attach": "Allega Documenti",
+      "attachCard": "Allega Carta di Credito",
+      "attachedDocs": "Documenti Allegati",
+      "select": "Seleziona Documenti",
+      "upload": "Carica Documenti",
+      "dragDropCard": "Trascina e rilascia la carta di credito qui",
+      "uploadCardTitle": "Carica la Carta di Credito",
+      "uploadTitle": "Carica i Documenti",
+      "dragDrop": "Trascina e rilascia i documenti qui"
+    },
+    "common":{
+      "edit": "Modifica",
+      "cancel": "Annulla",
+      "close": "Chiudi",
+      "delete": "Elimina",
+      "save": "Salva"
     }
   }

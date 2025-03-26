@@ -22,6 +22,16 @@
                                 />
                             </div>
                             
+                            <div class="field mt-3">
+                                <label>Theme Color</label>
+                                <ColorPicker 
+                                    v-model="appSettings.themeColor" 
+                                    format="hex" 
+                                    class="w-full md:w-14rem"
+                                />
+                                <small class="block mt-1 text-gray-500">Selected color: {{ appSettings.themeColor || '#2196F3' }}</small>
+                            </div>
+                            
                             <Button 
                                 label="Save Settings" 
                                 icon="pi pi-save" 
@@ -176,6 +186,7 @@ import { useConfirm } from "primevue/useconfirm";
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 import Breadcrumb from 'primevue/breadcrumb';
+import ColorPicker from 'primevue/colorpicker';
 
 // Defining props if needed
 const isViewMode = ref(false);
@@ -190,7 +201,8 @@ const items = ref([
 const toast = useToast();
 const confirm = useConfirm();
 const appSettings = ref({
-    lang: 'en'
+    lang: 'en',
+    themeColor: '#2196F3' // Add default theme color
 });
 const isUserDialogVisible = ref(false)
 const isEditing = ref(false)
@@ -282,48 +294,41 @@ const fetchAppSettings = async () => {
 
 const saveAppSettings = async () => {
     try {
-        // Assicuriamoci che appSettings.value contenga lang: "en" (o qualsiasi lingua selezionata)
         const settingsToSave = {
-            lang: appSettings.value.lang || 'en'
+            lang: appSettings.value.lang || 'en',
+            themeColor: appSettings.value.themeColor || '#2196F3'
         };
         
-        const response = await axios.post('/settings/save', {  // Aggiornato l'URL all'endpoint corretto
+        const response = await axios.post('/settings/save', { 
             settings: settingsToSave
         });
         
         console.log('Payload sent:', { settings: settingsToSave });
         
         if (response.status === 200) {
-            // Aggiorna le impostazioni locali con quelle restituite dal server
             if (response.data && response.data.settings) {
                 appSettings.value = response.data.settings;
                 console.log('Settings updated:', appSettings.value);
                 
-                // Aggiorna la lingua nell'i18n
                 if (appSettings.value.lang) {
-                    // Importa i18n se non è già stato importato
                     import('../../i18n').then(module => {
                         const i18n = module.default;
-                        // Cambia la lingua
                         i18n.global.locale.value = appSettings.value.lang;
-                        // Salva la lingua nel localStorage
                         localStorage.setItem('locale', appSettings.value.lang);
                         console.log('Language updated to:', appSettings.value.lang);
                     });
                 }
                 
-                // Salva le impostazioni nel localStorage
                 localStorage.setItem('appSettings', JSON.stringify(appSettings.value));
             }
             
             toast.add({ 
                 severity: 'success', 
                 summary: 'Success', 
-                detail: 'Language settings saved successfully', 
+                detail: 'Application settings saved successfully', 
                 life: 3000 
             });
             
-            // Aggiorna l'interfaccia
             await refreshInterface();
         } else {
             throw new Error('Failed to save settings');
@@ -333,7 +338,7 @@ const saveAppSettings = async () => {
         toast.add({ 
             severity: 'error', 
             summary: 'Error', 
-            detail: 'Failed to save language settings', 
+            detail: 'Failed to save application settings', 
             life: 3000 
         });
     }

@@ -1,5 +1,5 @@
 <template>
-  <h1 class="font-bold text-3xl">Customer List</h1>
+  <h1 class="font-bold text-3xl">{{ $t('customers.title') }}</h1>
   <Breadcrumb :model="items" class="custom-breadcrumb" />
   <div>
     <Card>
