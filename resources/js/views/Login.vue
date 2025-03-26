@@ -95,7 +95,7 @@
     },
     methods: {
       validateField(field) {
-        console.log(`Validating field: ${field}`);
+        // console.log(`Validating field: ${field}`);
         this.formErrors[field] = [];
 
         if (field === 'username') {
@@ -114,19 +114,19 @@
       },
 
       async onFormSubmit(event) {
-        console.log('Form submit triggered');
+        // console.log('Form submit triggered');
         this.validateField('username');
         this.validateField('password');
 
         if (this.formErrors.username.length === 0 && this.formErrors.password.length === 0) {
           try {
-            console.log('Sending request...');
+            // console.log('Sending request...');
             const response = await axios.post('/login', {
               email: this.initialValues.username,
               password: this.initialValues.password,
             }, { withCredentials: true }); // Assicurati di inviare i cookie
 
-            console.log('Login successful:', response.data);
+            // console.log('Login successful:', response.data);
             // Salva il token o gestisci lo stato di autenticazione
             localStorage.setItem('authToken', response.data.token); // Salva il token di autenticazione
             localStorage.setItem('name', response.data.user.name); // Salva il nome dell'utente
@@ -137,7 +137,7 @@
             this.formErrors.general = ['Login failed. Please check your credentials and try again.'];
           }
         } else {
-          console.log('Form validation failed:', this.formErrors);
+          // console.log('Form validation failed:', this.formErrors);
         }
       }
     }
