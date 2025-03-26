@@ -20,10 +20,37 @@
             <div class="vehicle-info">
               <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'" />
               <div class="input-group">
-                <FloatLabel variant="on">
+                <!-- <FloatLabel variant="on">
                   <Select id="brand" class="full-width" v-model="selectedBrand" :options="brands" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
                   <label for="brand">Brand</label>
+                </FloatLabel> -->
+
+                <FloatLabel variant="on">
+                    <Select 
+                        id="brand" 
+                        class="full-width full-height" 
+                        v-model="selectedBrand" 
+                        :options="brands" 
+                        filter 
+                        optionValue="value"
+                        optionLabel="label" 
+                        placeholder="‎ "
+                        :class="{ 'select-readonly': isViewMode && !isEditMode }"
+                    >
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <img 
+                                    :alt="slotProps.option.label" 
+                                    :src="slotProps.option.icon || '/brand-logo.svg'" 
+                                    class="mr-2" 
+                                    style="width: 35px" 
+                                />
+                                <div>{{ slotProps.option.label }}</div>
+                            </div>
+                        </template>
+                    </Select>
+                    <label for="brand">Brand</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
@@ -143,11 +170,12 @@
           <TabPanel value="1">
             <div v-if="isViewMode" class="images-container">
               <div v-if="isViewMode" v-for="(slot, index) in fotoSlots" :key="index">
-                <div  class="no-images">
+                <div class="no-images">
                   <div class="upload-container">
                     <FileUpload v-if="!src[index]" ref="fileupload" mode="basic" @select="onFileSelect($event, index)"
                       chooseLabel="Scegli" showUploadButton="false" customUpload auto name="fileupload"
-                      url="/api/upload" accept="image/*" :maxFileSize="1000000" @upload="onUpload" class="file-upload-button" />
+                      url="/api/upload" accept="image/*" :maxFileSize="1000000" @upload="onUpload"
+                      class="file-upload-button" />
                     <img v-if="!src[index]" :src="slot.imageSrc" alt="Image" class="uploaded-image" />
                     <div v-if="src[index]" class="uploaded-image-container">
                       <img :src="src[index]" alt="Image" class="uploaded-image" />
@@ -155,7 +183,6 @@
                         <i class="pi pi-times"></i>
                       </button>
                     </div>
-                    
                   </div>
                 </div>
               </div>
@@ -347,7 +374,7 @@ export default {
   mounted() {
     console.log(fotoSlots);
     console.log(this.src, 'this.src');
-    
+
     this.fetchLocations();
     this.fetchBrandsAndModels();
   },
@@ -355,7 +382,7 @@ export default {
     vehicle: {
       handler(newVal) {
         console.log(newVal, 'newVal');
-        
+
         // Only update values that are actually present in the new vehicle object
         if (newVal.make?.id) this.selectedBrand = newVal.make.id;
         if (newVal.model?.id) this.model = newVal.model.id;
@@ -396,7 +423,7 @@ export default {
         this.src[index] = e.target.result; // Imposta l'immagine nell'array basato sull'indice
       };
       console.log(this.src);
-      
+
       reader.readAsDataURL(file);
     },
     removeImage(index) {
@@ -711,64 +738,66 @@ export default {
     },
 
     savePhotos() {
-  // Collect all files that need to be uploaded
-  const uploads = [];
+      // Collect all files that need to be uploaded
+      const uploads = [];
 
-  this.src.forEach((photo, index) => {
-    // Aggiungi solo le foto che iniziano con 'data:', indicando che sono nuove immagini da caricare
-    if (photo && photo.startsWith('data:') && !this.existingPhotos.includes(photo)) {
-      const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
-      uploads.push({ file, index });
-      this.existingPhotos.push(photo); // Salva l'immagine nell'elenco per evitare duplicati
-    }
-  });
 
-  // if (uploads.length === 0) {
-  //   this.$showToast('info', 'Info', 'No new photos to upload');
-  //   return;
-  // }
+      this.src.forEach((photo, index) => {
+        // Aggiungi solo le foto che iniziano con 'data:', indicando che sono nuove immagini da caricare
+        if (photo && photo.startsWith('data:')) {
+          const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
+          uploads.push({ file, index });
+        }
+      });
 
-  // Create a form data object to send all photos
-  const formData = new FormData();
-  formData.append('vehicle_id', this.vehicle.id);
+      // if (uploads.length === 0) {
+      //   this.$showToast('info', 'Info', 'No new photos to upload');
+      //   return;
+      // }
 
-  uploads.forEach(({ file, index }) => {
-    formData.append(`photos[${index}]`, file);
-    formData.append(`indices[${index}]`, index);
-  });
+      // Create a form data object to send all photos
+      const formData = new FormData();
+      formData.append('vehicle_id', this.vehicle.id);
 
-  axios.post('/vehicles/upload-multiple-photos', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-    .then(response => {
-      this.$showToast('success', 'Success', 'Photos saved successfully');
+      uploads.forEach(({ file, index }) => {
+        formData.append(`photos[${index}]`, file);
+        formData.append(`indices[${index}]`, index);
+      });
 
-      // Aggiorna il veicolo con le nuove immagini
-      if (response.data && response.data.vehicle && response.data.vehicle.images) {
-        const updatedVehicle = {
-          ...this.vehicle,
-          images: response.data.vehicle.images
-        };
+      axios.post('/vehicles/upload-multiple-photos', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(response => {
+          this.$showToast('success', 'Success', 'Photos saved successfully');
+          let tmpPh = JSON.parse(JSON.stringify(this.src));
+          // let vehicleTmp = JSON.parse(JSON.stringify(this.vehicle));
+          // vehicleTmp.images = tmpPh;
+          // vehicleTmp = tmpPh;
+          // console.log(this.vehicle);
+          this.$emit('vehicle-updated-photo');
 
-        // Aggiorna il veicolo locale
-        this.vehicle = updatedVehicle;
+          // Aggiorna il veicolo con le nuove immagini
+          // if (response.data && response.data.vehicle && response.data.vehicle.images) {
 
-        // Resetta le foto selezionate dopo il salvataggio
-        // this.src = [null, null, null, null, null, null];
 
-        // Emetti evento per aggiornare i componenti genitori
-        this.$emit('vehicle-updated', updatedVehicle);
+          //   // Resetta le foto selezionate dopo il salvataggio
+          //   // this.src = [null, null, null, null, null, null];
 
-        console.log();
-      }
-    })
-    .catch(error => {
-      console.error('Error saving photos:', error);
-      this.$showToast('error', 'Error', 'Failed to save photos');
-    });
-},
+          //   // Emetti evento per aggiornare i componenti genitori
+          //   console.log(updatedVehicle, 'updatedVehicle');
+
+          //   this.$emit('vehicle-updated', updatedVehicle);
+
+          //   console.log();
+          // }
+        })
+        .catch(error => {
+          console.error('Error saving photos:', error);
+          this.$showToast('error', 'Error', 'Failed to save photos');
+        });
+    },
 
 
     onDamagePhotoSelect(index) {
@@ -785,7 +814,7 @@ export default {
     },
     enableEditMode(tabValue) {
       // Inizializza l'array delle foto per la modifica
-      this.src = [null, null, null,null,null,null];
+      // this.src = [null, null, null,null,null,null];
 
       // Se ci sono foto esistenti, le prepariamo per la modifica
       if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
@@ -948,26 +977,44 @@ export default {
   /* Riduce il numero di colonne a 3 su schermi grandi */
 }
 
+/* Contenitore della griglia per le immagini */
+.images-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* 3 colonne di larghezza uguale */
+  gap: 20px;
+  /* Spaziatura tra le immagini */
+  width: 100%;
+  padding: 10px;
+}
+
+/* Ogni immagine occupa una cella della griglia */
 .no-images {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 300px;
-  width: 300px;
+  height: 350px;
   background-color: #f8f9fa;
   border: 1px dashed #ccc;
   border-radius: 4px;
   color: #6c757d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
 }
 
-.images-container {
-  width: 100%;
-  display: flex;
-  gap: 20px;
+/* Media query per schermi medi (tablet o schermi più piccoli) */
+@media (max-width: 768px) {
+  .images-container {
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 colonne su schermi più piccoli */
+  }
+}
 
-  flex-wrap: wrap;
- 
+/* Media query per schermi piccoli (mobile) */
+@media (max-width: 480px) {
+  .images-container {
+    grid-template-columns: 1fr;
+    /* Una colonna su schermi molto piccoli */
+  }
 }
 
 
@@ -1288,6 +1335,7 @@ export default {
 .remove-image-button:hover {
   background-color: darkred;
 }
+
 /* Rendi il bottone sbiadito */
 ::v-deep .file-upload-button {
   opacity: 0.8 !important;
