@@ -1,17 +1,17 @@
 <template>
     <div class="settings">
-        <h1 v-if="!isViewMode" class="font-bold text-3xl">Settings</h1>
+        <h1 v-if="!isViewMode" class="font-bold text-3xl">{{ $t('settings.settings') }}</h1>
         <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
 
         <Card>
             <template #content>
                 <TabView>
-                    <TabPanel header="App">
+                    <TabPanel :header="$t('settings.app')">
                         <div class="app-settings">
-                            <h3>Application Settings</h3>
+                            <h3>{{ $t('settings.applicationSettings') }}</h3>
                             
                             <div class="field">
-                                <label>Language</label>
+                                <label>{{ $t('settings.language') }}</label>
                                 <Dropdown 
                                     v-model="appSettings.lang" 
                                     :options="languages" 
@@ -23,24 +23,24 @@
                             </div>
                             
                             <div class="field mt-3">
-                                <label>Theme Color</label>
+                                <label>{{ $t('settings.themeColor') }}</label>
                                 <ColorPicker 
                                     v-model="appSettings.themeColor" 
                                     format="hex" 
                                     class="w-full md:w-14rem"
                                 />
-                                <small class="block mt-1 text-gray-500">Selected color: {{ appSettings.themeColor || '#2196F3' }}</small>
+                                <small class="block mt-1 text-gray-500">{{ $t('settings.selectedColor') }} {{ appSettings.themeColor || '#2196F3' }}</small>
                             </div>
                             
                             <Button 
-                                label="Save Settings" 
+                                :label="$t('settings.saveSetting')"
                                 icon="pi pi-save" 
                                 @click="saveAppSettings" 
                                 class="mt-3"
                             />
                         </div>
                     </TabPanel>
-                    <TabPanel header="Profile">
+                    <TabPanel :header="$t('settings.profile')">
                         <div class="profile-settings">
                             <h3>Profile</h3>
                             <InputText v-model="user.firstName" placeholder="First Name" class="input-field" />
@@ -50,7 +50,7 @@
                             <Button label="Save" @click="saveProfile" class="save-button" />
                         </div>
                     </TabPanel>
-                    <TabPanel header="Change Password">
+                    <TabPanel :header="$t('settings.changePassword')">
                         <div class="password-settings">
                             <h3>Change Password</h3>
                             <div class="input-group">
@@ -65,12 +65,12 @@
                                 <label for="confirm-password">Confirm New Password</label>
                                 <Password id="confirm-password" v-model="passwords.confirm" placeholder="Confirm New Password" />
                             </div>
-                            <Button label="Change Password" @click="changePassword" class="small-button" />
+                            <Button :label="$t('settings.changePassword')" @click="changePassword" class="small-button" />
                         </div>
                     </TabPanel>
-                    <TabPanel header="Users">
+                    <TabPanel :header="$t('settings.users')">
                         <div class="users-settings">
-                            <Button label="Add User" @click="openAddUserDialog" style="margin-bottom: 1rem;" />
+                            <Button :label="$t('settings.addUser')" @click="openAddUserDialog" style="margin-bottom: 1rem;" />
 
                             <ProgressSpinner v-if="loading" />
                             <div v-else class="user-cards">
@@ -89,44 +89,44 @@
         </Card>
 
         <Dialog
-                :header="isEditing ? 'Edit User' : 'Add New User'"
+                :header="isEditing ? t('settings.editUser') : t('settings.addUser')"
                 v-model:visible="isUserDialogVisible"
                 :modal="true"
                 :closable="false"
             >
                 <div class="dialog-content">
                     <div class="field">
-                        <label>First Name</label>
+                        <label>{{$t('settings.firstName')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-user"></i>
                             </InputGroupAddon>
-                            <InputText v-model="dialogUser.firstName" placeholder="First Name" />
+                            <InputText v-model="dialogUser.firstName" :placeholder="$t('settings.firstName')" />
                         </InputGroup>
                     </div>
 
                     <div class="field">
-                        <label>Last Name</label>
+                        <label>{{$t('settings.lastName')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-user"></i>
                             </InputGroupAddon>
-                            <InputText v-model="dialogUser.lastName" placeholder="Last Name" />
+                            <InputText v-model="dialogUser.lastName" :placeholder="$t('settings.lastName')" />
                         </InputGroup>
                     </div>
 
                     <div class="field">
-                        <label>Email</label>
+                        <label>{{$t('settings.email')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-envelope"></i>
                             </InputGroupAddon>
-                            <InputText v-model="dialogUser.email" placeholder="Email" />
+                            <InputText v-model="dialogUser.email" :placeholder="$t('settings.email')" />
                         </InputGroup>
                     </div>
 
                     <div class="field">
-                        <label>Role</label>
+                        <label>{{$t('settings.role')}}</label>
                         <InputGroup>
                             <InputGroupAddon>
                                 <i class="pi pi-briefcase"></i>
@@ -136,26 +136,26 @@
                                 :options="roles"
                                 optionLabel="label"
                                 optionValue="value"
-                                placeholder="Select Role"
+                                :placeholder="$t('settings.selectRole')"
                             />
                         </InputGroup>
                     </div>
 
                     <div class="dialog-buttons">
                         <Button
-                            :label="isEditing ? 'Save' : 'Add'"
+                            :label="isEditing ? t('common.save') : t('common.add')"
                             icon="pi pi-check"
                             @click="isEditing ? saveExistingUser() : addNewUser()"
                         />
                         <Button
-                            label="Cancel"
+                            :label="$t('common.cancel')"
                             icon="pi pi-times"
                             @click="isUserDialogVisible = false"
                             class="p-button-secondary"
                         />
                         <Button
                             v-if="isEditing"
-                            label="Delete"
+                            :label="$t('common.delete')"
                             icon="pi pi-trash"
                             class="p-button-danger"
                             @click="confirmDeleteUser"
@@ -187,6 +187,8 @@ import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 import Breadcrumb from 'primevue/breadcrumb';
 import ColorPicker from 'primevue/colorpicker';
+import { useI18n } from 'vue-i18n'; 
+const { t } = useI18n();
 
 // Defining props if needed
 const isViewMode = ref(false);
@@ -194,7 +196,7 @@ const isViewMode = ref(false);
 // Breadcrumb items
 const items = ref([
     { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-    { label: 'Settings', url: '/dashboard/settings' }
+    { label: t('settings.settings'), url: '/dashboard/settings' }
 ]);
 
 // Setup toast and confirm hooks
@@ -223,11 +225,8 @@ const user = ref({
 });
 
 const languages = ref([
-    { name: 'English', code: 'en' },
-    { name: 'Italian', code: 'it' },
-    { name: 'French', code: 'fr' },
-    { name: 'German', code: 'de' },
-    { name: 'Spanish', code: 'es' }
+    { name: t('settings.languages.english'), code: 'en' },
+    { name: t('settings.languages.italian'), code: 'it' }
 ]);
 
 // Password management
@@ -248,11 +247,11 @@ const isDialogVisible = ref(false);
 
 // Roles dropdown options
 const roles = ref([
-    { label: 'Administrator', value: 'Administrator' },
-    { label: 'User', value: 'User' },
-    { label: 'Manager', value: 'Manager' },
-    { label: 'Support', value: 'Support' },
-    { label: 'Sales', value: 'Sales' },
+    { label: t('settings.roles.Administrator'), value: 'Administrator' },
+    { label: t('settings.roles.User'), value: 'User' },
+    { label: t('settings.roles.Manager'), value: 'Manager' },
+    { label: t('settings.roles.Support'), value: 'Support' },
+    { label: t('settings.roles.Sales'), value: 'Sales' },
 ]);
 
 const addUser = async () => {

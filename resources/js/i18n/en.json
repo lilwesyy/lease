@@ -1,20 +1,177 @@
 {
-    "customers": {
-      "title": "Customer List",
-      "addButton": "Add Customer",
-      "searchPlaceholder": "Search Customers",
-      "columns": {
-        "name": "Name",
-        "phone": "Phone",
-        "address": "Address",
-        "documents": "Documents",
-        "privacy": "Privacy"
-      },
-      "privacy": {
-        "signed": "Signed",
-        "notSigned": "Not Signed"
-      },
-      "noCustomers": "No customers found. Please add a customer.",
-      "clientDetails": "Client Details"
+  "customers": {
+    "personalData": "Personal Data",
+    "personalDataDesc": "Customer's personal information",
+    "documents": "Documents",
+    "documentsDesc": "Customer's documents",
+    "add": "Add Customer",
+    "title": "Customer List",
+    "driverLicense": "Driver's License",
+    "identityCard": "Identity Card",
+    "addButton": "Add Customer",
+    "card": "Credit Card",
+    "cardDesc": "Customer's credit card information",
+    "attachCardDesc": "Upload the customer's credit card",
+    "searchPlaceholder": "Search Customers",
+    "attachDocumentsDesc": "Upload customer documents",
+    "createButton": "Create Customer",
+    "addCustomer": "Add Customer",
+    "editCustomer": "Edit Customer",
+    "deleteCustomer": "Delete Customer",
+    "view": "View Customer",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone",
+      "address": "Address",
+      "birthDate": "Date of Birth",
+      "language": "Language",
+      "email": "Email",
+      "validUntil": "Valid Until",
+      "cardNumber": "Card Number",
+      "expirationDate": "Expiration Date",
+      "cvv": "CVV",
+      "cardHolder": "Card Holder",
+      "serialNumber": "Serial Number"
+    },
+    "columns": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address",
+      "documents": "Documents",
+      "privacy": "Privacy"
+    },
+    "privacy": {
+      "button": "Privacy",
+      "signed": "Signed",
+      "agree": "Agree",
+      "notSigned": "Not Signed"
+    },
+    "noCustomers": "No customers found. Add a customer.",
+    "clientDetails": "Customer Details"
+  },
+  "documents": {
+    "attach": "Attach Documents",
+    "attachCard": "Attach Credit Card",
+    "attachedDocs": "Attached Documents",
+    "select": "Select Documents",
+    "upload": "Upload Documents",
+    "dragDropCard": "Drag and drop the credit card here",
+    "uploadCardTitle": "Upload Credit Card",
+    "uploadTitle": "Upload Documents",
+    "dragDrop": "Drag and drop the documents here"
+  },
+  "common": {
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "add": "Add",
+    "save": "Save"
+  },
+  "dash": {
+    "customer": "Customers",
+    "calendar": "Calendar",
+    "addCustomer": "Add Customer",
+    "vehicle": "Vehicles",
+    "addVehicle": "Add Vehicle",
+    "vehicleList": "Vehicle List",
+    "booking": "Bookings",
+    "addBooking": "Add Booking",
+    "bookingList": "Booking List",
+    "reports": "Reports",
+    "help": "Help",
+    "settings": "Settings",
+    "logOut": "Log Out",
+    "logOutMessage": "Are you sure you want to log out?",
+    "logOutHeader": "Log Out",
+    "listCustomer": "Customer List"
+  },
+  "vehicle": {
+    "vehicleList": "Vehicle List",
+    "addButton": "Add Vehicle",
+    "addVehicle": "Add Vehicle",
+    "createVehicle": "Create Vehicle",
+    "vehicleInformation": "Vehicle Information",
+    "addPhotos": "Add Photos",
+    "photos": "Vehicle Photos",
+    "damages": "Damages",
+    "specs": "Specifications",
+    "status": "Status",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "maintenance": "Maintenance",
+    "searchPlaceholder": "Search Vehicles",
+    "columns": {
+      "brandModel": "Brand Model",
+      "color": "Color",
+      "plate": "Plate",
+      "location": "Location",
+      "status": "Status"
+    },
+    "fields": {
+      "brand": "Brand",
+      "bodyType": "Body Type",
+      "year": "Year",
+      "model": "Model",
+      "color": "Color",
+      "plate": "Plate",
+      "odometer": "Odometer",
+      "fuelType": "Fuel Type",
+      "transmission": "Transmission",
+      "passengers": "Passengers",
+      "kmPerDay": "Km per Day",
+      "extraKmPrice": "Extra Km Price",
+      "basicDailyPrice": "Basic Daily Price",
+      "franchise": "Franchise",
+      "deposit": "Deposit",
+      "location": "Location"
+    },
+    "damage": {
+      "vehicleDamage": "Vehicle Damages",
+      "addDamage": "Add Damage",
+      "vehicleDamageSeverity": "Damage Severity",
+      "vehicleDamageDescription": "Damage Description",
+      "vehicleDamageType": "Damage Type",
+      "vehicleDamageImages": "Damage Images",
+      "vehicleDamagePosition": "Damage Position",
+      "dragDrop": "Drag and drop the documents here",
+      "selectImages": "Select Images",
+      "fields": {
+        "position": "Position",
+        "severity": "Severity",
+        "type": "Type"
+      }
+    }
+  },
+  "settings": {
+    "saveSettings": "Save Settings",
+    "settings": "Settings",
+    "app": "Application",
+    "profile": "Profile",
+    "changePassword": "Change Password",
+    "users": "Users",
+    "applicationSettings": "Application Settings",
+    "language": "Language",
+    "themeColor": "Theme Color",
+    "selectedColor": "Selected Color",
+    "saveSetting": "Save Settings",
+    "addUser": "Add User",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "role": "Role",
+    "selectRole": "Select Role",
+    "languages": {
+      "english": "English",
+      "italian": "Italian"
+    },
+    "roles": {
+      "Administrator": "Administrator",
+      "User": "User",
+      "Manager": "Manager",
+      "Support": "Support",
+      "Sales": "Sales"
     }
   }
+}

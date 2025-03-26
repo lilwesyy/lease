@@ -66,6 +66,7 @@
       "cancel": "Annulla",
       "close": "Chiudi",
       "delete": "Elimina",
+      "add": "Aggiungi",
       "save": "Salva"
     },
     "dash":{
@@ -142,7 +143,36 @@
           "type":"Tipo"
         }
       }
-      
+    },
+    "settings":{
+      "saveSettings":"Salva Impostazioni",
+      "settings": "Impostazioni",
+      "app": "Applicazione",
+      "profile": "Profilo",
+      "changePassword": "Cambia Password",
+      "users": "Utenti",
+      "applicationSettings": "Impostazioni Applicazione",
+      "language": "Lingua",
+      "themeColor": "Colore Tema",
+      "selectedColor": "Colore Selezionato",
+      "saveSetting": "Salva Impostazioni",
+      "addUser" : "Aggiungi Utente",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Email",
+      "role": "Ruolo",
+      "selectRole": "Seleziona Ruolo",
+      "languages": {
+        "english": "Inglese",
+        "italian": "Italiano"
+      },
+      "roles": {
+        "Administrator": "Amministratore",
+        "User": "Utente",
+        "Manager": "Gestore",
+        "Support": "Supporto",
+        "Sales": "Vendite"
+      }
     }
 
   }
