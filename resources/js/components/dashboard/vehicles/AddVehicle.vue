@@ -1,21 +1,21 @@
 <template>
-  <h1 v-if="!isViewMode" class="font-bold text-3xl">Add Vehicle</h1>
+  <h1 v-if="!isViewMode" class="font-bold text-3xl">{{ $t('vehicle.addVehicle') }}</h1>
   <Breadcrumb v-if="!isViewMode" :model="items" class="custom-breadcrumb" />
 
   <Card class="isviewed">
     <template #content>
       <Tabs value="0">
         <TabList>
-          <Tab value="0"><i class="pi pi-car mr-2"></i>Vehicle Information</Tab>
-          <Tab value="1"><i class="pi pi-image mr-2"></i>{{ isViewMode ? 'Photos' : 'Upload Photos' }}</Tab>
-          <Tab value="2"><i class="pi pi-cog mr-2"></i>Damages</Tab>
+          <Tab value="0"><i class="pi pi-car mr-2"></i>{{ $t('vehicle.vehicleInformation') }}</Tab>
+          <Tab value="1"><i class="pi pi-image mr-2"></i>{{ isViewMode ? t('vehicle.photos') : t('vehicle.addPhotos') }}</Tab>
+          <Tab value="2"><i class="pi pi-cog mr-2"></i>{{ $t('vehicle.damages') }}</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="0">
             <FloatLabel v-if="isViewMode || isEditMode" variant="on">
               <Select v-model="status" :options="statusOptions" optionLabel="label" optionValue="value"
                 @change="handleStatusChange" />
-              <label for="status">Status</label>
+              <label for="status">{{ $t('vehicle.status') }}</label>
             </FloatLabel>
             <div class="vehicle-info">
               <img :src="brandLogo" width="400" :alt="selectedBrand + '-Logo'" />
@@ -32,46 +32,46 @@
                       </div>
                     </template>
                   </Select>
-                  <label for="brand">Brand</label>
+                  <label for="brand">{{ $t('vehicle.fields.brand') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="model" class="full-width" :options="filteredModels" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="model">Model</label>
+                  <label for="model">{{ $t('vehicle.fields.model') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="bodyType" class="full-width" :options="bodyTypes" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="bodyType">Body Type</label>
+                  <label for="bodyType">{{ $t('vehicle.fields.bodyType') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText type="number" class="full-width" v-model="year" :readonly="isViewMode && !isEditMode" />
-                  <label for="year">Year</label>
+                  <label for="year">{{ $t('vehicle.fields.year') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="location" class="full-width" :options="locations" optionLabel="name" optionValue="id"
                     :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="location">Location</label>
+                  <label for="location">{{ $t('vehicle.fields.location') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText type="text" class="full-width" v-model="plate" :readonly="isViewMode && !isEditMode" />
-                  <label for="plate">Plate</label>
+                  <label for="plate">{{ $t('vehicle.fields.plate') }}</label>
                 </FloatLabel>
               </div>
             </div>
             <div class="vehicle-specs">
-              <Divider><strong>Vehicle Specs</strong></Divider>
+              <Divider><strong>{{ $t('vehicle.specs') }}</strong></Divider>
 
               <div class="input-group">
                 <FloatLabel variant="on">
                   <InputText v-model="odometer" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="odometer">Odometer</label>
+                  <label for="odometer">{{ $t('vehicle.fields.odometer') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
@@ -84,67 +84,67 @@
                       </div>
                     </template>
                   </Select>
-                  <label for="externalColour">External Colour</label>
+                  <label for="externalColour">{{ $t('vehicle.fields.color') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="passengers" class="full-width" :options="passengerOptions" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="passengers">Passengers</label>
+                  <label for="passengers">{{ $t('vehicle.fields.passengers') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="fuelType" class="full-width" :options="fuelTypes" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="fuelType">Fuel Type</label>
+                  <label for="fuelType">{{ $t('vehicle.fields.fuelType') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <Select v-model="transmission" class="full-width" :options="transmissions" optionLabel="label"
                     optionValue="value" :class="{ 'select-readonly': isViewMode && !isEditMode }" />
-                  <label for="transmission">Transmission</label>
+                  <label for="transmission">{{ $t('vehicle.fields.transmission') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="baseKmDay" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="baseKmDay">Base Km per Day</label>
+                  <label for="baseKmDay">{{ $t('vehicle.fields.kmPerDay') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="kmExtraPrice" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="kmExtraPrice">Extra Km Price</label>
+                  <label for="kmExtraPrice">{{ $t('vehicle.fields.extraKmPrice') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="basicDailyPrice" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="basicDailyPrice">Basic Daily Price</label>
+                  <label for="basicDailyPrice">{{ $t('vehicle.fields.basicDailyPrice') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="franchise" class="full-width" type="number"
                     :readonly="isViewMode && !isEditMode" />
-                  <label for="franchise">Franchise</label>
+                  <label for="franchise">{{ $t('vehicle.fields.franchise') }}</label>
                 </FloatLabel>
 
                 <FloatLabel variant="on">
                   <InputText v-model="deposit" class="full-width" type="number" :readonly="isViewMode && !isEditMode" />
-                  <label for="deposit">Deposit</label>
+                  <label for="deposit">{{ $t('vehicle.fields.deposit') }}</label>
                 </FloatLabel>
               </div>
               <div v-if="isViewMode && !isEditMode">
-                <Button @click="enableEditMode" label="Edit" icon="pi pi-pencil" class="p-button-primary mt-4" />
+                <Button @click="enableEditMode" :label="$t('common.edit')" icon="pi pi-pencil" class="p-button-primary mt-4" />
               </div>
               <div v-else-if="isEditMode">
-                <Button @click="saveChanges" label="Save" icon="pi pi-check" class="p-button-success mt-4" />
-                <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times"
+                <Button @click="saveChanges" :label="$t('common.save')" icon="pi pi-check" />
+                <Button @click="cancelEditMode" :label="$t('common.cancel')" icon="pi pi-times"
                   class="p-button-secondary mt-4 ml-2" />
-                <Button @click="deleteVehicle" label="Delete" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
+                <Button @click="deleteVehicle" :label="$t('common.delete')" icon="pi pi-trash" class="p-button-danger mt-4 ml-2" />
               </div>
               <div v-if="!isViewMode && !isEditMode" class="mt-4">
-                <Button @click="createVehicle" label="Create Vehicle" icon="pi pi-check" />
+                <Button @click="createVehicle" :label="$t('vehicle.createVehicle')" icon="pi pi-check" />
               </div>
             </div>
           </TabPanel>
@@ -174,13 +174,13 @@
               <div v-for="(slot, index) in fotoSlots" :key="index">
                 <div class="no-images">
                   <div class="upload-container">
-                    <FileUpload v-if="!src?.[index]" ref="fileupload" mode="basic" @select="onFileSelect($event, index)"
+                    <FileUpload v-if="!src[index]" ref="fileupload" mode="basic" @select="onFileSelect($event, index)"
                       chooseLabel="Scegli" showUploadButton="false" customUpload auto name="fileupload"
                       url="/api/upload" accept="image/*" :maxFileSize="1000000" @upload="onUpload"
                       class="file-upload-button" />
-                    <img v-if="!src?.[index]" :src="slot.imageSrc" alt="Image" class="uploaded-image" />
-                    <div v-if="src?.[index]" class="uploaded-image-container">
-                      <img :src="src?.[index]" alt="Image" class="uploaded-image" />
+                    <img v-if="!src[index]" :src="slot.imageSrc" alt="Image" class="uploaded-image" />
+                    <div v-if="src[index]" class="uploaded-image-container">
+                      <img :src="src[index]" alt="Image" class="uploaded-image" />
                       <button @click="removeImage(index)" class="remove-image-button">
                         <i class="pi pi-times"></i>
                       </button>
@@ -190,8 +190,8 @@
               </div>
             </div>
             <div v-if="isEditMode" class="mt-4">
-              <Button @click="savePhotos" label="Save Photos" icon="pi pi-check" />
-              <Button @click="cancelEditMode" label="Cancel" icon="pi pi-times" class="p-button-secondary ml-2" />
+              <Button @click="savePhotos" :label="$t('common.save')" icon="pi pi-check" />
+              <Button @click="cancelEditMode" :label="$t('common.cancel')" icon="pi pi-times" class="p-button-secondary ml-2" />
             </div>
           </TabPanel>
           <TabPanel value="2">
@@ -205,7 +205,9 @@
   </Card>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, computed, watch, onMounted, toRaw } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Breadcrumb from 'primevue/breadcrumb';
 import Card from 'primevue/card';
@@ -227,740 +229,673 @@ import Row from 'primevue/row';
 import FloatLabel from 'primevue/floatlabel';
 import VehicleDamage from './VehicleDamage.vue';
 import { fotoSlots } from './utils.js';
-import { ref } from "vue";
+import { useI18n } from 'vue-i18n'; 
 
-export default {
-  name: 'AddVehicle',
-  emits: ['vehicle-updated'],
-  props: {
-    isViewMode: {
-      type: Boolean,
-      default: false
-    },
-    vehicle: {
-      type: Object,
-      default: () => ({
-        make: '',
-        model: '',
-        bodyType: '',
-        year: '',
-        location: '',
-        plateNumber: '',
-        odometer: '',
-        color: '',
-        seats: '',
-        fuel_type: '',
-        transmission: '',
-        km_per_day: '',
-        extra_km_price: '',
-        basic_daily_price: '',
-        franchise: '',
-        deposit: '',
-        imageUrl: '',
-        status: '',
-        damages: []
-      })
-    },
+const { t } = useI18n();
+
+const router = useRouter();
+
+// Props
+const props = defineProps({
+  isViewMode: {
+    type: Boolean,
+    default: false
   },
-  components: {
-    Breadcrumb,
-    Card,
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
-    InputText,
-    Select,
-    Divider,
-    FileUpload,
-    Button,
-    Textarea,
-    DataTable,
-    Column,
-    ColumnGroup,
-    Row,
-    FloatLabel,
-    VehicleDamage
-  },
-  data() {
-    return {
-      existingPhotos: [],
-      src: [null, null, null, null, null, null],
-      fotoSlots: fotoSlots,
-      fileInputs: [],
-      isEditMode: false,
-      items: [
-        { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
-        { label: 'Add Vehicles', url: '/dashboard/add-vehicles' }
-      ],
-      photos: [null, null, null],
-      damagePhotos: [null, null, null],
-      photoIds: [null, null, null],
-      damageDescription: '',
-      damageSeverity: '',
-      damages: this.vehicle ? this.vehicle.damages : [
-        {
-          damagePosition: 'Front Bumper',
-          damageSeverity: 'High',
-          damageType: 'Dent',
-          damageDescription: 'Severe dent and scratches'
-        }
-      ],
-      selectedBrand: '',
+  vehicle: {
+    type: Object,
+    default: () => ({
+      make: '',
       model: '',
       bodyType: '',
       year: '',
       location: '',
-      plate: '',
+      plateNumber: '',
       odometer: '',
-      externalColour: '',
-      passengers: '',
-      fuelType: '',
+      color: '',
+      seats: '',
+      fuel_type: '',
       transmission: '',
-      baseKmDay: '',
-      kmExtraPrice: '',
-      basicDailyPrice: '',
+      km_per_day: '',
+      extra_km_price: '',
+      basic_daily_price: '',
       franchise: '',
       deposit: '',
       imageUrl: '',
       status: '',
-      statusOptions: [
-        { label: 'Available', value: 'available' },
-        { label: 'Unavailable', value: 'unavailable' },
-        { label: 'Maintenance', value: 'maintenance' }
-      ],
-      brands: [],
-      models: {},
-      damageSeverities: [
-        { label: 'Minor', value: 'minor' },
-        { label: 'Moderate', value: 'moderate' },
-        { label: 'Severe', value: 'severe' }
-      ],
-      bodyTypes: [
-        { label: 'Wagon/Estate', value: 'wagon' },
-        { label: 'Passenger Van', value: 'van' },
-        { label: 'Sedan/Limousine', value: 'sedan' },
-        { label: 'Convertible', value: 'convertible' },
-        { label: 'Sport', value: 'sport' },
-        { label: 'SUV/4x4', value: 'suv' }
-      ],
-      locations: [],
-      fuelTypes: [
-        { label: 'Petrol', value: 'petrol' },
-        { label: 'Diesel', value: 'diesel' },
-        { label: 'Electric', value: 'electric' },
-        { label: 'Hybrid', value: 'hybrid' }
-      ],
-      transmissions: [
-        { label: 'Automatic', value: 'automatic' },
-        { label: 'Manual', value: 'manual' }
-      ],
-      colorOptions: [
-        { label: 'Red', value: 'red', style: 'background-color: red;' },
-        { label: 'Blue', value: 'blue', style: 'background-color: blue;' },
-        { label: 'Green', value: 'green', style: 'background-color: green;' },
-        { label: 'Black', value: 'black', style: 'background-color: black;' },
-        { label: 'White', value: 'white', style: 'background-color: white;' },
-        { label: 'Silver', value: 'silver', style: 'background-color: silver;' }
-      ],
-      passengerOptions: [
-        { label: '2', value: 2 },
-        { label: '4', value: 4 },
-        { label: '5', value: 5 },
-        { label: '7', value: 7 }
-      ],
-      originalData: {}
-    };
+      damages: []
+    })
   },
-  mounted() {
-    if (window.location.pathname === "/dashboard/add-vehicles") {
-      this.src = [null, null, null, null, null, null]
+});
+
+// Emits
+const emit = defineEmits(['vehicle-updated', 'vehicle-updated-photo']);
+
+// Reactive state
+const isEditMode = ref(false);
+const originalData = ref({});
+const existingPhotos = ref([]);
+const src = ref([null, null, null, null, null, null]);
+const fileInputs = ref([]);
+const photos = ref([null, null, null]);
+const damagePhotos = ref([null, null, null]);
+const photoIds = ref([null, null, null]);
+
+const items = [
+  { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
+  { label: t('vehicle.addVehicle'), url: '/dashboard/add-vehicles' }
+];
+
+// Form fields
+const selectedBrand = ref('');
+const model = ref('');
+const bodyType = ref('');
+const year = ref('');
+const location = ref('');
+const plate = ref('');
+const odometer = ref('');
+const externalColour = ref('');
+const passengers = ref('');
+const fuelType = ref('');
+const transmission = ref('');
+const baseKmDay = ref('');
+const kmExtraPrice = ref('');
+const basicDailyPrice = ref('');
+const franchise = ref('');
+const deposit = ref('');
+const imageUrl = ref('');
+const status = ref('');
+const damageDescription = ref('');
+const damageSeverity = ref('');
+const damages = ref(props.vehicle ? props.vehicle.damages : [
+  {
+    damagePosition: 'Front Bumper',
+    damageSeverity: 'High',
+    damageType: 'Dent',
+    damageDescription: 'Severe dent and scratches'
+  }
+]);
+
+// Options
+const statusOptions = [
+  { label: t('vehicle.available'), value: 'available' },
+  { label: t('vehicle.unavailable'), value: 'unavailable' },
+  { label: t('vehicle.maintenance'), value: 'maintenance' }
+];
+
+const brands = ref([]);
+const models = ref({});
+
+const damageSeverities = [
+  { label: 'Minor', value: 'minor' },
+  { label: 'Moderate', value: 'moderate' },
+  { label: 'Severe', value: 'severe' }
+];
+
+const bodyTypes = [
+  { label: 'Wagon/Estate', value: 'wagon' },
+  { label: 'Passenger Van', value: 'van' },
+  { label: 'Sedan/Limousine', value: 'sedan' },
+  { label: 'Convertible', value: 'convertible' },
+  { label: 'Sport', value: 'sport' },
+  { label: 'SUV/4x4', value: 'suv' }
+];
+
+const locations = ref([]);
+
+const fuelTypes = [
+  { label: 'Petrol', value: 'petrol' },
+  { label: 'Diesel', value: 'diesel' },
+  { label: 'Electric', value: 'electric' },
+  { label: 'Hybrid', value: 'hybrid' }
+];
+
+const transmissions = [
+  { label: 'Automatic', value: 'automatic' },
+  { label: 'Manual', value: 'manual' }
+];
+
+const colorOptions = [
+  { label: 'Red', value: 'red', style: 'background-color: red;' },
+  { label: 'Blue', value: 'blue', style: 'background-color: blue;' },
+  { label: 'Green', value: 'green', style: 'background-color: green;' },
+  { label: 'Black', value: 'black', style: 'background-color: black;' },
+  { label: 'White', value: 'white', style: 'background-color: white;' },
+  { label: 'Silver', value: 'silver', style: 'background-color: silver;' }
+];
+
+const passengerOptions = [
+  { label: '2', value: 2 },
+  { label: '4', value: 4 },
+  { label: '5', value: 5 },
+  { label: '7', value: 7 }
+];
+
+// Computed properties
+const brandLogo = computed(() => {
+  const selected = brands.value.find(brand => brand.value === selectedBrand.value);
+  return selected ? selected.icon : '/brand-logo.svg';
+});
+
+const filteredModels = computed(() => {
+  return selectedBrand.value ? models.value[selectedBrand.value] || [] : [];
+});
+
+const hasVehicleImages = computed(() => {
+  return props.vehicle && props.vehicle.images && props.vehicle.images.length > 0;
+});
+
+// Methods
+const fetchLocations = () => {
+  axios.post('/location')
+    .then(response => {
+      locations.value = response.data;
+    })
+    .catch(error => {
+      console.error('Error fetching locations:', error);
+      window.$showToast('error', 'Error', 'Failed to load locations');
+    });
+};
+
+const fetchBrandsAndModels = () => {
+  axios.post('/vehicle-makes')
+    .then(response => {
+      brands.value = response.data.map(make => ({ 
+        label: make.name, 
+        value: make.id, 
+        icon: make.icon 
+      }));
+
+      models.value = response.data.reduce((acc, make) => {
+        acc[make.id] = make.models.map(model => ({ 
+          label: model.name, 
+          value: model.id 
+        }));
+        return acc;
+      }, {});
+
+      // If in view mode and we have a vehicle
+      if (props.vehicle && props.isViewMode) {
+        // Set the brand based on ID
+        selectedBrand.value = props.vehicle.make?.id || '';
+
+        // Set model after a brief delay to ensure filtered models are available
+        setTimeout(() => {
+          model.value = props.vehicle.model?.id || '';
+        }, 100);
       }
+    })
+    .catch(error => {
+      console.error('Error fetching vehicle makes and models:', error);
+    });
+};
 
-    this.fetchLocations();
-    this.fetchBrandsAndModels();
-  },
-  watch: {
-    vehicle: {
-      handler(newVal) {
-        // Only update values that are actually present in the new vehicle object
-        if (newVal.make?.id) this.selectedBrand = newVal.make.id;
-        if (newVal.model?.id) this.model = newVal.model.id;
+const onFileSelect = (event, index) => {
+  if (window.location.pathname === "/dashboard/vehicles") {
+    isEditMode.value = true;
+  }
 
-        // For other properties, use the nullish coalescing operator to keep
-        // existing values if the new ones are null/undefined
-        this.bodyType = newVal.bodyType ?? this.bodyType;
-        this.year = newVal.year ?? this.year;
-        this.location = newVal.location_id ?? this.location;
-        this.plate = newVal.plateNumber ?? this.plate;
-        this.odometer = newVal.odometer ?? this.odometer;
-        this.externalColour = newVal.color ?? this.externalColour;
-        this.passengers = newVal.seats ?? this.passengers;
-        this.fuelType = newVal.fuel_type ?? this.fuelType;
-        this.transmission = newVal.transmission ?? this.transmission;
-        this.baseKmDay = newVal.km_per_day ?? this.baseKmDay;
-        this.kmExtraPrice = newVal.extra_km_price ?? this.kmExtraPrice;
-        this.basicDailyPrice = newVal.basic_daily_price ?? this.basicDailyPrice;
-        this.franchise = newVal.franchise ?? this.franchise;
-        this.deposit = newVal.deposit ?? this.deposit;
-        this.src = newVal.images?.map(image => image.url) ?? this.images;
-        this.status = newVal.status ?? this.status;
-      },
-      immediate: true,
-      deep: true
-    },
-    selectedBrand(newBrand) {
-      this.model = '';
+  const file = event.files[0];
+  const reader = new FileReader();
+
+  reader.onload = async (e) => {
+    src.value[index] = e.target.result; // Set the image in the array based on index
+  };
+
+  reader.readAsDataURL(file);
+};
+
+const removeImage = (index) => {
+  if (window.location.pathname === "/dashboard/vehicles") {
+    isEditMode.value = true;
+  }
+  src.value[index] = null; // Remove the selected image
+};
+
+const triggerFileInput = (index) => {
+  // Use a short timeout to make sure the click event is completed
+  setTimeout(() => {
+    const inputElement = document.getElementById(`file-upload-${index}`);
+    if (inputElement) {
+      inputElement.click();
+    } else {
+      console.error(`Input file with id file-upload-${index} not found`);
     }
-  },
-  methods: {
-    onFileSelect(event, index) {
-      if (window.location.pathname === "/dashboard/vehicles") {
-        this.isEditMode = true;
-      }
-
-      const file = event.files[0];
-      const reader = new FileReader();
-
-      reader.onload = async (e) => {
-        this.src[index] = e.target.result; // Imposta l'immagine nell'array basato sull'indice
-      };
-
-      reader.readAsDataURL(file);
-    },
-    removeImage(index) {
-      if (window.location.pathname === "/dashboard/vehicles") {
-        this.isEditMode = true;
-      }
-      this.src[index] = null; // Rimuove l'immagine selezionata
-    },
-    fetchLocations() {
-      axios.post('/location')
-        .then(response => {
-          // Your API returns an array of location objects with id and name properties
-          this.locations = response.data;
-          // console.log('Locations loaded:', this.locations);
-        })
-        .catch(error => {
-          console.error('Error fetching locations:', error);
-          this.$showToast('error', 'Error', 'Failed to load locations');
-        });
-    },
-    triggerFileInput(index) {
-      // Usa un timeout breve per assicurarsi che l'evento di click sia completato
-      setTimeout(() => {
-        const inputElement = document.getElementById(`file-upload-${index}`);
-        if (inputElement) {
-          inputElement.click();
-        } else {
-          console.error(`Input file con id file-upload-${index} non trovato`);
-        }
-      }, 10);
-    },
-    handleFileUpload(event, index) {
-      this.isEditMode = true;
-      const file = event.target.files[0];
-      if (!file) {
-        return;
-      }
-
-      // Size validation
-      if (file.size > 5000000) {
-        this.$showToast('error', 'Error', 'File size must be less than 5MB');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        // Aggiorna l'array delle foto con la nuova immagine
-        this.photos[index] = e.target.result;
-      };
-      reader.onerror = (e) => {
-        console.error("Errore durante la lettura del file:", e);
-        this.$showToast('error', 'Error', 'Failed to read the image file');
-      };
-      reader.readAsDataURL(file);
-    },
-    getVehicleImageUrl(index) {
-      // Controlla se il veicolo esiste e ha immagini
-      if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
-        // Cerca un'immagine con la posizione corrispondente all'indice
-        const image = this.vehicle.images.find(img => img.position === index);
-
-        // Se trova un'immagine con la posizione specificata, usa il suo URL
-        if (image && image.url) {
-          return image.url;
-        }
-
-        // Alternativa: cerca un'immagine all'indice specificato nell'array
-        // (utile se le immagini non hanno la proprietà position)
-        if (this.vehicle.images[index] && this.vehicle.images[index].url) {
-          return this.vehicle.images[index].url;
-        }
-      }
-
-      // Se non ci sono immagini o l'immagine non esiste, mostra l'immagine predefinita
-      return '/images/no-image.png';
-    },
-    handleStatusChange() {
-      // No need to access event parameter, directly use this.status
-
-      // Store current make and model values to restore them later if needed
-      const currentMake = this.selectedBrand;
-      const currentModel = this.model;
-
-      // Only make the API call if in view or edit mode and we have a vehicle ID
-      if ((this.isViewMode || this.isEditMode) && this.vehicle && this.vehicle.id) {
-        // Create status update object
-        const statusUpdate = {
-          id: this.vehicle.id,
-          status: this.status
-        };
-
-        // Send the request to the backend
-        axios.put(`/vehicles/update-status/${this.vehicle.id}`, statusUpdate)
-          .then(response => {
-            this.$showToast('success', 'Success', 'Vehicle status updated successfully');
-
-            // Update local vehicle with data from server
-            if (response.data && response.data.vehicle) {
-              const updatedVehicle = response.data.vehicle;
-
-              // Create a merged vehicle object that preserves current data
-              // but updates with new data from the server
-              const mergedVehicle = {
-                ...this.vehicle,
-                ...updatedVehicle,
-                make: this.vehicle.make,  // Preserve make object
-                model: this.vehicle.model  // Preserve model object
-              };
-
-              // Update status (should be the same as this.status)
-              this.status = updatedVehicle.status || this.status;
-
-              // Emit the merged vehicle data
-              this.$root.$emit('vehicle-status-updated', mergedVehicle);
-              this.$emit('vehicle-updated', mergedVehicle);
-            }
-          })
-          .catch(error => {
-            console.error('Error updating status:', error);
-            this.$showToast('error', 'Error', 'Failed to update vehicle status');
-
-            // Restore previous status in case of error
-            this.status = this.vehicle.status;
-          });
-      }
-    },
-    createVehicle() {
-      const uploads = [];
-      // Validate required fields
-      if (!this.selectedBrand || !this.model || !this.year || !this.plate) {
-        this.$showToast('error', 'Error', 'Please fill in all required fields');
-        return;
-      }
-
-      const newVehicle = {
-        make_id: this.selectedBrand,
-        model_id: this.model,
-        bodyType: this.bodyType,
-        year: this.year,
-        location_id: this.location,
-        plateNumber: this.plate,
-        odometer: this.odometer,
-        color: this.externalColour,
-        seats: this.passengers,
-        fuel_type: this.fuelType,
-        transmission: this.transmission,
-        km_per_day: this.baseKmDay,
-        extra_km_price: this.kmExtraPrice,
-        basic_daily_price: this.basicDailyPrice,
-        dailyPrice: this.basicDailyPrice,
-        franchise: this.franchise,
-        deposit: this.deposit,
-        status: 'available' // Default status for new vehicles
-      };
-
-      // this.src.forEach((photo, index) => {
-      //   // Aggiungi solo le foto che iniziano con 'data:', indicando che sono nuove immagini da caricare
-      //   if (photo && photo.startsWith('data:')) {
-      //     const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
-      //     uploads.push({ file, index });
-      //   }
-      // });
-
-      // if (uploads.length === 0) {
-      //   this.$showToast('info', 'Info', 'No new photos to upload');
-      //   return;
-      // }
-
-      // Create a form data object to send all photos
-
-
-      // Handle any images that were uploaded
-      const formData = new FormData();
-
-      // Add all vehicle data to formData
-      Object.keys(newVehicle).forEach(key => {
-        formData.append(key, newVehicle[key]);
-      });
-
-      this.src.forEach((photo, index) => {
-        // Aggiungi solo le nuove immagini (quelle che iniziano con 'data:')
-        if (photo && photo.startsWith("data:")) {
-          const file = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
-          uploads.push({ file, index });
-        }
-      });
-
-
-      uploads.forEach(({ file, index }) => {
-        formData.append(`photos[${index}]`, file); // Aggiunge il file a FormData
-        formData.append(`indices[${index}]`, index); // Aggiunge l'indice
-      });
-
-      // this.photos.forEach((photo, index) => {
-      //   if (photo) {
-      //     hasPhotos = true;
-      //     // Convert base64 back to file if needed
-      //     const photoFile = this.dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
-      //     formData.append(`photos[${index}]`, photoFile);
-      //     formData.append(`indices[${index}]`, index);
-      //   }
-      // });
-      formData.append('vehicle_id', this.vehicle.id);
-      // Send the request to the API
-      axios.post('/vehicles/create', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-        .then(response => {
-          this.$showToast('success', 'Success', 'Vehicle created successfully');
-
-          // Reset form or redirect to vehicles list
-          this.resetForm();
-
-          // Optionally navigate to the vehicles list
-          this.$router.push('/dashboard/vehicles');
-        })
-        .catch(error => {
-          console.error('Error creating vehicle:', error);
-          this.$showToast('error', 'Error', 'Failed to create vehicle');
-        });
-    },
-
-    // Helper method to convert base64 to File object
-    dataURLtoFile(dataURL, filename) {
-      const arr = dataURL.split(',');
-      const mime = arr[0].match(/:(.*?);/)[1];
-      const bstr = atob(arr[1]);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-
-      return new File([u8arr], filename, { type: mime });
-    },
-
-    resetForm() {
-      // Reset all form fields
-      this.selectedBrand = '';
-      this.model = '';
-      this.bodyType = '';
-      this.year = '';
-      this.location = '';
-      this.plate = '';
-      this.odometer = '';
-      this.externalColour = '';
-      this.passengers = '';
-      this.fuelType = '';
-      this.transmission = '';
-      this.baseKmDay = '';
-      this.kmExtraPrice = '';
-      this.basicDailyPrice = '';
-      this.franchise = '';
-      this.deposit = '';
-      this.photos = [null, null, null];
-    },
-    fetchBrandsAndModels() {
-      axios.post('/vehicle-makes')
-        .then(response => {
-          this.brands = response.data.map(make => ({ label: make.name, value: make.id, icon: make.icon }));
-          this.models = response.data.reduce((acc, make) => {
-            acc[make.id] = make.models.map(model => ({ label: model.name, value: model.id }));
-            return acc;
-          }, {});
-
-          // Se siamo in modalità visualizzazione e abbiamo un veicolo
-          if (this.vehicle && this.isViewMode) {
-            // Imposta il brand basato sull'ID
-            this.selectedBrand = this.vehicle.make?.id || '';
-
-            // Imposta il modello dopo un breve ritardo per assicurarsi che i modelli filtrati siano disponibili
-            setTimeout(() => {
-              this.model = this.vehicle.model?.id || '';
-            }, 100);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching vehicle makes and models:', error);
-        });
-    },
-    // onFileSelect(event, index) {
-    //   const file = event.files[0];
-    //   if (!file) return;
-
-    //   // Size validation
-    //   if (file.size > 5000000) {
-    //     this.$showToast('error', 'Error', 'File size must be less than 5MB');
-    //     return;
-    //   }
-
-    //   const reader = new FileReader();
-    //   reader.onload = (e) => {
-    //     // Aggiorna l'array delle foto con la nuova immagine
-    //     this.photos[index] = e.target.result;
-
-    //     console.log(`Immagine caricata in index ${index}:`, this.photos[index].substring(0, 50) + '...');
-    //   };
-    //   reader.readAsDataURL(file);
-    // },
-
-    removePhoto(index) {
-      // Replace this.$set with direct assignment
-      this.photos[index] = null;
-    },
-
-    uploadPhoto(file, index) {
-      const formData = new FormData();
-      formData.append('photo', file);
-      formData.append('index', index);
-
-      if (this.vehicle && this.vehicle.id) {
-        formData.append('vehicle_id', this.vehicle.id);
-      }
-
-      axios.post('/vehicles/upload-photo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-        .then(response => {
-          this.$showToast('success', 'Success', 'Photo uploaded successfully');
-
-          // If we have a photo ID from the server, store it
-          if (response.data && response.data.photo_id) {
-            // Create or update photoIds array
-            if (!this.photoIds) this.photoIds = Array(3).fill(null);
-            // Replace this.$set with direct assignment
-            this.photoIds[index] = response.data.photo_id;
-          }
-        })
-        .catch(error => {
-          console.error('Error uploading photo:', error);
-          this.$showToast('error', 'Error', 'Failed to upload photo');
-        });
-    },
-
-    savePhotos() {
-      // Collect all files that need to be uploaded
-
-      // if (uploads.length === 0) {
-      //   this.$showToast('info', 'Info', 'No new photos to upload');
-      //   return;
-      // }
-
-      // Create a form data object to send all photos
-      const formData = new FormData();
-      formData.append('vehicle_id', this.vehicle.id);
-
-
-      axios.post('/vehicles/upload-multiple-photos', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-        .then(response => {
-          this.$showToast('success', 'Success', 'Photos saved successfully');
-          let tmpPh = JSON.parse(JSON.stringify(this.src));
-          // let vehicleTmp = JSON.parse(JSON.stringify(this.vehicle));
-          // vehicleTmp.images = tmpPh;
-          // vehicleTmp = tmpPh;
-          // console.log(this.vehicle);
-          this.$emit('vehicle-updated-photo');
-
-          // Aggiorna il veicolo con le nuove immagini
-          // if (response.data && response.data.vehicle && response.data.vehicle.images) {
-
-
-          //   // Resetta le foto selezionate dopo il salvataggio
-          //   // this.src = [null, null, null, null, null, null];
-
-          //   // Emetti evento per aggiornare i componenti genitori
-          //   console.log(updatedVehicle, 'updatedVehicle');
-
-          //   this.$emit('vehicle-updated', updatedVehicle);
-
-          //   console.log();
-          // }
-        })
-        .catch(error => {
-          console.error('Error saving photos:', error);
-          this.$showToast('error', 'Error', 'Failed to save photos');
-        });
-    },
-
-
-    onDamagePhotoSelect(index) {
-      // Handle damage photo selection event
-      return (event) => {
-        const file = event.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          // Replace this.$set with direct assignment
-          this.damagePhotos[index] = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      };
-    },
-    enableEditMode(tabValue) {
-      // Inizializza l'array delle foto per la modifica
-      // this.src = [null, null, null,null,null,null];
-
-      // Se ci sono foto esistenti, le prepariamo per la modifica
-      if (this.vehicle && this.vehicle.images && this.vehicle.images.length > 0) {
-        // Per ogni immagine esistente, prepara il riferimento
-        this.vehicle.images.forEach((image, idx) => {
-          if (idx < 3) {
-            // Assicurati che l'array photos esista e sia inizializzato
-            this.src[idx] = image.url;
-          }
-        });
-      }
-
-      // Imposta la modalità di modifica
-      this.isEditMode = true;
-
-      // Se è specificato un valore di tab, impostiamo la tab corrente
-      if (tabValue) {
-        this.activeTabIndex = tabValue;
-      }
-
-      // Log per debug
-      // Salva i dati originali per poterli ripristinare in caso di annullamento
-      this.originalData = JSON.parse(JSON.stringify(this.$data));
-    },
-    saveChanges() {
-      // Create the updated vehicle object
-      const updatedVehicle = new FormData(); // Usare FormData invece di un oggetto normale
-
-      updatedVehicle.append("id", this.vehicle.id);
-      updatedVehicle.append("make_id", this.selectedBrand);
-      updatedVehicle.append("model_id", this.model);
-      updatedVehicle.append("bodyType", this.bodyType);
-      updatedVehicle.append("year", this.year);
-      updatedVehicle.append("location_id", this.location);
-      updatedVehicle.append("plateNumber", this.plate);
-      updatedVehicle.append("odometer", this.odometer);
-      updatedVehicle.append("color", this.externalColour);
-      updatedVehicle.append("seats", this.passengers);
-      updatedVehicle.append("fuel_type", this.fuelType);
-      updatedVehicle.append("transmission", this.transmission);
-      updatedVehicle.append("km_per_day", this.baseKmDay);
-      updatedVehicle.append("extra_km_price", this.kmExtraPrice);
-      updatedVehicle.append("basic_daily_price", this.basicDailyPrice);
-      updatedVehicle.append("dailyPrice", this.basicDailyPrice);
-      updatedVehicle.append("franchise", this.franchise);
-      updatedVehicle.append("deposit", this.deposit);
-      updatedVehicle.append("status", this.status);
-
-      
-
-
-      // Send the update request to the API////////
-      axios.put(`/vehicles/edit/${this.vehicle.id}`, updatedVehicle)
-        .then(response => {
-          this.isEditMode = false;
-
-          // Log della risposta per debug
-          // Aggiorna il veicolo locale con i dati ricevuti dal server
-          if (response.data && response.data.vehicle) {
-            const updatedVehicle = response.data.vehicle;
-
-            // Emetti un evento globale per aggiornare la tabella dei veicoli
-            this.$root.$emit('vehicle-updated', updatedVehicle);
-
-            // Emetti anche un evento locale per il componente padre diretto
-            this.$emit('vehicle-updated', updatedVehicle);
-
-            // Aggiorna i dati locali con quelli ricevuti dal server
-            this.selectedBrand = updatedVehicle.make_id;
-            this.model = updatedVehicle.model_id;
-            this.bodyType = updatedVehicle.bodyType;
-            this.year = updatedVehicle.year;
-            this.location = updatedVehicle.location;
-            this.plate = updatedVehicle.plateNumber;
-            this.odometer = updatedVehicle.odometer;
-            this.externalColour = updatedVehicle.color;
-            this.passengers = updatedVehicle.seats;
-            this.fuelType = updatedVehicle.fuel_type;
-            this.transmission = updatedVehicle.transmission;
-            this.baseKmDay = updatedVehicle.km_per_day;
-            this.kmExtraPrice = updatedVehicle.extra_km_price;
-            this.basicDailyPrice = updatedVehicle.basic_daily_price;
-            this.franchise = updatedVehicle.franchise;
-            this.deposit = updatedVehicle.deposit;
-            this.status = updatedVehicle.status;
-          }
-
-          this.$showToast('success', 'Success', 'Vehicle details updated successfully');
-        })
-        .catch(error => {
-          console.error('Error updating vehicle:', error);
-          this.$showToast('error', 'Error', 'Failed to update vehicle details');
-        });
-    },
-    cancelEditMode() {
-      // Restore the original data
-      for (const key in this.originalData) {
-        if (key !== 'originalData' && Object.prototype.hasOwnProperty.call(this, key)) {
-          this[key] = JSON.parse(JSON.stringify(this.originalData[key]));
-        }
-      }
-      this.isEditMode = false;
-    },
-    deleteVehicle() {
-      if (confirm('Are you sure you want to delete this vehicle?')) {
-        axios.delete(`/vehicles/delete/${this.vehicle.id}`)
-          .then(response => {
-            this.$root.$emit('vehicle-deleted', this.vehicle.id);
-            this.$showToast('success', 'Success', 'Vehicle deleted successfully');
-            this.$router.push('/dashboard/vehicles');
-          })
-          .catch(error => {
-            console.error('Error deleting vehicle:', error);
-            this.$showToast('error', 'Error', 'Failed to delete vehicle');
-          });
-      }
+  }, 10);
+};
+
+const handleFileUpload = (event, index) => {
+  isEditMode.value = true;
+  const file = event.target.files[0];
+  if (!file) {
+    return;
+  }
+
+  // Size validation
+  if (file.size > 5000000) {
+    window.$showToast('error', 'Error', 'File size must be less than 5MB');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    // Update photos array with the new image
+    photos.value[index] = e.target.result;
+  };
+  reader.onerror = (e) => {
+    console.error("Error reading file:", e);
+    window.$showToast('error', 'Error', 'Failed to read the image file');
+  };
+  reader.readAsDataURL(file);
+};
+
+const getVehicleImageUrl = (index) => {
+  // Check if vehicle exists and has images
+  if (props.vehicle && props.vehicle.images && props.vehicle.images.length > 0) {
+    // Look for an image with position matching the index
+    const image = props.vehicle.images.find(img => img.position === index);
+
+    // If found an image with the specified position, use its URL
+    if (image && image.url) {
+      return image.url;
     }
-  },
-  computed: {
-    brandLogo() {
-      const selectedBrand = this.brands.find(brand => brand.value === this.selectedBrand);
-      return selectedBrand ? selectedBrand.icon : '/brand-logo.svg';
-    },
-    filteredModels() {
-      return this.selectedBrand ? this.models[this.selectedBrand] || [] : [];
-    },
-    hasVehicleImages() {
-      return this.vehicle && this.vehicle.images && this.vehicle.images.length > 0;
+
+    // Alternative: look for an image at the specified index in the array
+    if (props.vehicle.images[index] && props.vehicle.images[index].url) {
+      return props.vehicle.images[index].url;
     }
   }
+
+  // If no images or the image doesn't exist, show default image
+  return '/images/no-image.png';
 };
+
+const handleStatusChange = () => {
+  // No need to access event parameter, directly use status.value
+
+  // Only make the API call if in view or edit mode and we have a vehicle ID
+  if ((props.isViewMode || isEditMode.value) && props.vehicle && props.vehicle.id) {
+    // Create status update object
+    const statusUpdate = {
+      id: props.vehicle.id,
+      status: status.value
+    };
+
+    // Send the request to the backend
+    axios.put(`/vehicles/update-status/${props.vehicle.id}`, statusUpdate)
+      .then(response => {
+        window.$showToast('success', 'Success', 'Vehicle status updated successfully');
+
+        // Update local vehicle with data from server
+        if (response.data && response.data.vehicle) {
+          const updatedVehicle = response.data.vehicle;
+
+          // Create a merged vehicle object that preserves current data
+          // but updates with new data from the server
+          const mergedVehicle = {
+            ...props.vehicle,
+            ...updatedVehicle,
+            make: props.vehicle.make,  // Preserve make object
+            model: props.vehicle.model  // Preserve model object
+          };
+
+          // Update status (should be the same as status.value)
+          status.value = updatedVehicle.status || status.value;
+
+          // Emit the merged vehicle data
+          window.$root.$emit('vehicle-status-updated', mergedVehicle);
+          emit('vehicle-updated', mergedVehicle);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating status:', error);
+        window.$showToast('error', 'Error', 'Failed to update vehicle status');
+
+        // Restore previous status in case of error
+        status.value = props.vehicle.status;
+      });
+  }
+};
+
+const dataURLtoFile = (dataURL, filename) => {
+  const arr = dataURL.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new File([u8arr], filename, { type: mime });
+};
+
+const createVehicle = () => {
+  const uploads = [];
+  // Validate required fields
+  if (!selectedBrand.value || !model.value || !year.value || !plate.value) {
+    window.$showToast('error', 'Error', 'Please fill in all required fields');
+    return;
+  }
+
+  const newVehicle = {
+    make_id: selectedBrand.value,
+    model_id: model.value,
+    bodyType: bodyType.value,
+    year: year.value,
+    location_id: location.value,
+    plateNumber: plate.value,
+    odometer: odometer.value,
+    color: externalColour.value,
+    seats: passengers.value,
+    fuel_type: fuelType.value,
+    transmission: transmission.value,
+    km_per_day: baseKmDay.value,
+    extra_km_price: kmExtraPrice.value,
+    basic_daily_price: basicDailyPrice.value,
+    dailyPrice: basicDailyPrice.value,
+    franchise: franchise.value,
+    deposit: deposit.value,
+    status: 'available' // Default status for new vehicles
+  };
+
+  // Create a form data object to send all data
+  const formData = new FormData();
+
+  // Add all vehicle data to formData
+  Object.keys(newVehicle).forEach(key => {
+    formData.append(key, newVehicle[key]);
+  });
+
+  src.value.forEach((photo, index) => {
+    // Add only new images (those that start with 'data:')
+    if (photo && photo.startsWith("data:")) {
+      const file = dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
+      uploads.push({ file, index });
+    }
+  });
+
+  uploads.forEach(({ file, index }) => {
+    formData.append(`photos[${index}]`, file); // Add file to FormData
+    formData.append(`indices[${index}]`, index); // Add index
+  });
+
+  if (props.vehicle && props.vehicle.id) {
+    formData.append('vehicle_id', props.vehicle.id);
+  }
+
+  // Send the request to the API
+  axios.post('/vehicles/create', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+    .then(response => {
+      window.$showToast('success', 'Success', 'Vehicle created successfully');
+
+      // Reset form
+      resetForm();
+
+      // Navigate to the vehicles list
+      router.push('/dashboard/vehicles');
+    })
+    .catch(error => {
+      console.error('Error creating vehicle:', error);
+      window.$showToast('error', 'Error', 'Failed to create vehicle');
+    });
+};
+
+const resetForm = () => {
+  // Reset all form fields
+  selectedBrand.value = '';
+  model.value = '';
+  bodyType.value = '';
+  year.value = '';
+  location.value = '';
+  plate.value = '';
+  odometer.value = '';
+  externalColour.value = '';
+  passengers.value = '';
+  fuelType.value = '';
+  transmission.value = '';
+  baseKmDay.value = '';
+  kmExtraPrice.value = '';
+  basicDailyPrice.value = '';
+  franchise.value = '';
+  deposit.value = '';
+  photos.value = [null, null, null];
+};
+
+const enableEditMode = (tabValue) => {
+  // Initialize photos array for editing
+  // If there are existing photos, prepare them for editing
+  if (props.vehicle && props.vehicle.images && props.vehicle.images.length > 0) {
+    // For each existing image, prepare the reference
+    props.vehicle.images.forEach((image, idx) => {
+      if (idx < 6) { // Assuming maximum 6 photos
+        src.value[idx] = image.url;
+      }
+    });
+  }
+
+  // Set edit mode
+  isEditMode.value = true;
+
+  // Save original data to restore in case of cancel
+  originalData.value = JSON.parse(JSON.stringify({
+    selectedBrand: selectedBrand.value,
+    model: model.value,
+    bodyType: bodyType.value,
+    year: year.value,
+    location: location.value,
+    plate: plate.value,
+    odometer: odometer.value,
+    externalColour: externalColour.value,
+    passengers: passengers.value,
+    fuelType: fuelType.value,
+    transmission: transmission.value,
+    baseKmDay: baseKmDay.value,
+    kmExtraPrice: kmExtraPrice.value,
+    basicDailyPrice: basicDailyPrice.value,
+    franchise: franchise.value,
+    deposit: deposit.value,
+    status: status.value,
+    src: [...src.value]
+  }));
+};
+
+const saveChanges = () => {
+  // Create the updated vehicle object using FormData
+  const updatedVehicle = new FormData();
+
+  updatedVehicle.append("id", props.vehicle.id);
+  updatedVehicle.append("make_id", selectedBrand.value);
+  updatedVehicle.append("model_id", model.value);
+  updatedVehicle.append("bodyType", bodyType.value);
+  updatedVehicle.append("year", year.value);
+  updatedVehicle.append("location_id", location.value);
+  updatedVehicle.append("plateNumber", plate.value);
+  updatedVehicle.append("odometer", odometer.value);
+  updatedVehicle.append("color", externalColour.value);
+  updatedVehicle.append("seats", passengers.value);
+  updatedVehicle.append("fuel_type", fuelType.value);
+  updatedVehicle.append("transmission", transmission.value);
+  updatedVehicle.append("km_per_day", baseKmDay.value);
+  updatedVehicle.append("extra_km_price", kmExtraPrice.value);
+  updatedVehicle.append("basic_daily_price", basicDailyPrice.value);
+  updatedVehicle.append("dailyPrice", basicDailyPrice.value);
+  updatedVehicle.append("franchise", franchise.value);
+  updatedVehicle.append("deposit", deposit.value);
+  updatedVehicle.append("status", status.value);
+
+  // Send the update request to the API
+  axios.put(`/vehicles/edit/${props.vehicle.id}`, updatedVehicle)
+    .then(response => {
+      isEditMode.value = false;
+
+      // Update local vehicle with data from server
+      if (response.data && response.data.vehicle) {
+        const updatedVehicle = response.data.vehicle;
+
+        // Emit an event to update the vehicles table
+        window.$root.$emit('vehicle-updated', updatedVehicle);
+
+        // Also emit a local event for the direct parent component
+        emit('vehicle-updated', updatedVehicle);
+
+        // Update local data with data received from server
+        selectedBrand.value = updatedVehicle.make_id;
+        model.value = updatedVehicle.model_id;
+        bodyType.value = updatedVehicle.bodyType;
+        year.value = updatedVehicle.year;
+        location.value = updatedVehicle.location;
+        plate.value = updatedVehicle.plateNumber;
+        odometer.value = updatedVehicle.odometer;
+        externalColour.value = updatedVehicle.color;
+        passengers.value = updatedVehicle.seats;
+        fuelType.value = updatedVehicle.fuel_type;
+        transmission.value = updatedVehicle.transmission;
+        baseKmDay.value = updatedVehicle.km_per_day;
+        kmExtraPrice.value = updatedVehicle.extra_km_price;
+        basicDailyPrice.value = updatedVehicle.basic_daily_price;
+        franchise.value = updatedVehicle.franchise;
+        deposit.value = updatedVehicle.deposit;
+        status.value = updatedVehicle.status;
+      }
+
+      window.$showToast('success', 'Success', 'Vehicle details updated successfully');
+    })
+    .catch(error => {
+      console.error('Error updating vehicle:', error);
+      window.$showToast('error', 'Error', 'Failed to update vehicle details');
+    });
+};
+
+const cancelEditMode = () => {
+  // Restore original data
+  if (originalData.value) {
+    selectedBrand.value = originalData.value.selectedBrand;
+    model.value = originalData.value.model;
+    bodyType.value = originalData.value.bodyType;
+    year.value = originalData.value.year;
+    location.value = originalData.value.location;
+    plate.value = originalData.value.plate;
+    odometer.value = originalData.value.odometer;
+    externalColour.value = originalData.value.externalColour;
+    passengers.value = originalData.value.passengers;
+    fuelType.value = originalData.value.fuelType;
+    transmission.value = originalData.value.transmission;
+    baseKmDay.value = originalData.value.baseKmDay;
+    kmExtraPrice.value = originalData.value.kmExtraPrice;
+    basicDailyPrice.value = originalData.value.basicDailyPrice;
+    franchise.value = originalData.value.franchise;
+    deposit.value = originalData.value.deposit;
+    status.value = originalData.value.status;
+    src.value = [...originalData.value.src];
+  }
+  isEditMode.value = false;
+};
+
+const deleteVehicle = () => {
+  if (confirm('Are you sure you want to delete this vehicle?')) {
+    axios.delete(`/vehicles/delete/${props.vehicle.id}`)
+      .then(response => {
+        window.$root.$emit('vehicle-deleted', props.vehicle.id);
+        window.$showToast('success', 'Success', 'Vehicle deleted successfully');
+        router.push('/dashboard/vehicles');
+      })
+      .catch(error => {
+        console.error('Error deleting vehicle:', error);
+        window.$showToast('error', 'Error', 'Failed to delete vehicle');
+      });
+  }
+};
+
+const savePhotos = () => {
+  // Create a form data object to send all photos
+  const formData = new FormData();
+  formData.append('vehicle_id', props.vehicle.id);
+
+  // Process and add any new uploads
+  const uploads = [];
+  src.value.forEach((photo, index) => {
+    if (photo && photo.startsWith("data:")) {
+      const file = dataURLtoFile(photo, `vehicle_photo_${index}.jpg`);
+      formData.append(`photos[${index}]`, file);
+      formData.append(`indices[${index}]`, index);
+      uploads.push({ index, isNew: true });
+    } else if (photo) {
+      // This is an existing photo URL
+      formData.append(`existing_photos[${index}]`, photo);
+      formData.append(`existing_indices[${index}]`, index);
+      uploads.push({ index, isNew: false });
+    }
+  });
+
+  axios.post('/vehicles/upload-multiple-photos', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+    .then(response => {
+      window.$showToast('success', 'Success', 'Photos saved successfully');
+      emit('vehicle-updated-photo');
+    })
+    .catch(error => {
+      console.error('Error saving photos:', error);
+      window.$showToast('error', 'Error', 'Failed to save photos');
+    });
+};
+
+const onUpload = (event) => {
+  // Handle upload complete event if needed
+};
+
+// Watch for changes to props.vehicle
+watch(() => props.vehicle, (newVal) => {
+  if (newVal) {
+    // Only update values that are actually present in the new vehicle object
+    if (newVal.make?.id) selectedBrand.value = newVal.make.id;
+    if (newVal.model?.id) model.value = newVal.model.id;
+
+    // For other properties, use nullish coalescing to keep existing values if new ones are null/undefined
+    bodyType.value = newVal.bodyType ?? bodyType.value;
+    year.value = newVal.year ?? year.value;
+    location.value = newVal.location_id ?? location.value;
+    plate.value = newVal.plateNumber ?? plate.value;
+    odometer.value = newVal.odometer ?? odometer.value;
+    externalColour.value = newVal.color ?? externalColour.value;
+    passengers.value = newVal.seats ?? passengers.value;
+    fuelType.value = newVal.fuel_type ?? fuelType.value;
+    transmission.value = newVal.transmission ?? transmission.value;
+    baseKmDay.value = newVal.km_per_day ?? baseKmDay.value;
+    kmExtraPrice.value = newVal.extra_km_price ?? kmExtraPrice.value;
+    basicDailyPrice.value = newVal.basic_daily_price ?? basicDailyPrice.value;
+    franchise.value = newVal.franchise ?? franchise.value;
+    deposit.value = newVal.deposit ?? deposit.value;
+    
+    if (newVal.images) {
+      src.value = newVal.images.map(image => image.url);
+    }
+    
+    status.value = newVal.status ?? status.value;
+  }
+}, { immediate: true, deep: true });
+
+// Watch for changes to selectedBrand to reset model
+watch(selectedBrand, () => {
+  model.value = '';
+});
+
+// Lifecycle hooks
+onMounted(() => {
+  if (window.location.pathname === "/dashboard/add-vehicles") {
+    src.value = [null, null, null, null, null, null];
+  }
+
+  fetchLocations();
+  fetchBrandsAndModels();
+});
 </script>
 
 <style scoped>
