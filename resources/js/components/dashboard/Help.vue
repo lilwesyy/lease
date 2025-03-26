@@ -139,7 +139,7 @@ const fetchTickets = async () => {
       responseInputs[ticket.id] = '';
     });
     
-    console.log('Tickets loaded:', tickets.value);
+    // console.log('Tickets loaded:', tickets.value);
   } catch (err) {
     console.error('Errore durante il recupero dei ticket:', err);
     error.value = 'Impossibile caricare i ticket. Riprova più tardi.';
