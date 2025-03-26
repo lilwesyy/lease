@@ -18,7 +18,7 @@
       "addCustomer": "Aggiungi Cliente",
       "editCustomer": "Modifica Cliente",
       "deleteCustomer": "Elimina Cliente",
-      "viewCustomer": "Visualizza Cliente",
+      "view": "Visualizza cliente",
       "fields":{
         "firstName": "Nome",
         "lastName": "Cognome",
@@ -44,6 +44,7 @@
       "privacy": {
         "button": "Privacy",
         "signed": "Firmato",
+        "agree": "Accetta",
         "notSigned": "Non Firmato"
       },
       "noCustomers": "Nessun cliente trovato. Aggiungi un cliente.",
@@ -66,5 +67,82 @@
       "close": "Chiudi",
       "delete": "Elimina",
       "save": "Salva"
+    },
+    "dash":{
+      "customer": "Clienti",
+      "calendar": "Calendario",
+      "addCustomer":"Aggiungi Cliente",
+      "vehicle":"Veicoli",
+      "addVehicle":"Aggiungi Veicolo",
+      "vehicleList":"Lista Veicoli",
+      "booking":"Prenotazioni",
+      "addBooking":"Aggiungi Prenotazione",
+      "bookingList":"Lista Prenotazioni",
+      "reports":"Report",
+      "help":"Aiuto",
+      "settings":"Impostazioni",
+      "logOut":"Esci",
+      "logOutMessage":"Sei sicuro di voler uscire?",
+      "logOutHeader":"Esci",
+      "listCustomer":"Lista Clienti"
+    },
+    "vehicle":{
+      "vehicleList":"Lista Veicoli",
+      "addButton":"Aggiungi Veicolo",
+      "addVehicle":"Aggiungi Veicolo",
+      "createVehicle":"Crea Veicolo",
+      "vehicleInformation":"Informazioni Veicolo",
+      "addPhotos":"Aggiungi Foto",
+      "photos":"Foto Veicolo",
+      "damages":"Danni",
+      "specs":"Specifiche",
+      "status":"Stato",
+      "available":"Disponibile",
+      "unavailable":"Non Disponibile",
+      "maintenance":"Manutenzione",
+      "searchPlaceholder":"Cerca Veicoli",
+      "columns":{
+        "brandModel":"Marca Modello",
+        "color":"Colore",
+        "plate": "Targa",
+        "location":"Posizione",
+        "status":"Stato"
+      },
+      "fields":{
+        "brand":"Marca",
+        "bodyType":"Tipo di Carrozzeria",
+        "year":"Anno",
+        "model":"Modello",
+        "color":"Colore",
+        "plate": "Targa",
+        "odometer":"Chilometraggio",
+        "fuelType":"Tipo di Carburante",
+        "transmission":"Trasmissione",
+        "passengers":"Passeggeri",
+        "kmPerDay":"Km al Giorno",
+        "extraKmPrice":"Prezzo Extra Km",
+        "basicDailyPrice":"Prezzo Giornaliero Base",
+        "franchise":"Franchigia",
+        "deposit":"Deposito",
+        "location":"Posizione"
+      },
+      "damage":{
+        "vehicleDamage":"Danni Veicolo",
+        "addDamage":"Aggiungi Danno",
+        "vehicleDamageSeverity":"Gravità Danno",
+        "vehicleDamageDescription":"Descrizione Danno",
+        "vehicleDamageType":"Tipo Danno",
+        "vehicleDamageImages":"Immagini Danno",
+        "vehicleDamagePosition":"Posizione Danno",
+        "dragDrop":"Trascina e rilascia i documenti qui",
+        "selectImages":"Seleziona Immagini",
+        "fields":{
+          "position":"Posizione",
+          "severity":"Gravità",
+          "type":"Tipo"
+        }
+      }
+      
     }
+
   }

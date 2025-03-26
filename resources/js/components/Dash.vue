@@ -6,9 +6,7 @@
   >
     <div>
       <div class="font-xl text-center p-4">
-        <!-- <h1 class="font-bold text-4xl">Lease</h1> -->
         <img src="/logo.png" alt="" />
-        <!-- <h2 class="text-xl text-gray-500 company-name">Rental Company Name</h2> -->
       </div>
       <Divider />
       <PanelMenu :model="menuItems" class="w-full">
@@ -100,23 +98,6 @@
     </div>
   </div>
 
-  <!-- Toggle Button for Mobile -->
-
-  <!-- <Dialog header="Confirm Logout" v-model:visible="showLogoutDialog" modal>
-    <span>Are you sure you want to log out?</span>
-    <template #footer>
-      <div class="w-full flex justify-center">
-        <Button
-          label="Yes"
-          icon="pi pi-check"
-          severity="danger"
-          class="w-full text-lg py-3"
-          @click="logout"
-        />
-      </div>
-    </template>
-  </Dialog> -->
-
   <ConfirmDialog></ConfirmDialog>
 
   <!-- Main Content -->
@@ -134,7 +115,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import PanelMenu from 'primevue/panelmenu';
 import InputText from 'primevue/inputtext';
 import Badge from 'primevue/badge';
@@ -150,254 +131,246 @@ import Menubar from 'primevue/menubar';
 import Dialog from 'primevue/dialog';
 import axios from 'axios';
 import ConfirmDialog from 'primevue/confirmdialog';
-import { mapGetters } from 'vuex';
+import { ref, computed, watch, onMounted, inject } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from 'vue-router';
+import { useConfirm } from 'primevue/useconfirm';
+import { useI18n } from 'vue-i18n';
 
-export default {
-  components: {
-    PanelMenu,
-    InputText,
-    Badge,
-    Card,
-    IconField,
-    Button,
-    Dropdown,
-    InputIcon,
-    Divider,
-    Avatar,
-    Menubar,
-    Dialog,
-    ConfirmDialog
-  },
-  directives: {
-    ripple: Ripple // Register the ripple directive
-  },
-  data() {
-    return {
-      showLogoutDialog: false,
-      isSidebarOpen: false,
-      userName: '',
-      userRole: '',
-      menuItemsMobile: [
-        {
-          label: 'Dashboard',
-          icon: 'pi pi-fw pi-home',
-          url: '/dashboard/home'
-        },
-        {
-          label: 'Calendar',
-          icon: 'pi pi-fw pi-calendar',
-          url: '/dashboard/calendar'
-        },
-        {
-          label: 'Customers',
-          icon: 'pi pi-fw pi-users',
-          items: [
-            {
-              label: 'Customer List',
-              icon: 'pi pi-fw pi-list',
-              url: '/dashboard/customers'
-            },
-            {
-              label: 'Add Customer',
-              icon: 'pi pi-fw pi-plus',
-              url: '/dashboard/add-customer'
-            }
-          ]
-        },
-        {
-          label: 'Vehicles',
-          icon: 'pi pi-fw pi-car',
-          items: [
-            {
-              label: 'Vehicle List',
-              icon: 'pi pi-fw pi-list',
-              url: '/dashboard/vehicles'
-            },
-            {
-              label: 'Add Vehicle',
-              icon: 'pi pi-fw pi-plus',
-              url: '/dashboard/add-vehicles'
-            }
-          ]
-        },
-        {
-          label: 'Bookings',
-          icon: 'pi pi-fw pi-book',
-          items: [
-            {
-              label: 'Booking List',
-              icon: 'pi pi-fw pi-list',
-              url: '/dashboard/bookings'
-            },
-            {
-              label: 'Add Booking',
-              icon: 'pi pi-fw pi-plus',
-              url: '/dashboard/add-booking'
-            }
-          ]
-        },
-        {
-          label: 'Reports',
-          icon: 'pi pi-fw pi-chart-line',
-          url: '/dashboard/reports'
-        },
-      ],
-      menuItems: [
-        {
-          label: 'Dashboard',
-          icon: 'pi pi-fw pi-home',
-          to: '/dashboard/home'
-        },
-        {
-          label: 'Calendar',
-          icon: 'pi pi-fw pi-calendar',
-          to: '/dashboard/calendar'
-        },
-        {
-          label: 'Customers',
-          icon: 'pi pi-fw pi-users',
-          items: [
-            {
-              label: 'Customer List',
-              icon: 'pi pi-fw pi-list',
-              to: '/dashboard/customers'
-            },
-            {
-              label: 'Add Customer',
-              icon: 'pi pi-fw pi-plus',
-              to: '/dashboard/add-customer'
-            }
-          ]
-        },
-        {
-          label: 'Vehicles',
-          icon: 'pi pi-fw pi-car',
-          items: [
-            {
-              label: 'Vehicle List',
-              icon: 'pi pi-fw pi-list',
-              to: '/dashboard/vehicles'
-            },
-            {
-              label: 'Add Vehicle',
-              icon: 'pi pi-fw pi-plus',
-              to: '/dashboard/add-vehicles'
-            }
-          ]
-        },
-        {
-          label: 'Bookings',
-          icon: 'pi pi-fw pi-book',
-          items: [
-            {
-              label: 'Booking List',
-              icon: 'pi pi-fw pi-list',
-              to: '/dashboard/bookings'
-            },
-            {
-              label: 'Add Booking',
-              icon: 'pi pi-fw pi-plus',
-              to: '/dashboard/add-booking'
-            }
-          ]
-        },
-        {
-          label: 'Reports',
-          icon: 'pi pi-fw pi-chart-line',
-          to: '/dashboard/reports'
-        },
-      ],
-      bottomMenuItems: [
-        { label: 'Help', icon: 'pi pi-question-circle', to: '/dashboard/help' },
-        { label: 'Settings', icon: 'pi pi-cog', to: '/dashboard/settings' },
-        {
-          label: 'Log Out',
-          icon: 'pi pi-sign-out',
-          command: () => {
-            this.confirmLogout();
-          }
-        }
-      ],
-      notifications: [
-        { label: 'Notification 1' },
-        { label: 'Notification 2' },
-        { label: 'Notification 3' }
-      ],
-      pageTitle: 'Dashboard',
-      navbarItems: [
-        { label: 'Add Customer', icon: 'pi pi-fw pi-user-plus', url: '/dashboard/add-customer' },
-        { label: 'Add Booking', icon: 'pi pi-fw pi-calendar-plus', url: '/dashboard/add-booking' },
-        { label: 'Add Vehicle', icon: 'pi pi-fw pi-car', url: '/dashboard/add-vehicles' },
+// Directive setup
+const vRipple = Ripple;
 
-      ]
-      
-    };
-  },
-  computed: {
-    ...mapGetters(['user']),
-    userInitial() {
-      return this.userName ? this.userName.charAt(0) : '';
-    }
-  },
-  watch: {
-    $route(to) {
-      this.updatePageTitle(to);
-    }
-  },
-  methods: {
-      async fetchUserData() {
-          try {
-  const response = await axios.post('/user'); // Endpoint per ottenere i dati dell'utente
-  const userData = response.data.user;
+// Composables
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const confirm = useConfirm();
+const { t } = useI18n();
 
-  // Imposta il nome e il ruolo
-  this.userName = userData.name;
-  this.userRole = userData.roles.length > 0
-    ? userData.roles[0].role.charAt(0).toUpperCase() + userData.roles[0].role.slice(1)
-    : 'N/A'; // Prendi il primo ruolo e capitalizza la prima lettera
-} catch (error) {
-  console.error('Errore nel recupero dei dati utente:', error);
-}
-  },
+// Reactive state
+const showLogoutDialog = ref(false);
+const isSidebarOpen = ref(false);
+const userName = ref('');
+const userRole = ref('');
+const pageTitle = ref('Dashboard');
 
-    updatePageTitle(route) {
-      this.pageTitle = `Dashboard - ${route.meta.title || 'Dashboard'}`;
-    },
-    confirmLogout() {
-      this.$confirm.require({
-          message: 'Are you sure you want to log out?',
-          header: 'Confirm Logout',
-          icon: 'pi pi-exclamation-triangle',
-          acceptClass: 'p-button-danger',
-          rejectClass: 'p-button-secondary',
-          accept: () => {
-          this.logout();
-          },
-          reject: () => {
-          // Optional: handle rejection
-          }
-      });
-   },
-    async logout() {
-      try {
-        await axios.post('/logout');
-        localStorage.removeItem('authToken');
-        this.showLogoutDialog = false;
-        this.$router.push('/login');
-      } catch (error) {
-        console.error('Logout failed:', error);
+// Computed properties
+const user = computed(() => store.getters.user);
+const userInitial = computed(() => userName.value ? userName.value.charAt(0) : '');
+
+// Menu items
+const menuItemsMobile = ref([
+  {
+    label: 'Dashboard',
+    icon: 'pi pi-fw pi-home',
+    url: '/dashboard/home'
+  },
+  {
+    label: 'Calendar',
+    icon: 'pi pi-fw pi-calendar',
+    url: '/dashboard/calendar'
+  },
+  {
+    label: 'Customers',
+    icon: 'pi pi-fw pi-users',
+    items: [
+      {
+        label: 'Customer List',
+        icon: 'pi pi-fw pi-list',
+        url: '/dashboard/customers'
+      },
+      {
+        label: 'Add Customer',
+        icon: 'pi pi-fw pi-plus',
+        url: '/dashboard/add-customer'
       }
-    },
-    toggleSidebar() {
-      this.isSidebarOpen = !this.isSidebarOpen;
-    }
+    ]
   },
-  mounted() {
-    this.updatePageTitle(this.$route);
-    this.fetchUserData();
-  //   this.userName = localStorage.getItem('name'); // Recupera il nome dell'utente da localStorage
+  {
+    label: 'Vehicles',
+    icon: 'pi pi-fw pi-car',
+    items: [
+      {
+        label: 'Vehicle List',
+        icon: 'pi pi-fw pi-list',
+        url: '/dashboard/vehicles'
+      },
+      {
+        label: 'Add Vehicle',
+        icon: 'pi pi-fw pi-plus',
+        url: '/dashboard/add-vehicles'
+      }
+    ]
+  },
+  {
+    label: 'Bookings',
+    icon: 'pi pi-fw pi-book',
+    items: [
+      {
+        label: 'Booking List',
+        icon: 'pi pi-fw pi-list',
+        url: '/dashboard/bookings'
+      },
+      {
+        label: 'Add Booking',
+        icon: 'pi pi-fw pi-plus',
+        url: '/dashboard/add-booking'
+      }
+    ]
+  },
+  {
+    label: 'Reports',
+    icon: 'pi pi-fw pi-chart-line',
+    url: '/dashboard/reports'
+  },
+]);
+
+const menuItems = ref([
+  {
+    label: 'Dashboard',
+    icon: 'pi pi-fw pi-home',
+    to: '/dashboard/home'
+  },
+  {
+    label: t('dash.calendar'),
+    icon: 'pi pi-fw pi-calendar',
+    to: '/dashboard/calendar'
+  },
+  {
+    label: t('dash.customer'),
+    icon: 'pi pi-fw pi-users',
+    items: [
+      {
+        label: t('dash.listCustomer'),
+        icon: 'pi pi-fw pi-list',
+        to: '/dashboard/customers'
+      },
+      {
+        label: t('dash.addCustomer'),
+        icon: 'pi pi-fw pi-plus',
+        to: '/dashboard/add-customer'
+      }
+    ]
+  },
+  {
+    label: t('dash.vehicle'),
+    icon: 'pi pi-fw pi-car',
+    items: [
+      {
+        label: t('dash.vehicleList'),
+        icon: 'pi pi-fw pi-list',
+        to: '/dashboard/vehicles'
+      },
+      {
+        label: t('dash.addVehicle'),
+        icon: 'pi pi-fw pi-plus',
+        to: '/dashboard/add-vehicles'
+      }
+    ]
+  },
+  {
+    label: t('dash.booking'),
+    icon: 'pi pi-fw pi-book',
+    items: [
+      {
+        label: t('dash.bookingList'),
+        icon: 'pi pi-fw pi-list',
+        to: '/dashboard/bookings'
+      },
+      {
+        label: t('dash.addBooking'),
+        icon: 'pi pi-fw pi-plus',
+        to: '/dashboard/add-booking'
+      }
+    ]
+  },
+  {
+    label: t('dash.reports'),
+    icon: 'pi pi-fw pi-chart-line',
+    to: '/dashboard/reports'
+  },
+]);
+
+const navbarItems = ref([
+  { label: t('dash.addCustomer'), icon: 'pi pi-fw pi-user-plus', url: '/dashboard/add-customer' },
+  { label: t('dash.addBooking'), icon: 'pi pi-fw pi-calendar-plus', url: '/dashboard/add-booking' },
+  { label: t('dash.addVehicle'), icon: 'pi pi-fw pi-car', url: '/dashboard/add-vehicles' },
+]);
+
+// Methods
+const fetchUserData = async () => {
+  try {
+    const response = await axios.post('/user');
+    const userData = response.data.user;
+
+    // Set name and role
+    userName.value = userData.name;
+    userRole.value = userData.roles.length > 0
+      ? userData.roles[0].role.charAt(0).toUpperCase() + userData.roles[0].role.slice(1)
+      : 'N/A';
+  } catch (error) {
+    console.error('Error fetching user data:', error);
   }
 };
+
+const updatePageTitle = (to) => {
+  pageTitle.value = `Dashboard - ${to.meta.title || 'Dashboard'}`;
+};
+
+const confirmLogout = () => {
+  confirm.require({
+    message: t('dash.logOutMessage'),
+    header: t('dash.logOutHeader'),
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: t('dash.logOut'),
+    rejectLabel: t('common.cancel'),
+    acceptClass: 'p-button-danger',
+    rejectClass: 'p-button-secondary',
+    accept: () => {
+      logout();
+    },
+    reject: () => {
+      // Optional: handle rejection
+    }
+  });
+};
+
+const logout = async () => {
+  try {
+    await axios.post('/logout');
+    localStorage.removeItem('authToken');
+    showLogoutDialog.value = false;
+    router.push('/login');
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+// Bottom menu items with command function
+const bottomMenuItems = ref([
+  { label: t('dash.help'), icon: 'pi pi-question-circle', to: '/dashboard/help' },
+  { label: t('dash.settings'), icon: 'pi pi-cog', to: '/dashboard/settings' },
+  {
+    label: t('dash.logOut'),
+    icon: 'pi pi-sign-out',
+    command: confirmLogout
+  }
+]);
+
+// Watchers
+watch(() => route.path, (to) => {
+  updatePageTitle(route);
+}, { immediate: true });
+
+// Lifecycle hooks
+onMounted(() => {
+  updatePageTitle(route);
+  fetchUserData();
+});
 </script>
 
 <style>
@@ -442,6 +415,4 @@ export default {
   display: none !important;
 }
 }
-
-
 </style>

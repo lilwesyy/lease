@@ -35,7 +35,7 @@
     </div>
   </template>
   <template #footer>
-    <Button :label="$t('privacy.agree')" icon="pi pi-check" class="p-button-success" @click="acceptPrivacy" />
+    <Button :label="$t('customers.privacy.agree')" icon="pi pi-check" class="p-button-success" @click="acceptPrivacy" />
     <Button :label="$t('common.close')" icon="pi pi-times" class="p-button-secondary" @click="privacyDialogVisible = false" />
   </template>
 </Dialog>
@@ -286,7 +286,7 @@
       <Button @click="enableEditMode" :label="$t('common.edit')" icon="pi pi-pencil" class="p-button-primary mt-4" />
       <Button 
         @click="handlePrivacyClick" 
-        :label="$t('privacy.button')" 
+        :label="$t('customers.privacy.button')" 
         icon="pi pi-lock" 
         :class="props.client.privacy ? 'p-button-primary' : 'p-button-secondary'" 
         class="ml-2" 
@@ -417,7 +417,7 @@ const languages = [
 const breadcrumbItems = computed(() => [
   { label: 'Dashboard', url: '/dashboard/home', icon: 'pi pi-home' },
   {
-    label: props.isViewMode ? (isEditMode.value ? t('customers.editCustomer') : t('customers.viewCustomer')) : t('customers.addCustomer'),
+    label: props.isViewMode ? (isEditMode.value ? t('customers.editCustomer') : t('customers.view')) : t('customers.addCustomer'),
     url: props.isViewMode ? `/dashboard/customers/${props.client?.id || ''}` : '/dashboard/add-customer'
   }
 
